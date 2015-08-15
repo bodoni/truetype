@@ -1,0 +1,8 @@
+[package]
+name = "truetype"
+version = "0.0.1"
+authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/hilbert-space/truetype"
+homepage = "https://github.com/hilbert-space/truetype"
+description = "TrueType."
