@@ -2,7 +2,7 @@ use std::mem;
 
 use Result;
 use band::{Band, Value};
-use primitive::{Fixed, ULong, UShort};
+use primitive::Fixed;
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct OffsetTable {
@@ -13,21 +13,21 @@ pub struct OffsetTable {
 table! {
     #[derive(Copy)]
     pub OffsetTableHeader {
-        version       (Fixed ),
-        numTables     (UShort),
-        searchRange   (UShort),
-        entrySelector (UShort),
-        rangeShift    (UShort),
+        version       (Fixed),
+        numTables     (u16  ),
+        searchRange   (u16  ),
+        entrySelector (u16  ),
+        rangeShift    (u16  ),
     }
 }
 
 table! {
     #[derive(Copy)]
     pub OffsetTableRecord {
-        tag      (ULong),
-        checkSum (ULong),
-        offset   (ULong),
-        length   (ULong),
+        tag      (u32),
+        checkSum (u32),
+        offset   (u32),
+        length   (u32),
     }
 }
 
@@ -48,10 +48,10 @@ impl Value for OffsetTable {
 impl OffsetTableRecord {
     #[doc(hidden)]
     pub fn check<T, F>(&self, band: &mut T, process: F) -> Result<bool>
-        where T: Band, F: Fn(usize, ULong) -> ULong
+        where T: Band, F: Fn(usize, u32) -> u32
     {
         let length = {
-            let size = mem::size_of::<ULong>();
+            let size = mem::size_of::<u32>();
             ((self.length as usize + size - 1) & !(size - 1)) / size
         };
         band.stay(|band| {

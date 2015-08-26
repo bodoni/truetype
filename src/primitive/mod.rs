@@ -5,21 +5,8 @@ use std::mem;
 use Result;
 use band::{Band, Value};
 
-pub type Byte = u8;
-pub type Char = i8;
-
-pub type UShort = u16;
-pub type Short = i16;
-
-pub type UFWord = u16;
-pub type FWord = i16;
-
-pub type ULong = u32;
-
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct Fixed(pub u32);
-
-pub type LongDateTime = i64;
 
 impl Fixed {
     pub fn as_f32(&self) -> f32 {
@@ -57,15 +44,8 @@ macro_rules! implement {
     });
 }
 
-implement!(i8, 1);
-implement!(u8, 1);
-
-implement!(i16, 2);
 implement!(u16, 2);
-
 implement!(u32, 4);
-
-implement!(i64, 8);
 
 impl Value for Fixed {
     #[inline(always)]
