@@ -1,6 +1,7 @@
 use primitive::Fixed;
 
 table! {
+    #[doc = "A font header."]
     #[derive(Copy)]
     pub FontHeader {
         version            (Fixed),
