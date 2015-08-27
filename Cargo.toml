@@ -5,4 +5,5 @@ authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
 license = "MIT"
 repository = "https://github.com/bodoni/truetype"
 homepage = "https://github.com/bodoni/truetype"
+documentation = "https://bodoni.github.io/truetype"
 description = "The package provides a parser for TrueType fonts."
