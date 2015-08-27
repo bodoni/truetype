@@ -85,6 +85,21 @@ fn font_header() {
 }
 
 #[test]
+fn maximum_profile() {
+    use truetype::compound::MaximumProfile;
+
+    let mut file = setup(296);
+    let table = MaximumProfile::read(&mut file).unwrap();
+
+    match table {
+        MaximumProfile::Version05(ref table) => {
+            assert_eq!(table.numGlyphs, 547);
+        },
+        _ => unreachable!(),
+    }
+}
+
+#[test]
 fn offset_table() {
     use truetype::compound::OffsetTable;
 

@@ -64,9 +64,11 @@ macro_rules! read_vector(
 
 mod char_mapping;
 mod font_header;
+mod maximum_profile;
 mod offset_table;
 
 pub use self::char_mapping::{CharMapping, CharMappingHeader, CharMappingRecord};
 pub use self::char_mapping::{CharMappingEncoding, CharMappingEncoding4, CharMappingEncoding6};
 pub use self::font_header::FontHeader;
+pub use self::maximum_profile::{MaximumProfile, MaximumProfile05, MaximumProfile10};
 pub use self::offset_table::{OffsetTable, OffsetTableHeader, OffsetTableRecord};
