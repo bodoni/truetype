@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use Result;
 use tape::{Tape, Value};
 
+/// A char-to-glyph mapping.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct CharMapping {
     pub header: CharMappingHeader,
@@ -10,6 +11,7 @@ pub struct CharMapping {
     pub encodings: Vec<CharMappingEncoding>,
 }
 
+/// An encoding of a char-to-glyph mapping.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CharMappingEncoding {
     Format4(CharMappingEncoding4),
@@ -17,6 +19,7 @@ pub enum CharMappingEncoding {
 }
 
 table! {
+    #[doc = "The header of a char-to-glyph mapping."]
     #[derive(Copy)]
     pub CharMappingHeader {
         version   (u16),
@@ -25,6 +28,7 @@ table! {
 }
 
 table! {
+    #[doc = "A record of a char-to-glyph mapping."]
     #[derive(Copy)]
     pub CharMappingRecord {
         platformID (u16),
@@ -34,6 +38,7 @@ table! {
 }
 
 table! {
+    #[doc = "A char-to-glyph encoding of format 4."]
     pub CharMappingEncoding4 {
         format        (u16     ),
         length        (u16     ),
@@ -52,6 +57,7 @@ table! {
 }
 
 table! {
+    #[doc = "A char-to-glyph encoding of format 6."]
     pub CharMappingEncoding6 {
         format       (u16     ),
         length       (u16     ),
@@ -67,7 +73,7 @@ impl Value for CharMapping {
         let position = try!(tape.position());
         let header = match try!(tape.peek::<u16>()) {
             0 => try!(CharMappingHeader::read(tape)),
-            _ => raise!("the format of the character-to-glyph mapping header is not supported"),
+            _ => raise!("the format of the char-to-glyph mapping header is not supported"),
         };
         let mut records = vec![];
         for _ in 0..header.numTables {
@@ -79,7 +85,7 @@ impl Value for CharMapping {
             encodings.push(match try!(tape.peek::<u16>()) {
                 4 => CharMappingEncoding::Format4(try!(Value::read(tape))),
                 6 => CharMappingEncoding::Format6(try!(Value::read(tape))),
-                _ => raise!("the format of a character-to-glyph mapping is not supported"),
+                _ => unimplemented!(),
             });
         }
 
@@ -88,6 +94,7 @@ impl Value for CharMapping {
 }
 
 impl CharMappingEncoding4 {
+    /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         let segments = self.segments();
 
@@ -114,10 +121,10 @@ impl CharMappingEncoding4 {
         let segments = self.segments();
 
         if segments == 0 {
-            raise!("a character-to-glyph mapping has no segments");
+            raise!("found a char-to-glyph mapping with no segments");
         }
         if self.startCode[segments - 1] != 0xffff || self.endCode[segments - 1] != 0xffff {
-            raise!("a character-to-glyph mapping is malformed");
+            raise!("found a malformed char-to-glyph mapping");
         }
 
         let mut length = 0;

@@ -2,7 +2,7 @@ use Result;
 use tape::{Tape, Value};
 use primitive::Fixed;
 
-/// The offset table.
+/// An offset table.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct OffsetTable {
     pub header: OffsetTableHeader,
@@ -10,7 +10,7 @@ pub struct OffsetTable {
 }
 
 table! {
-    #[doc = "The header of the offset table."]
+    #[doc = "The header of an offset table."]
     #[derive(Copy)]
     pub OffsetTableHeader {
         version       (Fixed),
@@ -22,7 +22,7 @@ table! {
 }
 
 table! {
-    #[doc = "A record of the offset table."]
+    #[doc = "A record of an offset table."]
     #[derive(Copy)]
     pub OffsetTableRecord {
         tag      (u32),
@@ -38,7 +38,7 @@ impl Value for OffsetTable {
             Fixed(0x00010000) => {},
             version => match &tag!(version) {
                 b"true" | b"typ1" | b"OTTO" => {},
-                _ => raise!("the format is not supported"),
+                _ => raise!("the font format is not supported"),
             }
         }
         let header = try!(OffsetTableHeader::read(tape));
@@ -51,7 +51,8 @@ impl Value for OffsetTable {
 }
 
 impl OffsetTableRecord {
-    /// Compute the checksum and compare it with the one in the record.
+    /// Compute the checksum of the corresponding table and compare it with the
+    /// one in the record.
     pub fn checksum<T, F>(&self, tape: &mut T, process: F) -> Result<bool>
         where T: Tape, F: Fn(usize, u32) -> u32
     {
