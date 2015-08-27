@@ -1,4 +1,17 @@
 use primitive::Fixed;
+use tape::Value;
+
+const MAGIC_NUMBER: u32 = 0x5F0F3CF5;
+
+macro_rules! read_magic_number(
+    ($tape:ident) => ({
+        let number = try!(Value::read($tape));
+        if number != MAGIC_NUMBER {
+            raise!("the font header is corrupted");
+        }
+        Ok(number)
+    });
+);
 
 table! {
     #[doc = "A font header."]
@@ -7,7 +20,7 @@ table! {
         version            (Fixed),
         fontRevision       (Fixed),
         checkSumAdjustment (u32  ),
-        magicNumber        (u32  ),
+        magicNumber        (u32  ) |tape, this| { read_magic_number!(tape) },
         flags              (u16  ),
         unitsPerEm         (u16  ),
         created            (i64  ),
