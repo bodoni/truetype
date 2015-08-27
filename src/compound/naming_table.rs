@@ -3,13 +3,17 @@ use std::mem;
 use Result;
 use tape::{Tape, Value};
 
+/// A naming table.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NamingTable {
+    /// Format 0.
     Format0(NamingTable0),
+    /// Format 1.
     Format1(NamingTable1),
 }
 
 table! {
+    #[doc = "A naming table of format 0."]
     pub NamingTable0 {
         format       (u16            ),
         count        (u16            ),
@@ -20,6 +24,7 @@ table! {
 }
 
 table! {
+    #[doc = "A naming table of format 1."]
     pub NamingTable1 {
         format        (u16                   ),
         count         (u16                   ),
@@ -33,8 +38,9 @@ table! {
 }
 
 table! {
-    #[repr(C)]
+    #[doc = "A name record of a naming table."]
     #[derive(Copy)]
+    #[repr(C)]
     pub NameRecord {
         platformID (u16),
         encodingID (u16),
@@ -46,11 +52,12 @@ table! {
 }
 
 table! {
-    #[repr(C)]
+    #[doc = "A language-tag record of a naming table."]
     #[derive(Copy)]
+    #[repr(C)]
     pub LanguageTagRecord {
         length (u16),
-        ffset  (u16),
+        offset (u16),
     }
 }
 

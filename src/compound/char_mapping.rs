@@ -14,7 +14,9 @@ pub struct CharMapping {
 /// An encoding of a char-to-glyph mapping.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CharMappingEncoding {
+    /// Format 4.
     Format4(CharMappingEncoding4),
+    /// Format 6.
     Format6(CharMappingEncoding6),
 }
 
