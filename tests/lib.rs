@@ -162,6 +162,21 @@ fn postscript() {
     }
 }
 
+#[test]
+fn windows_metrics() {
+    use truetype::compound::WindowsMetrics;
+
+    let table = WindowsMetrics::read(&mut setup(304)).unwrap();
+    match table {
+        WindowsMetrics::Version3(ref table) => {
+            assert_eq!(table.panose, &[2, 4, 6, 3, 5, 4, 5, 2, 2, 4]);
+            assert_eq!(stringify(&table.achVendID), "ADBE");
+            assert_eq!(table.usBreakChar, 32);
+        },
+        _ => unreachable!(),
+    }
+}
+
 fn setup(offset: u64) -> File {
     use std::fs;
     use std::io::{Seek, SeekFrom};
@@ -172,4 +187,13 @@ fn setup(offset: u64) -> File {
     let mut file = File::open(&path).unwrap();
     file.seek(SeekFrom::Start(offset)).unwrap();
     file
+}
+
+fn stringify<T>(data: &[T]) -> &str {
+    use std::{mem, slice, str};
+    unsafe {
+        let length = data.len() * mem::size_of::<T>();
+        let bytes = slice::from_raw_parts(data as *const _ as *const _, length);
+        str::from_utf8_unchecked(bytes)
+    }
 }

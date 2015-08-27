@@ -52,6 +52,15 @@ macro_rules! read_field(
 );
 
 macro_rules! read_vector(
+    ($tape:ident, $count:expr, i8) => (unsafe {
+        let count = $count as usize;
+        let mut values = Vec::with_capacity(count);
+        values.set_len(count);
+        if try!(::std::io::Read::read($tape, &mut values)) != count {
+            return raise!("failed to read as much as needed");
+        }
+        Ok(::std::mem::transmute(values))
+    });
     ($tape:ident, $count:expr, u8) => (unsafe {
         let count = $count as usize;
         let mut values = Vec::with_capacity(count);
@@ -79,6 +88,7 @@ mod maximum_profile;
 mod naming_table;
 mod offset_table;
 mod postscript;
+mod windows_metrics;
 
 pub use self::char_mapping::{CharMapping, CharMappingHeader, CharMappingRecord};
 pub use self::char_mapping::{CharMappingEncoding, CharMappingEncoding4, CharMappingEncoding6};
@@ -90,3 +100,4 @@ pub use self::naming_table::{NameRecord, LanguageTagRecord};
 pub use self::naming_table::{NamingTable, NamingTable0, NamingTable1};
 pub use self::offset_table::{OffsetTable, OffsetTableHeader, OffsetTableRecord};
 pub use self::postscript::{PostScript, PostScript10, PostScript30};
+pub use self::windows_metrics::{WindowsMetrics, WindowsMetrics3, WindowsMetrics5};
