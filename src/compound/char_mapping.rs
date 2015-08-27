@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
 use Result;
-use compound::OffsetTableRecord;
 use tape::{Tape, Value};
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -63,13 +62,9 @@ table! {
     }
 }
 
-impl CharMapping {
-    pub fn read<T: Tape>(tape: &mut T, record: &OffsetTableRecord) -> Result<CharMapping> {
-        if !try!(record.check(tape, |_, word| word)) {
-            raise!("the character-to-glyph mapping is corrupted");
-        }
-        try!(tape.jump(record.offset as u64));
-
+impl Value for CharMapping {
+    fn read<T: Tape>(tape: &mut T) -> Result<CharMapping> {
+        let position = try!(tape.position());
         let header = match try!(tape.peek::<u16>()) {
             0 => try!(CharMappingHeader::read(tape)),
             _ => raise!("the format of the character-to-glyph mapping header is not supported"),
@@ -80,7 +75,7 @@ impl CharMapping {
         }
         let mut encodings = vec![];
         for encoding in records.iter() {
-            try!(tape.jump(record.offset as u64 + encoding.offset as u64));
+            try!(tape.jump(position + encoding.offset as u64));
             encodings.push(match try!(tape.peek::<u16>()) {
                 4 => CharMappingEncoding::Format4(try!(Value::read(tape))),
                 6 => CharMappingEncoding::Format6(try!(Value::read(tape))),

@@ -54,7 +54,7 @@ impl Value for OffsetTable {
 
 impl OffsetTableRecord {
     #[doc(hidden)]
-    pub fn check<T, F>(&self, tape: &mut T, process: F) -> Result<bool>
+    pub fn checksum<T, F>(&self, tape: &mut T, process: F) -> Result<bool>
         where T: Tape, F: Fn(usize, u32) -> u32
     {
         let length = {
@@ -78,8 +78,8 @@ mod tests {
     use super::OffsetTableRecord;
 
     #[test]
-    fn record_check() {
-        macro_rules! check(
+    fn record_checksum() {
+        macro_rules! checksum(
             ($length:expr, $checksum:expr, $data:expr) => ({
                 let data: &[u8] = $data;
                 let mut reader = Cursor::new(data);
@@ -88,11 +88,11 @@ mod tests {
                     checkSum: $checksum,
                     .. OffsetTableRecord::default()
                 };
-                table.check(&mut reader, |_, chunk| chunk).unwrap()
+                table.checksum(&mut reader, |_, chunk| chunk).unwrap()
             })
         );
 
-        assert!(!check!(3 * 4, 1 + 2 + 4, &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3]));
-        assert!( check!(3 * 4, 1 + 2 + 3, &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3]));
+        assert!(!checksum!(3 * 4, 1 + 2 + 4, &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3]));
+        assert!( checksum!(3 * 4, 1 + 2 + 3, &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3]));
     }
 }
