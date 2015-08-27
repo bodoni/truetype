@@ -10,7 +10,7 @@ use tape::{Tape, Value};
 pub struct Fixed(pub u32);
 
 impl Fixed {
-    /// Return as `f32`.
+    /// Return the inner value as `f32`.
     pub fn as_f32(&self) -> f32 {
         const SCALE: f32 = 1f32 / (1 << 16) as f32;
         SCALE * (self.0 as f32)
@@ -49,6 +49,7 @@ macro_rules! implement {
 implement!(i16, 2);
 implement!(u16, 2);
 implement!(u32, 4);
+implement!(i64, 8);
 
 impl Value for Fixed {
     #[inline(always)]

@@ -73,6 +73,19 @@ fn char_mapping_records() {
 }
 
 #[test]
+fn font_header() {
+    use truetype::compound::FontHeader;
+
+    let mut file = setup(204);
+    let table = FontHeader::read(&mut file).unwrap();
+
+    assert_eq!(format!("{:.3}", table.fontRevision.as_f32()), "1.017");
+    assert_eq!(table.magicNumber, 0x5F0F3CF5);
+    assert_eq!(table.unitsPerEm, 1000);
+    assert_eq!(table.macStyle, 0);
+}
+
+#[test]
 fn offset_table() {
     use truetype::compound::OffsetTable;
 
@@ -83,6 +96,7 @@ fn offset_table() {
     assert_eq!(records.len(), 12);
 
     assert!(records[5].checksum(&mut file, |_, chunk| chunk).unwrap());
+    assert!(records[6].checksum(&mut file, |i, chunk| if i == 2 { 0 } else { chunk }).unwrap());
 }
 
 fn setup(offset: u64) -> File {
