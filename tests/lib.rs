@@ -100,6 +100,22 @@ fn maximum_profile() {
 }
 
 #[test]
+fn naming_table() {
+    use truetype::compound::NamingTable;
+
+    let mut file = setup(400);
+    let table = NamingTable::read(&mut file).unwrap();
+
+    match table {
+        NamingTable::Format0(ref table) => {
+            assert_eq!(table.count, 26);
+            assert_eq!(table.strings().unwrap()[9], "Frank Grießhammer");
+        },
+        _ => unreachable!(),
+    }
+}
+
+#[test]
 fn offset_table() {
     use truetype::compound::OffsetTable;
 
