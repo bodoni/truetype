@@ -129,6 +129,22 @@ fn offset_table() {
     assert!(records[6].checksum(&mut file, |i, chunk| if i == 2 { 0 } else { chunk }).unwrap());
 }
 
+#[test]
+fn postscript() {
+    use truetype::compound::PostScript;
+
+    let mut file = setup(17700);
+    let table = PostScript::read(&mut file).unwrap();
+
+    match table {
+        PostScript::Version30(ref table) => {
+            assert_eq!(table.version.as_f32(), 3.0);
+            assert_eq!(table.underlinePosition, -75);
+        },
+        _ => unreachable!(),
+    }
+}
+
 fn setup(offset: u64) -> File {
     use std::fs;
     use std::io::{Seek, SeekFrom};
