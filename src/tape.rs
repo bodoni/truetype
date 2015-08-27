@@ -2,7 +2,7 @@ use std::io::{Read, Seek, SeekFrom};
 
 use Result;
 
-pub trait Band: Read + Seek + Sized {
+pub trait Tape: Read + Seek + Sized {
     #[inline]
     fn jump(&mut self, position: u64) -> Result<u64> {
         self.seek(SeekFrom::Start(position))
@@ -10,7 +10,7 @@ pub trait Band: Read + Seek + Sized {
 
     #[inline]
     fn peek<T: Value>(&mut self) -> Result<T> {
-        self.stay(|band| Value::read(band))
+        self.stay(|tape| Value::read(tape))
     }
 
     #[inline]
@@ -32,8 +32,8 @@ pub trait Band: Read + Seek + Sized {
 }
 
 pub trait Value: Sized {
-    fn read<T: Band>(&mut T) -> Result<Self>;
+    fn read<T: Tape>(&mut T) -> Result<Self>;
 }
 
-impl<T: Read + Seek> Band for T {
+impl<T: Read + Seek> Tape for T {
 }

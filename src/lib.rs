@@ -17,9 +17,9 @@ macro_rules! tag(
     });
 );
 
-mod band;
+mod tape;
 
 pub mod compound;
 pub mod primitive;
 
-pub use band::{Band, Value};
+pub use tape::{Tape, Value};

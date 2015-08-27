@@ -1,7 +1,7 @@
 use std::mem;
 
 use Result;
-use band::{Band, Value};
+use tape::{Tape, Value};
 use primitive::Fixed;
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -32,14 +32,14 @@ table! {
 }
 
 impl Value for OffsetTable {
-    fn read<T: Band>(band: &mut T) -> Result<Self> {
-        let header = match &tag!(try!(band.peek::<Fixed>())) {
-            b"OTTO" => try!(OffsetTableHeader::read(band)),
+    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+        let header = match &tag!(try!(tape.peek::<Fixed>())) {
+            b"OTTO" => try!(OffsetTableHeader::read(tape)),
             _ => raise!("the format of a font is not supported"),
         };
         let mut records = vec![];
         for _ in 0..header.numTables {
-            records.push(try!(OffsetTableRecord::read(band)));
+            records.push(try!(OffsetTableRecord::read(tape)));
         }
         Ok(OffsetTable { header: header, records: records })
     }
@@ -47,18 +47,18 @@ impl Value for OffsetTable {
 
 impl OffsetTableRecord {
     #[doc(hidden)]
-    pub fn check<T, F>(&self, band: &mut T, process: F) -> Result<bool>
-        where T: Band, F: Fn(usize, u32) -> u32
+    pub fn check<T, F>(&self, tape: &mut T, process: F) -> Result<bool>
+        where T: Tape, F: Fn(usize, u32) -> u32
     {
         let length = {
             let size = mem::size_of::<u32>();
             ((self.length as usize + size - 1) & !(size - 1)) / size
         };
-        band.stay(|band| {
-            try!(band.jump(self.offset as u64));
+        tape.stay(|tape| {
+            try!(tape.jump(self.offset as u64));
             let mut checksum: u64 = 0;
             for i in 0..length {
-                checksum += process(i, try!(Value::read(band))) as u64;
+                checksum += process(i, try!(Value::read(tape))) as u64;
             }
             Ok(self.checkSum == checksum as u32)
         })

@@ -19,10 +19,10 @@ macro_rules! table_define {
 
 macro_rules! table_read {
     (pub $structure:ident { $($field:ident,)+ }) => (
-        impl ::band::Value for $structure {
-            fn read<T: ::band::Band>(band: &mut T) -> ::Result<Self> {
+        impl ::tape::Value for $structure {
+            fn read<T: ::tape::Tape>(tape: &mut T) -> ::Result<Self> {
                 let mut table = $structure::default();
-                $(table.$field = try!(::band::Value::read(band));)+
+                $(table.$field = try!(::tape::Value::read(tape));)+
                 Ok(table)
             }
         }
