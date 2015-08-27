@@ -1,5 +1,3 @@
-use std::mem;
-
 use Result;
 use tape::{Tape, Value};
 use primitive::Fixed;
@@ -53,14 +51,11 @@ impl Value for OffsetTable {
 }
 
 impl OffsetTableRecord {
-    #[doc(hidden)]
+    /// Compute the checksum and compare it with the one in the record.
     pub fn checksum<T, F>(&self, tape: &mut T, process: F) -> Result<bool>
         where T: Tape, F: Fn(usize, u32) -> u32
     {
-        let length = {
-            let size = mem::size_of::<u32>();
-            ((self.length as usize + size - 1) & !(size - 1)) / size
-        };
+        let length = ((self.length as usize + 4 - 1) & !(4 - 1)) / 4;
         tape.stay(|tape| {
             try!(tape.jump(self.offset as u64));
             let mut checksum: u64 = 0;
