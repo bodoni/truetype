@@ -34,12 +34,8 @@ table! {
 
 impl Value for OffsetTable {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        match try!(tape.peek::<Fixed>()) {
-            Fixed(0x00010000) => {},
-            version => match &tag!(version) {
-                b"true" | b"typ1" | b"OTTO" => {},
-                _ => raise!("the font format is not supported"),
-            }
+        if !is_known(try!(tape.peek::<Fixed>())) {
+            raise!("the font format is not supported");
         }
         let header = try!(OffsetTableHeader::read(tape));
         let mut records = vec![];
@@ -66,6 +62,19 @@ impl OffsetTableRecord {
             Ok(self.checkSum == checksum as u32)
         })
     }
+}
+
+#[inline]
+fn is_known(version: Fixed) -> bool {
+    match version {
+        Fixed(0x00010000) => return true,
+        _ => {},
+    }
+    match &tag!(version) {
+        b"true" | b"typ1" | b"OTTO" => return true,
+        _ => {},
+    }
+    false
 }
 
 #[cfg(test)]
