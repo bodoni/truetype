@@ -7,7 +7,7 @@ macro_rules! read_version(
     ($tape:ident) => ({
         let value = try!(Value::read($tape));
         if value != Fixed(0x00010000) {
-            raise!("the format of the font header is not supported");
+            raise!("the version of the font header is not supported");
         }
         Ok(value)
     });

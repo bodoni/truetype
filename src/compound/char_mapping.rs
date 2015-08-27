@@ -18,11 +18,21 @@ pub enum CharMappingEncoding {
     Format6(CharMappingEncoding6),
 }
 
+macro_rules! read_version(
+    ($tape:ident) => ({
+        let value = try!(Value::read($tape));
+        if value != 0 {
+            raise!("the version of the char-to-glyph mapping header is not supported");
+        }
+        Ok(value)
+    });
+);
+
 table! {
     #[doc = "The header of a char-to-glyph mapping."]
     #[derive(Copy)]
     pub CharMappingHeader {
-        version   (u16),
+        version   (u16) |tape, this| { read_version!(tape) },
         numTables (u16),
     }
 }
