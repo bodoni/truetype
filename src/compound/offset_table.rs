@@ -33,10 +33,14 @@ table! {
 
 impl Value for OffsetTable {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        let header = match &tag!(try!(tape.peek::<Fixed>())) {
-            b"OTTO" => try!(OffsetTableHeader::read(tape)),
-            _ => raise!("the format of a font is not supported"),
-        };
+        match try!(tape.peek::<Fixed>()) {
+            Fixed(0x00010000) => {},
+            version => match &tag!(version) {
+                b"true" | b"typ1" | b"OTTO" => {},
+                _ => raise!("the format is not supported"),
+            }
+        }
+        let header = try!(OffsetTableHeader::read(tape));
         let mut records = vec![];
         for _ in 0..header.numTables {
             records.push(try!(OffsetTableRecord::read(tape)));
