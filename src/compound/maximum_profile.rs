@@ -3,13 +3,17 @@ use primitive::Fixed;
 use Result;
 use tape::{Tape, Value};
 
+/// A maximum profile.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum MaximumProfile {
+    /// Version 0.5.
     Version05(MaximumProfile05),
+    /// Version 1.0.
     Version10(MaximumProfile10),
 }
 
 table! {
+    #[doc = "A maximum profile of version 0.5."]
     #[derive(Copy)]
     pub MaximumProfile05 {
         version   (Fixed),
@@ -18,6 +22,7 @@ table! {
 }
 
 table! {
+    #[doc = "A maximum profile of version 1.0."]
     #[derive(Copy)]
     pub MaximumProfile10 {
         version               (Fixed),
@@ -39,6 +44,7 @@ table! {
 }
 
 impl MaximumProfile {
+    /// Return the number of glyphs.
     pub fn glyphs(&self) -> usize {
         match self {
             &MaximumProfile::Version05(ref profile) => profile.numGlyphs as usize,
