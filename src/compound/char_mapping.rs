@@ -88,7 +88,6 @@ impl Value for CharMapping {
                 _ => unimplemented!(),
             });
         }
-
         Ok(CharMapping { header: header, records: records, encodings: encodings })
     }
 }
@@ -97,7 +96,6 @@ impl CharMappingEncoding4 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         let segments = self.segments();
-
         let mut map = HashMap::new();
         for i in 0..(segments - 1) {
             let startCode = self.startCode[i];
@@ -113,20 +111,17 @@ impl CharMappingEncoding4 {
                 map.insert(j, index);
             }
         }
-
         map
     }
 
     fn array_length(&self) -> Result<usize> {
         let segments = self.segments();
-
         if segments == 0 {
             raise!("found a char-to-glyph mapping with no segments");
         }
         if self.startCode[segments - 1] != 0xffff || self.endCode[segments - 1] != 0xffff {
             raise!("found a malformed char-to-glyph mapping");
         }
-
         let mut length = 0;
         for i in 0..(segments - 1) {
             let startCode = self.startCode[i];
@@ -140,7 +135,6 @@ impl CharMappingEncoding4 {
                 }
             }
         }
-
         Ok(length as usize)
     }
 
