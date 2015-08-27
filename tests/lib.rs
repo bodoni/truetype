@@ -85,6 +85,18 @@ fn font_header() {
 }
 
 #[test]
+fn horizontal_header() {
+    use truetype::compound::HorizontalHeader;
+
+    let mut file = setup(260);
+    let table = HorizontalHeader::read(&mut file).unwrap();
+
+    assert_eq!(table.Ascender, 918);
+    assert_eq!(table.Descender, -335);
+    assert_eq!(table.numberOfHMetrics, 547);
+}
+
+#[test]
 fn maximum_profile() {
     use truetype::compound::MaximumProfile;
 
