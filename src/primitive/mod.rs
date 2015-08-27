@@ -5,10 +5,12 @@ use std::mem;
 use Result;
 use tape::{Tape, Value};
 
+/// A fixed-point number.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct Fixed(pub u32);
 
 impl Fixed {
+    /// Return as `f32`.
     pub fn as_f32(&self) -> f32 {
         const SCALE: f32 = 1f32 / (1 << 16) as f32;
         SCALE * (self.0 as f32)

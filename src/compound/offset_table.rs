@@ -4,6 +4,7 @@ use Result;
 use tape::{Tape, Value};
 use primitive::Fixed;
 
+/// The offset table.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct OffsetTable {
     pub header: OffsetTableHeader,
@@ -11,6 +12,7 @@ pub struct OffsetTable {
 }
 
 table! {
+    #[doc = "The header of the offset table."]
     #[derive(Copy)]
     pub OffsetTableHeader {
         version       (Fixed),
@@ -22,6 +24,7 @@ table! {
 }
 
 table! {
+    #[doc = "A record of the offset table."]
     #[derive(Copy)]
     pub OffsetTableRecord {
         tag      (u32),
