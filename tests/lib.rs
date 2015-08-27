@@ -9,10 +9,8 @@ mod fixture;
 fn char_mapping_encodings() {
     use truetype::compound::{CharMapping, CharMappingEncoding};
 
-    let mut file = setup(15620);
-    let mapping = CharMapping::read(&mut file).unwrap();
+    let mapping = CharMapping::read(&mut setup(15620)).unwrap();
     let tables = &mapping.encodings;
-
     assert_eq!(tables.len(), 3);
     match &tables[0] {
         &CharMappingEncoding::Format4(ref table) => {
@@ -47,10 +45,8 @@ fn char_mapping_encodings() {
 fn char_mapping_header() {
     use truetype::compound::CharMapping;
 
-    let mut file = setup(15620);
-    let mapping = CharMapping::read(&mut file).unwrap();
+    let mapping = CharMapping::read(&mut setup(15620)).unwrap();
     let table = &mapping.header;
-
     assert_eq!(table.version, 0);
     assert_eq!(table.numTables, 3);
 }
@@ -59,10 +55,8 @@ fn char_mapping_header() {
 fn char_mapping_records() {
     use truetype::compound::CharMapping;
 
-    let mut file = setup(15620);
-    let mapping = CharMapping::read(&mut file).unwrap();
+    let mapping = CharMapping::read(&mut setup(15620)).unwrap();
     let tables = &mapping.records;
-
     assert_eq!(tables.len(), 3);
     assert_eq!(tables[0].platformID, 0);
     assert_eq!(tables[0].encodingID, 3);
@@ -76,9 +70,7 @@ fn char_mapping_records() {
 fn font_header() {
     use truetype::compound::FontHeader;
 
-    let mut file = setup(204);
-    let table = FontHeader::read(&mut file).unwrap();
-
+    let table = FontHeader::read(&mut setup(204)).unwrap();
     assert_eq!(format!("{:.3}", table.fontRevision.as_f32()), "1.017");
     assert_eq!(table.unitsPerEm, 1000);
     assert_eq!(table.macStyle, 0);
@@ -88,21 +80,28 @@ fn font_header() {
 fn horizontal_header() {
     use truetype::compound::HorizontalHeader;
 
-    let mut file = setup(260);
-    let table = HorizontalHeader::read(&mut file).unwrap();
-
+    let table = HorizontalHeader::read(&mut setup(260)).unwrap();
     assert_eq!(table.Ascender, 918);
     assert_eq!(table.Descender, -335);
     assert_eq!(table.numberOfHMetrics, 547);
 }
 
 #[test]
+fn horizontal_metrics() {
+    use truetype::compound::{HorizontalHeader, HorizontalMetrics, MaximumProfile};
+
+    let header = HorizontalHeader::read(&mut setup(260)).unwrap();
+    let profile = MaximumProfile::read(&mut setup(296)).unwrap();
+    let table = HorizontalMetrics::read(&mut setup(55460), &header, &profile).unwrap();
+    assert_eq!(table.hMetrics.len(), 547);
+    assert_eq!(table.leftSideBearing.len(), 547 - 547);
+}
+
+#[test]
 fn maximum_profile() {
     use truetype::compound::MaximumProfile;
 
-    let mut file = setup(296);
-    let table = MaximumProfile::read(&mut file).unwrap();
-
+    let table = MaximumProfile::read(&mut setup(296)).unwrap();
     match table {
         MaximumProfile::Version05(ref table) => {
             assert_eq!(table.numGlyphs, 547);
@@ -115,9 +114,7 @@ fn maximum_profile() {
 fn naming_table() {
     use truetype::compound::NamingTable;
 
-    let mut file = setup(400);
-    let table = NamingTable::read(&mut file).unwrap();
-
+    let table = NamingTable::read(&mut setup(400)).unwrap();
     match table {
         NamingTable::Format0(ref table) => {
             assert_eq!(table.count, 26);
@@ -135,10 +132,18 @@ fn offset_table() {
     let OffsetTable { header, records } = OffsetTable::read(&mut file).unwrap();
 
     assert_eq!(header.numTables, 12);
-    assert_eq!(records.len(), 12);
+    assert_eq!(header.searchRange, 8 * 16);
+    assert_eq!(header.entrySelector, 3);
+    assert_eq!(header.rangeShift, header.numTables * 16 - header.searchRange);
 
-    assert!(records[5].checksum(&mut file, |_, chunk| chunk).unwrap());
-    assert!(records[6].checksum(&mut file, |i, chunk| if i == 2 { 0 } else { chunk }).unwrap());
+    assert_eq!(records.len(), 12);
+    for (i, record) in records.iter().enumerate() {
+        assert!(if i == 6 {
+            record.checksum(&mut file, |i, chunk| if i == 2 { 0 } else { chunk })
+        } else {
+            record.checksum(&mut file, |_, chunk| chunk)
+        }.unwrap());
+    }
 }
 
 #[test]
