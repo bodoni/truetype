@@ -46,6 +46,7 @@ macro_rules! implement {
     });
 }
 
+implement!(i16, 2);
 implement!(u16, 2);
 implement!(u32, 4);
 
