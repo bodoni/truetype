@@ -9,11 +9,11 @@ use tape::{Tape, Value};
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct Fixed(pub u32);
 
-impl Fixed {
-    /// Return the inner value as `f32`.
-    pub fn as_f32(&self) -> f32 {
+impl From<Fixed> for f32 {
+    #[inline]
+    fn from(fixed: Fixed) -> f32 {
         const SCALE: f32 = 1f32 / (1 << 16) as f32;
-        SCALE * (self.0 as f32)
+        SCALE * (fixed.0 as f32)
     }
 }
 

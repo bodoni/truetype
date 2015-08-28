@@ -71,7 +71,7 @@ fn font_header() {
     use truetype::compound::FontHeader;
 
     let table = FontHeader::read(&mut setup(204)).unwrap();
-    assert_eq!(format!("{:.3}", table.fontRevision.as_f32()), "1.017");
+    assert_eq!(format!("{:.3}", f32::from(table.fontRevision)), "1.017");
     assert_eq!(table.unitsPerEm, 1000);
     assert_eq!(table.macStyle, 0);
 }
@@ -155,7 +155,7 @@ fn postscript() {
 
     match table {
         PostScript::Version30(ref table) => {
-            assert_eq!(table.version.as_f32(), 3.0);
+            assert_eq!(f32::from(table.version), 3.0);
             assert_eq!(table.underlinePosition, -75);
         },
         _ => unreachable!(),
