@@ -28,8 +28,22 @@ impl From<Tag> for [u8; 4] {
     }
 }
 
-impl From<Fixed> for Tag {
+impl From<[u8; 4]> for Tag {
     #[inline]
+    fn from(bytes: [u8; 4]) -> Self {
+        Tag(u32::from_be(unsafe { mem::transmute(bytes) }))
+    }
+}
+
+impl<'l> From<&'l [u8; 4]> for Tag {
+    #[inline(always)]
+    fn from(bytes: &'l [u8; 4]) -> Self {
+        (*bytes).into()
+    }
+}
+
+impl From<Fixed> for Tag {
+    #[inline(always)]
     fn from(fixed: Fixed) -> Self {
         Tag(fixed.0)
     }
@@ -73,5 +87,15 @@ impl Value for Fixed {
     #[inline(always)]
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         Ok(Fixed(try!(Value::read(tape))))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Tag;
+
+    #[test]
+    fn from() {
+        assert_eq!(Tag::from(b"true"), Tag(0x74727565));
     }
 }
