@@ -1,6 +1,6 @@
 use Result;
+use primitive::{Fixed, Tag};
 use tape::{Tape, Value};
-use primitive::Fixed;
 
 /// An offset table.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -70,7 +70,7 @@ fn is_known(version: Fixed) -> bool {
         Fixed(0x00010000) => return true,
         _ => {},
     }
-    match &tag!(version) {
+    match &Tag::from(version).into() {
         b"true" | b"typ1" | b"OTTO" => return true,
         _ => {},
     }

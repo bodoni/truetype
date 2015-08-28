@@ -11,12 +11,6 @@ macro_rules! raise(
     ($($argument:tt)+) => (raise!(format!($($argument)+)));
 );
 
-macro_rules! tag(
-    ($value:expr) => (unsafe {
-        ::std::mem::transmute::<_, [u8; 4]>(u32::from_be(::std::mem::transmute($value)))
-    });
-);
-
 mod tape;
 
 pub mod compound;

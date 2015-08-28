@@ -9,11 +9,29 @@ use tape::{Tape, Value};
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct Fixed(pub u32);
 
+/// A font-table tag.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub struct Tag(pub u32);
+
 impl From<Fixed> for f32 {
     #[inline]
-    fn from(fixed: Fixed) -> f32 {
+    fn from(fixed: Fixed) -> Self {
         const SCALE: f32 = 1f32 / (1 << 16) as f32;
         SCALE * (fixed.0 as f32)
+    }
+}
+
+impl From<Tag> for [u8; 4] {
+    #[inline]
+    fn from(tag: Tag) -> Self {
+        unsafe { mem::transmute(u32::from_be(tag.0)) }
+    }
+}
+
+impl From<Fixed> for Tag {
+    #[inline]
+    fn from(fixed: Fixed) -> Self {
+        Tag(fixed.0)
     }
 }
 
