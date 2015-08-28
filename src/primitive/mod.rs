@@ -10,7 +10,7 @@ use tape::{Tape, Value};
 pub struct Fixed(pub u32);
 
 /// A font-table tag.
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Tag(pub u32);
 
 impl From<Fixed> for f32 {
