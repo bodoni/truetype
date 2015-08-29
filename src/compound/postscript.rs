@@ -5,9 +5,9 @@ use tape::{Tape, Value};
 /// PostScript information.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PostScript {
-    // Version 1.0.
+    /// Version 1.0.
     Version10(PostScript10),
-    // Version 3.0.
+    /// Version 3.0.
     Version30(PostScript30),
 }
 
