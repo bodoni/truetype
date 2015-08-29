@@ -87,7 +87,7 @@ mod horizontal_metrics;
 mod maximum_profile;
 mod naming_table;
 mod offset_table;
-mod postscript;
+mod postscript_info;
 mod windows_metrics;
 
 pub use self::char_mapping::{CharMapping, CharMappingHeader, CharMappingRecord};
@@ -99,5 +99,5 @@ pub use self::maximum_profile::{MaximumProfile, MaximumProfile05, MaximumProfile
 pub use self::naming_table::{NameRecord, LanguageTagRecord};
 pub use self::naming_table::{NamingTable, NamingTable0, NamingTable1};
 pub use self::offset_table::{OffsetTable, OffsetTableHeader, OffsetTableRecord};
-pub use self::postscript::{PostScript, PostScript10, PostScript30};
+pub use self::postscript_info::{PostScriptInfo, PostScriptInfo10, PostScriptInfo30};
 pub use self::windows_metrics::{WindowsMetrics, WindowsMetrics3, WindowsMetrics5};

@@ -148,13 +148,13 @@ fn offset_table() {
 
 #[test]
 fn postscript() {
-    use truetype::compound::PostScript;
+    use truetype::compound::PostScriptInfo;
 
     let mut file = setup(17700);
-    let table = PostScript::read(&mut file).unwrap();
+    let table = PostScriptInfo::read(&mut file).unwrap();
 
     match table {
-        PostScript::Version30(ref table) => {
+        PostScriptInfo::Version30(ref table) => {
             assert_eq!(f32::from(table.version), 3.0);
             assert_eq!(table.underlinePosition, -75);
         },

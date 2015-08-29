@@ -4,17 +4,17 @@ use tape::{Tape, Value};
 
 /// PostScript information.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum PostScript {
+pub enum PostScriptInfo {
     /// Version 1.0.
-    Version10(PostScript10),
+    Version10(PostScriptInfo10),
     /// Version 3.0.
-    Version30(PostScript30),
+    Version30(PostScriptInfo30),
 }
 
 table! {
     #[doc = "PostScript information of version 1.0."]
     #[derive(Copy)]
-    pub PostScript10 {
+    pub PostScriptInfo10 {
         version            (Fixed),
         italicAngle        (Fixed),
         underlinePosition  (i16  ),
@@ -28,13 +28,13 @@ table! {
 }
 
 /// PostScript information of version 3.0.
-pub type PostScript30 = PostScript10;
+pub type PostScriptInfo30 = PostScriptInfo10;
 
-impl Value for PostScript {
+impl Value for PostScriptInfo {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         Ok(match try!(tape.peek::<Fixed>()) {
-            Fixed(0x00010000) => PostScript::Version10(try!(Value::read(tape))),
-            Fixed(0x00030000) => PostScript::Version30(try!(Value::read(tape))),
+            Fixed(0x00010000) => PostScriptInfo::Version10(try!(Value::read(tape))),
+            Fixed(0x00030000) => PostScriptInfo::Version30(try!(Value::read(tape))),
             _ => raise!("the format of the PostScript information is not supported"),
         })
     }
