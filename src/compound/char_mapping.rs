@@ -104,6 +104,16 @@ impl Value for CharMapping {
     }
 }
 
+impl CharMappingEncoding {
+    /// Return the mapping.
+    pub fn mapping(&self) -> HashMap<u16, u16> {
+        match self {
+            &CharMappingEncoding::Format4(ref encoding) => encoding.mapping(),
+            &CharMappingEncoding::Format6(ref encoding) => encoding.mapping(),
+        }
+    }
+}
+
 impl CharMappingEncoding4 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
@@ -153,5 +163,12 @@ impl CharMappingEncoding4 {
     #[inline]
     fn segments(&self) -> usize {
         self.segCountX2 as usize / 2
+    }
+}
+
+impl CharMappingEncoding6 {
+    /// Return the mapping.
+    pub fn mapping(&self) -> HashMap<u16, u16> {
+        unimplemented!();
     }
 }
