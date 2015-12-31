@@ -13,88 +13,104 @@ pub enum WindowsMetrics {
 table! {
     #[doc = "OS/2 and Windows metrics of version 3."]
     pub WindowsMetrics3 {
-        version             (u16    ),
-        xAvgCharWidth       (i16    ),
-        usWeightClass       (u16    ),
-        usWidthClass        (u16    ),
-        fsType              (u16    ),
-        ySubscriptXSize     (i16    ),
-        ySubscriptYSize     (i16    ),
-        ySubscriptXOffset   (i16    ),
-        ySubscriptYOffset   (i16    ),
-        ySuperscriptXSize   (i16    ),
-        ySuperscriptYSize   (i16    ),
-        ySuperscriptXOffset (i16    ),
-        ySuperscriptYOffset (i16    ),
-        yStrikeoutSize      (i16    ),
-        yStrikeoutPosition  (i16    ),
-        sFamilyClass        (i16    ),
-        panose              (Vec<u8>) |tape, this| { read_vector!(tape, 10, u8) },
-        ulUnicodeRange1     (u32    ),
-        ulUnicodeRange2     (u32    ),
-        ulUnicodeRange3     (u32    ),
-        ulUnicodeRange4     (u32    ),
-        achVendID           (Vec<i8>) |tape, this| { read_vector!(tape, 4, i8) },
-        fsSelection         (u16    ),
-        usFirstCharIndex    (u16    ),
-        usLastCharIndex     (u16    ),
-        sTypoAscender       (i16    ),
-        sTypoDescender      (i16    ),
-        sTypoLineGap        (i16    ),
-        usWinAscent         (u16    ),
-        usWinDescent        (u16    ),
-        ulCodePageRange1    (u32    ),
-        ulCodePageRange2    (u32    ),
-        sxHeight            (i16    ),
-        sCapHeight          (i16    ),
-        usDefaultChar       (u16    ),
-        usBreakChar         (u16    ),
-        usMaxContext        (u16    ),
+        version              (u16),
+        average_char_width   (i16), // xAvgCharWidth
+        weight_class         (u16), // usWeightClass
+        width_class          (u16), // usWidthClass
+        type_flags           (u16), // fsType
+        subscript_x_size     (i16), // ySubscriptXSize
+        subscript_y_size     (i16), // ySubscriptYSize
+        subscript_x_offset   (i16), // ySubscriptXOffset
+        subscript_y_offset   (i16), // ySubscriptYOffset
+        superscript_x_size   (i16), // ySuperscriptXSize
+        superscript_y_size   (i16), // ySuperscriptYSize
+        superscript_x_offset (i16), // ySuperscriptXOffset
+        superscript_y_offset (i16), // ySuperscriptYOffset
+        strikeout_size       (i16), // yStrikeoutSize
+        strikeout_position   (i16), // yStrikeoutPosition
+        family_class         (i16), // sFamilyClass
+
+        panose (Vec<u8>) |tape, this| {
+            read_vector!(tape, 10, u8)
+        },
+
+        unicode_range1 (u32), // ulUnicodeRange1
+        unicode_range2 (u32), // ulUnicodeRange2
+        unicode_range3 (u32), // ulUnicodeRange3
+        unicode_range4 (u32), // ulUnicodeRange4
+
+        vendor_id (Vec<i8>) |tape, this| { // achVendID
+            read_vector!(tape, 4, i8)
+        },
+
+        selection_flags       (u16), // fsSelection
+        first_char_index      (u16), // usFirstCharIndex
+        last_char_index       (u16), // usLastCharIndex
+        typographic_ascender  (i16), // sTypoAscender
+        typographic_descender (i16), // sTypoDescender
+        typographic_line_gap  (i16), // sTypoLineGap
+        windows_ascender      (u16), // usWinAscent
+        windows_descender     (u16), // usWinDescent
+        code_page_range1      (u32), // ulCodePageRange1
+        code_page_range2      (u32), // ulCodePageRange2
+        x_height              (i16), // sxHeight
+        cap_height            (i16), // sCapHeight
+        default_char          (u16), // usDefaultChar
+        break_char            (u16), // usBreakChar
+        max_context           (u16), // usMaxContext
     }
 }
 
 table! {
     #[doc = "OS/2 and Windows metrics of version 5."]
     pub WindowsMetrics5 {
-        version                 (u16    ),
-        xAvgCharWidth           (i16    ),
-        usWeightClass           (u16    ),
-        usWidthClass            (u16    ),
-        fsType                  (u16    ),
-        ySubscriptXSize         (i16    ),
-        ySubscriptYSize         (i16    ),
-        ySubscriptXOffset       (i16    ),
-        ySubscriptYOffset       (i16    ),
-        ySuperscriptXSize       (i16    ),
-        ySuperscriptYSize       (i16    ),
-        ySuperscriptXOffset     (i16    ),
-        ySuperscriptYOffset     (i16    ),
-        yStrikeoutSize          (i16    ),
-        yStrikeoutPosition      (i16    ),
-        sFamilyClass            (i16    ),
-        panose                  (Vec<u8>) |tape, this| { read_vector!(tape, 10, u8) },
-        ulUnicodeRange1         (u32    ),
-        ulUnicodeRange2         (u32    ),
-        ulUnicodeRange3         (u32    ),
-        ulUnicodeRange4         (u32    ),
-        achVendID               (Vec<i8>) |tape, this| { read_vector!(tape, 4, i8) },
-        fsSelection             (u16    ),
-        usFirstCharIndex        (u16    ),
-        usLastCharIndex         (u16    ),
-        sTypoAscender           (i16    ),
-        sTypoDescender          (i16    ),
-        sTypoLineGap            (i16    ),
-        usWinAscent             (u16    ),
-        usWinDescent            (u16    ),
-        ulCodePageRange1        (u32    ),
-        ulCodePageRange2        (u32    ),
-        sxHeight                (i16    ),
-        sCapHeight              (i16    ),
-        usDefaultChar           (u16    ),
-        usBreakChar             (u16    ),
-        usMaxContext            (u16    ),
-        usLowerOpticalPointSize (u16    ),
-        usUpperOpticalPointSize (u16    ),
+        version              (u16),
+        average_char_width   (i16), // xAvgCharWidth
+        weight_class         (u16), // usWeightClass
+        width_class          (u16), // usWidthClass
+        type_flags           (u16), // fsType
+        subscript_x_size     (i16), // ySubscriptXSize
+        subscript_y_size     (i16), // ySubscriptYSize
+        subscript_x_offset   (i16), // ySubscriptXOffset
+        subscript_y_offset   (i16), // ySubscriptYOffset
+        superscript_x_size   (i16), // ySuperscriptXSize
+        superscript_y_size   (i16), // ySuperscriptYSize
+        superscript_x_offset (i16), // ySuperscriptXOffset
+        superscript_y_offset (i16), // ySuperscriptYOffset
+        strikeout_size       (i16), // yStrikeoutSize
+        strikeout_position   (i16), // yStrikeoutPosition
+        family_class         (i16), // sFamilyClass
+
+        panose (Vec<u8>) |tape, this| {
+            read_vector!(tape, 10, u8)
+        },
+
+        unicode_range1 (u32), // ulUnicodeRange1
+        unicode_range2 (u32), // ulUnicodeRange2
+        unicode_range3 (u32), // ulUnicodeRange3
+        unicode_range4 (u32), // ulUnicodeRange4
+
+        vendor_id (Vec<i8>) |tape, this| { // achVendID
+            read_vector!(tape, 4, i8)
+        },
+
+        selection_flags          (u16), // fsSelection
+        first_char_index         (u16), // usFirstCharIndex
+        last_char_index          (u16), // usLastCharIndex
+        typographic_ascender     (i16), // sTypoAscender
+        typographic_descender    (i16), // sTypoDescender
+        typographic_line_gap     (i16), // sTypoLineGap
+        windows_ascender         (u16), // usWinAscent
+        windows_descender        (u16), // usWinDescent
+        code_page_range1         (u32), // ulCodePageRange1
+        code_page_range2         (u32), // ulCodePageRange2
+        x_height                 (i16), // sxHeight
+        cap_height               (i16), // sCapHeight
+        default_char             (u16), // usDefaultChar
+        break_char               (u16), // usBreakChar
+        max_context              (u16), // usMaxContext
+        lower_optical_point_size (u16), // usLowerOpticalPointSize
+        upper_optical_point_size (u16), // usUpperOpticalPointSize
     }
 }
 

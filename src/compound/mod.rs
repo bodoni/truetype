@@ -1,7 +1,5 @@
 //! Compound data types.
 
-#![allow(non_snake_case)]
-
 macro_rules! itemize(($($chunk:item)*) => ($($chunk)*));
 
 macro_rules! table {
