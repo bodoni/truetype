@@ -7,7 +7,7 @@ mod fixture;
 
 #[test]
 fn char_mapping_encodings() {
-    use truetype::compound::{CharMapping, CharMappingEncoding};
+    use truetype::{CharMapping, CharMappingEncoding};
 
     let mapping = CharMapping::read(&mut setup(15620)).unwrap();
     let tables = &mapping.encodings;
@@ -43,7 +43,7 @@ fn char_mapping_encodings() {
 
 #[test]
 fn char_mapping_header() {
-    use truetype::compound::CharMapping;
+    use truetype::CharMapping;
 
     let mapping = CharMapping::read(&mut setup(15620)).unwrap();
     let table = &mapping.header;
@@ -53,7 +53,7 @@ fn char_mapping_header() {
 
 #[test]
 fn char_mapping_records() {
-    use truetype::compound::CharMapping;
+    use truetype::CharMapping;
 
     let mapping = CharMapping::read(&mut setup(15620)).unwrap();
     let tables = &mapping.records;
@@ -68,7 +68,7 @@ fn char_mapping_records() {
 
 #[test]
 fn font_header() {
-    use truetype::compound::FontHeader;
+    use truetype::FontHeader;
 
     let table = FontHeader::read(&mut setup(204)).unwrap();
     assert_eq!(format!("{:.3}", f32::from(table.fontRevision)), "1.017");
@@ -78,7 +78,7 @@ fn font_header() {
 
 #[test]
 fn horizontal_header() {
-    use truetype::compound::HorizontalHeader;
+    use truetype::HorizontalHeader;
 
     let table = HorizontalHeader::read(&mut setup(260)).unwrap();
     assert_eq!(table.Ascender, 918);
@@ -88,7 +88,7 @@ fn horizontal_header() {
 
 #[test]
 fn horizontal_metrics() {
-    use truetype::compound::{HorizontalHeader, HorizontalMetrics, MaximumProfile};
+    use truetype::{HorizontalHeader, HorizontalMetrics, MaximumProfile};
 
     let header = HorizontalHeader::read(&mut setup(260)).unwrap();
     let profile = MaximumProfile::read(&mut setup(296)).unwrap();
@@ -99,7 +99,7 @@ fn horizontal_metrics() {
 
 #[test]
 fn maximum_profile() {
-    use truetype::compound::MaximumProfile;
+    use truetype::MaximumProfile;
 
     let table = MaximumProfile::read(&mut setup(296)).unwrap();
     match table {
@@ -112,7 +112,7 @@ fn maximum_profile() {
 
 #[test]
 fn naming_table() {
-    use truetype::compound::NamingTable;
+    use truetype::NamingTable;
 
     let table = NamingTable::read(&mut setup(400)).unwrap();
     match table {
@@ -126,7 +126,7 @@ fn naming_table() {
 
 #[test]
 fn offset_table() {
-    use truetype::compound::OffsetTable;
+    use truetype::OffsetTable;
 
     let mut file = setup(0);
     let OffsetTable { header, records } = OffsetTable::read(&mut file).unwrap();
@@ -148,7 +148,7 @@ fn offset_table() {
 
 #[test]
 fn postscript() {
-    use truetype::compound::PostScriptInfo;
+    use truetype::PostScriptInfo;
 
     let mut file = setup(17700);
     let table = PostScriptInfo::read(&mut file).unwrap();
@@ -164,7 +164,7 @@ fn postscript() {
 
 #[test]
 fn windows_metrics() {
-    use truetype::compound::WindowsMetrics;
+    use truetype::WindowsMetrics;
 
     let table = WindowsMetrics::read(&mut setup(304)).unwrap();
     match table {

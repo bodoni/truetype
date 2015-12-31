@@ -13,7 +13,9 @@ macro_rules! raise(
 
 mod tape;
 
-pub mod compound;
-pub mod primitive;
+mod compound;
+mod primitive;
 
+pub use compound::*;
+pub use primitive::*;
 pub use tape::{Tape, Value};
