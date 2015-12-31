@@ -15,25 +15,40 @@ pub enum NamingTable {
 table! {
     #[doc = "A naming table of format 0."]
     pub NamingTable0 {
-        format       (u16            ),
-        count        (u16            ),
-        stringOffset (u16            ),
-        nameRecord   (Vec<NameRecord>) |tape, this| { read_vector!(tape, this.count) },
-        storage      (Vec<u8>        ) |tape, this| { this.read_storage(tape) },
+        format        (u16),
+        count         (u16),
+        string_offset (u16), // stringOffset
+
+        name_records (Vec<NameRecord>) |tape, this| { // nameRecord
+            read_vector!(tape, this.count)
+        },
+
+        storage (Vec<u8>) |tape, this| {
+            this.read_storage(tape)
+        },
     }
 }
 
 table! {
     #[doc = "A naming table of format 1."]
     pub NamingTable1 {
-        format        (u16                   ),
-        count         (u16                   ),
-        stringOffset  (u16                   ),
-        nameRecord    (Vec<NameRecord>       ) |tape, this| { read_vector!(tape, this.count) },
-        langTagCount  (u16                   ),
-        langTagRecord (Vec<LanguageTagRecord>) |tape, this| { read_vector!(tape,
-                                                                           this.langTagCount) },
-        storage       (Vec<u8>               ) |tape, this| { this.read_storage(tape) },
+        format        (u16),
+        count         (u16),
+        string_offset (u16), // stringOffset
+
+        name_records (Vec<NameRecord>) |tape, this| { // nameRecord
+            read_vector!(tape, this.count)
+        },
+
+        language_tag_count (u16), // langTagCount
+
+        language_tag_records (Vec<LanguageTagRecord>) |tape, this| { // langTagRecord
+            read_vector!(tape, this.language_tag_count)
+        },
+
+        storage (Vec<u8>) |tape, this| {
+            this.read_storage(tape)
+        },
     }
 }
 
@@ -42,12 +57,12 @@ table! {
     #[derive(Copy)]
     #[repr(C)]
     pub NameRecord {
-        platformID (u16),
-        encodingID (u16),
-        languageID (u16),
-        nameID     (u16),
-        length     (u16),
-        offset     (u16),
+        platform_id (u16), // platformID
+        encoding_id (u16), // encodingID
+        language_id (u16), // languageID
+        name_id     (u16), // nameID
+        length      (u16),
+        offset      (u16),
     }
 }
 
@@ -55,7 +70,7 @@ table! {
     #[doc = "A language-tag record of a naming table."]
     #[derive(Copy)]
     #[repr(C)]
-    pub LanguageTagRecord {
+    pub LanguageTagRecord { // langTagRecord
         length (u16),
         offset (u16),
     }
@@ -74,29 +89,29 @@ impl Value for NamingTable {
 impl NamingTable0 {
     #[inline]
     pub fn strings(&self) -> Result<Vec<String>> {
-        strings(&self.nameRecord, &self.storage)
+        strings(&self.name_records, &self.storage)
     }
 
     fn read_storage<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = try!(tape.position());
-        let above = 3 * 2 + self.nameRecord.len() * mem::size_of::<NameRecord>();
-        try!(tape.jump(current - above as u64 + self.stringOffset as u64));
-        read_vector!(tape, storage_length(&self.nameRecord), u8)
+        let above = 3 * 2 + self.name_records.len() * mem::size_of::<NameRecord>();
+        try!(tape.jump(current - above as u64 + self.string_offset as u64));
+        read_vector!(tape, storage_length(&self.name_records), u8)
     }
 }
 
 impl NamingTable1 {
     #[inline]
     pub fn strings(&self) -> Result<Vec<String>> {
-        strings(&self.nameRecord, &self.storage)
+        strings(&self.name_records, &self.storage)
     }
 
     fn read_storage<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = try!(tape.position());
-        let above = 4 * 2 + self.nameRecord.len() * mem::size_of::<NameRecord>() +
-                            self.langTagRecord.len() * mem::size_of::<LanguageTagRecord>();
-        try!(tape.jump(current - above as u64 + self.stringOffset as u64));
-        read_vector!(tape, storage_length(&self.nameRecord), u8)
+        let above = 4 * 2 + self.name_records.len() * mem::size_of::<NameRecord>() +
+                            self.language_tag_records.len() * mem::size_of::<LanguageTagRecord>();
+        try!(tape.jump(current - above as u64 + self.string_offset as u64));
+        read_vector!(tape, storage_length(&self.name_records), u8)
     }
 }
 
@@ -116,8 +131,8 @@ fn strings(records: &[NameRecord], storage: &[u8]) -> Result<Vec<String>> {
     for record in records {
         let (offset, length) = (record.offset as usize, record.length as usize);
         let bytes = &storage[offset..(offset + length)];
-        match record.platformID {
-            1 => match decode_macintosh(bytes, record.encodingID) {
+        match record.platform_id {
+            1 => match decode_macintosh(bytes, record.encoding_id) {
                 Some(string) => {
                     strings.push(string);
                     continue;
@@ -133,7 +148,7 @@ fn strings(records: &[NameRecord], storage: &[u8]) -> Result<Vec<String>> {
 
 // The implementation is based on
 // https://github.com/nodebox/opentype.js/blob/master/src/types.js#L300
-fn decode_macintosh(bytes: &[u8], encoding: u16) -> Option<String> {
+fn decode_macintosh(bytes: &[u8], encoding_id: u16) -> Option<String> {
     const ROMAN: [char; 128] = ['Ä', 'Å', 'Ç', 'É', 'Ñ', 'Ö', 'Ü', 'á', 'à', 'â', 'ä', 'ã', 'å',
                                 'ç', 'é', 'è', 'ê', 'ë', 'í', 'ì', 'î', 'ï', 'ñ', 'ó', 'ò', 'ô',
                                 'ö', 'õ', 'ú', 'ù', 'û', 'ü', '†', '°', '¢', '£', '§', '•', '¶',
@@ -145,7 +160,7 @@ fn decode_macintosh(bytes: &[u8], encoding: u16) -> Option<String> {
                                 'Ë', 'È', 'Í', 'Î', 'Ï', 'Ì', 'Ó', 'Ô', '', 'Ò', 'Ú', 'Û', 'Ù',
                                 'ı', 'ˆ', '˜', '¯', '˘', '˙', '˚', '¸', '˝', '˛', 'ˇ'];
 
-    if encoding != 0 {
+    if encoding_id != 0 {
         return None;
     }
 
