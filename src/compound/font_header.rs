@@ -35,10 +35,10 @@ table! {
         units_per_em        (u16  ), // unitsPerEm
         created             (i64  ),
         modified            (i64  ),
-        x_min               (i16  ), // xMin
-        y_min               (i16  ), // yMin
-        x_max               (i16  ), // xMax
-        y_max               (i16  ), // yMax
+        min_x               (i16  ), // xMin
+        min_y               (i16  ), // yMin
+        max_x               (i16  ), // xMax
+        max_y               (i16  ), // yMax
         mac_style           (u16  ), // macStyle
         lowest_ppem         (u16  ), // lowestRecPPEM
         font_direction_hint (i16  ), // fontDirectionHint

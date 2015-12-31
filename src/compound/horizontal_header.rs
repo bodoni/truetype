@@ -19,10 +19,10 @@ table! {
         ascender                (i16  ), // Ascender
         descender               (i16  ), // Descender
         line_gap                (i16  ), // LineGap
-        advance_width_max       (u16  ), // advanceWidthMax
-        left_side_bearing_min   (i16  ), // minLeftSideBearing
-        right_side_bearing_min  (i16  ), // minRightSideBearing
-        x_extent_max            (i16  ), // xMaxExtent
+        max_advance_width       (u16  ), // advanceWidthMax
+        min_left_side_bearing   (i16  ), // minLeftSideBearing
+        min_right_side_bearing  (i16  ), // minRightSideBearing
+        max_x_extent            (i16  ), // xMaxExtent
         caret_slope_rise        (i16  ), // caretSlopeRise
         caret_slope_run         (i16  ), // caretSlopeRun
         caret_offset            (i16  ), // caretOffset
