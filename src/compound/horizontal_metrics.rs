@@ -5,17 +5,17 @@ use tape::{Tape, Value};
 define_table! {
     #[doc = "Horizontal metrics."]
     pub HorizontalMetrics {
-        hMetrics        (Vec<LongHorizontalMetric>),
-        leftSideBearing (Vec<i16>                 ),
+        metrics            (Vec<LongHorizontalMetric>), // hMetrics
+        left_side_bearings (Vec<i16>                 ), // leftSideBearing
     }
 }
 
 table! {
     #[doc = "A record of horizontal metrics."]
     #[derive(Copy)]
-    pub LongHorizontalMetric {
-        advanceWidth (u16),
-        lsb          (i16),
+    pub LongHorizontalMetric { // longHorMetric
+        advance_width     (u16), // advanceWidth
+        left_side_bearing (i16), // lsb
     }
 }
 
@@ -29,14 +29,14 @@ impl HorizontalMetrics {
         debug_assert!(metrics <= glyphs);
         let bearings = glyphs - metrics;
         let mut table = HorizontalMetrics {
-            hMetrics: Vec::with_capacity(metrics),
-            leftSideBearing: Vec::with_capacity(bearings),
+            metrics: Vec::with_capacity(metrics),
+            left_side_bearings: Vec::with_capacity(bearings),
         };
         for _ in 0..metrics {
-            table.hMetrics.push(try!(Value::read(tape)));
+            table.metrics.push(try!(Value::read(tape)));
         }
         for _ in 0..bearings {
-            table.leftSideBearing.push(try!(Value::read(tape)));
+            table.left_side_bearings.push(try!(Value::read(tape)));
         }
         Ok(table)
     }
