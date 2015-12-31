@@ -71,9 +71,9 @@ fn font_header() {
     use truetype::FontHeader;
 
     let table = FontHeader::read(&mut setup(204)).unwrap();
-    assert_eq!(format!("{:.3}", f32::from(table.fontRevision)), "1.017");
-    assert_eq!(table.unitsPerEm, 1000);
-    assert_eq!(table.macStyle, 0);
+    assert_eq!(format!("{:.3}", f32::from(table.font_revision)), "1.017");
+    assert_eq!(table.units_per_em, 1000);
+    assert_eq!(table.mac_style, 0);
 }
 
 #[test]

@@ -27,22 +27,22 @@ table! {
     #[doc = "A font header."]
     #[derive(Copy)]
     pub FontHeader {
-        version            (Fixed) |tape, this| { read_version!(tape) },
-        fontRevision       (Fixed),
-        checkSumAdjustment (u32  ),
-        magicNumber        (u32  ) |tape, this| { read_magic_number!(tape) },
-        flags              (u16  ),
-        unitsPerEm         (u16  ),
-        created            (i64  ),
-        modified           (i64  ),
-        xMin               (i16  ),
-        yMin               (i16  ),
-        xMax               (i16  ),
-        yMax               (i16  ),
-        macStyle           (u16  ),
-        lowestRecPPEM      (u16  ),
-        fontDirectionHint  (i16  ),
-        indexToLocFormat   (i16  ),
-        glyphDataFormat    (i16  ),
+        version             (Fixed) |tape, this| { read_version!(tape) },
+        font_revision       (Fixed), // fontRevision
+        checksum_adjustment (u32  ), // checkSumAdjustment
+        magic_number        (u32  ) |tape, this| { read_magic_number!(tape) }, // MagicNumber
+        flags               (u16  ),
+        units_per_em        (u16  ), // unitsPerEm
+        created             (i64  ),
+        modified            (i64  ),
+        x_min               (i16  ), // xMin
+        y_min               (i16  ), // yMin
+        x_max               (i16  ), // xMax
+        y_max               (i16  ), // yMax
+        mac_style           (u16  ), // macStyle
+        lowest_ppem         (u16  ), // lowestRecPPEM
+        font_direction_hint (i16  ), // fontDirectionHint
+        location_format     (i16  ), // indexToLocFormat
+        glyph_data_format   (i16  ), // glyphDataFormat
     }
 }
