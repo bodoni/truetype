@@ -15,22 +15,22 @@ table! {
     #[doc = "A horizontal header."]
     #[derive(Copy)]
     pub HorizontalHeader {
-        version             (Fixed) |tape, this| { read_version!(tape) },
-        ascender            (i16  ),
-        descender           (i16  ),
-        lineGap             (i16  ),
-        advanceWidthMax     (u16  ),
-        minLeftSideBearing  (i16  ),
-        minRightSideBearing (i16  ),
-        xMaxExtent          (i16  ),
-        caretSlopeRise      (i16  ),
-        caretSlopeRun       (i16  ),
-        caretOffset         (i16  ),
-        reserved1           (i16  ),
-        reserved2           (i16  ),
-        reserved3           (i16  ),
-        reserved4           (i16  ),
-        metricDataFormat    (i16  ),
-        numberOfHMetrics    (u16  ),
+        version                 (Fixed) |tape, this| { read_version!(tape) },
+        ascender                (i16  ), // Ascender
+        descender               (i16  ), // Descender
+        line_gap                (i16  ), // LineGap
+        advance_width_max       (u16  ), // advanceWidthMax
+        left_side_bearing_min   (i16  ), // minLeftSideBearing
+        right_side_bearing_min  (i16  ), // minRightSideBearing
+        x_extent_max            (i16  ), // xMaxExtent
+        caret_slope_rise        (i16  ), // caretSlopeRise
+        caret_slope_run         (i16  ), // caretSlopeRun
+        caret_offset            (i16  ), // caretOffset
+        reserved1               (i16  ),
+        reserved2               (i16  ),
+        reserved3               (i16  ),
+        reserved4               (i16  ),
+        metric_data_format      (i16  ), // metricDataFormat
+        horizontal_metric_count (u16  ), // numberOfHMetrics
     }
 }

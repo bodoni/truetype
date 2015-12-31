@@ -24,7 +24,7 @@ impl HorizontalMetrics {
     pub fn read<T: Tape>(tape: &mut T, header: &HorizontalHeader, profile: &MaximumProfile)
                          -> Result<Self> {
 
-        let metrics = header.numberOfHMetrics as usize;
+        let metrics = header.horizontal_metric_count as usize;
         let glyphs = profile.glyphs();
         debug_assert!(metrics <= glyphs);
         let bearings = glyphs - metrics;
