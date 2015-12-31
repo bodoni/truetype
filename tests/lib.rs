@@ -81,8 +81,8 @@ fn horizontal_header() {
     use truetype::HorizontalHeader;
 
     let table = HorizontalHeader::read(&mut setup(260)).unwrap();
-    assert_eq!(table.Ascender, 918);
-    assert_eq!(table.Descender, -335);
+    assert_eq!(table.ascender, 918);
+    assert_eq!(table.descender, -335);
     assert_eq!(table.numberOfHMetrics, 547);
 }
 

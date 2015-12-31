@@ -16,9 +16,9 @@ table! {
     #[derive(Copy)]
     pub HorizontalHeader {
         version             (Fixed) |tape, this| { read_version!(tape) },
-        Ascender            (i16  ),
-        Descender           (i16  ),
-        LineGap             (i16  ),
+        ascender            (i16  ),
+        descender           (i16  ),
+        lineGap             (i16  ),
         advanceWidthMax     (u16  ),
         minLeftSideBearing  (i16  ),
         minRightSideBearing (i16  ),
