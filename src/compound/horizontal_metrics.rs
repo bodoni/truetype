@@ -25,7 +25,7 @@ impl HorizontalMetrics {
                          -> Result<Self> {
 
         let metrics = header.horizontal_metric_count as usize;
-        let glyphs = profile.glyphs();
+        let glyphs = profile.glyph_count();
         debug_assert!(metrics <= glyphs);
         let bearings = glyphs - metrics;
         let mut table = HorizontalMetrics {

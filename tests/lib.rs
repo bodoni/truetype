@@ -104,7 +104,7 @@ fn maximum_profile() {
     let table = MaximumProfile::read(&mut setup(296)).unwrap();
     match table {
         MaximumProfile::Version05(ref table) => {
-            assert_eq!(table.numGlyphs, 547);
+            assert_eq!(table.glyph_count, 547);
         },
         _ => unreachable!(),
     }

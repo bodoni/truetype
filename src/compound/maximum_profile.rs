@@ -16,8 +16,8 @@ table! {
     #[doc = "A maximum profile of version 0.5."]
     #[derive(Copy)]
     pub MaximumProfile05 {
-        version   (Fixed),
-        numGlyphs (u16  ),
+        version     (Fixed),
+        glyph_count (u16  ), // numGlyphs
     }
 }
 
@@ -25,30 +25,30 @@ table! {
     #[doc = "A maximum profile of version 1.0."]
     #[derive(Copy)]
     pub MaximumProfile10 {
-        version               (Fixed),
-        numGlyphs             (u16  ),
-        maxPoints             (u16  ),
-        maxContours           (u16  ),
-        maxCompositePoints    (u16  ),
-        maxCompositeContours  (u16  ),
-        maxZones              (u16  ),
-        maxTwilightPoints     (u16  ),
-        maxStorage            (u16  ),
-        maxFunctionDefs       (u16  ),
-        maxInstructionDefs    (u16  ),
-        maxStackElements      (u16  ),
-        maxSizeOfInstructions (u16  ),
-        maxComponentElements  (u16  ),
-        maxComponentDepth     (u16  ),
+        version                     (Fixed),
+        glyph_count                 (u16  ), // numGlyphs
+        max_points                  (u16  ), // maxPoints
+        max_contours                (u16  ), // maxContours
+        max_composite_points        (u16  ), // maxCompositePoints
+        max_composite_contours      (u16  ), // maxCompositeContours
+        max_zones                   (u16  ), // maxZones
+        max_twilight_points         (u16  ), // maxTwilightPoints
+        max_storage                 (u16  ), // maxStorage
+        max_function_definitions    (u16  ), // maxFunctionDefs
+        max_instruction_definitions (u16  ), // maxInstructionDefs
+        max_stack_elements          (u16  ), // maxStackElements
+        max_size_of_instructions    (u16  ), // maxSizeOfInstructions
+        max_component_elements      (u16  ), // maxComponentElements
+        max_component_depth         (u16  ), // maxComponentDepth
     }
 }
 
 impl MaximumProfile {
     /// Return the number of glyphs.
-    pub fn glyphs(&self) -> usize {
+    pub fn glyph_count(&self) -> usize {
         match self {
-            &MaximumProfile::Version05(ref profile) => profile.numGlyphs as usize,
-            &MaximumProfile::Version10(ref profile) => profile.numGlyphs as usize,
+            &MaximumProfile::Version05(ref profile) => profile.glyph_count as usize,
+            &MaximumProfile::Version10(ref profile) => profile.glyph_count as usize,
         }
     }
 }
