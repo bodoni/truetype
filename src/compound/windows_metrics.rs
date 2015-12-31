@@ -30,8 +30,8 @@ table! {
         strikeout_position   (i16), // yStrikeoutPosition
         family_class         (i16), // sFamilyClass
 
-        panose (Vec<u8>) |tape, this| {
-            read_vector!(tape, 10, u8)
+        panose ([u8; 10]) |tape, this| {
+            read_array!(tape, 10, u8)
         },
 
         unicode_range1 (u32), // ulUnicodeRange1
@@ -39,8 +39,8 @@ table! {
         unicode_range3 (u32), // ulUnicodeRange3
         unicode_range4 (u32), // ulUnicodeRange4
 
-        vendor_id (Vec<i8>) |tape, this| { // achVendID
-            read_vector!(tape, 4, i8)
+        vendor_id ([i8; 4]) |tape, this| { // achVendID
+            read_array!(tape, 4, i8)
         },
 
         selection_flags       (u16), // fsSelection
@@ -81,8 +81,8 @@ table! {
         strikeout_position   (i16), // yStrikeoutPosition
         family_class         (i16), // sFamilyClass
 
-        panose (Vec<u8>) |tape, this| {
-            read_vector!(tape, 10, u8)
+        panose ([u8; 10]) |tape, this| {
+            read_array!(tape, 10, u8)
         },
 
         unicode_range1 (u32), // ulUnicodeRange1
@@ -90,8 +90,8 @@ table! {
         unicode_range3 (u32), // ulUnicodeRange3
         unicode_range4 (u32), // ulUnicodeRange4
 
-        vendor_id (Vec<i8>) |tape, this| { // achVendID
-            read_vector!(tape, 4, i8)
+        vendor_id ([i8; 4]) |tape, this| { // achVendID
+            read_array!(tape, 4, i8)
         },
 
         selection_flags          (u16), // fsSelection

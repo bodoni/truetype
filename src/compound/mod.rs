@@ -49,16 +49,29 @@ macro_rules! read_field(
     });
 );
 
-macro_rules! read_vector(
-    ($tape:ident, $count:expr, i8) => (unsafe {
+macro_rules! read_array(
+    (@common $tape:ident, $count:expr) => ({
         let count = $count as usize;
         let mut values = Vec::with_capacity(count);
         values.set_len(count);
         if try!(::std::io::Read::read($tape, &mut values)) != count {
             return raise!("failed to read as much as needed");
         }
-        Ok(::std::mem::transmute(values))
+        let mut array: [u8; $count] = ::std::mem::uninitialized();
+        for (destination, source) in array.iter_mut().zip(values.iter()) {
+            *destination = *source;
+        }
+        array
     });
+    ($tape:ident, $count:expr, i8) => (unsafe {
+        Ok(::std::mem::transmute(read_array!(@common $tape, $count)))
+    });
+    ($tape:ident, $count:expr, u8) => (unsafe {
+        Ok(read_array!(@common $tape, $count))
+    });
+);
+
+macro_rules! read_vector(
     ($tape:ident, $count:expr, u8) => (unsafe {
         let count = $count as usize;
         let mut values = Vec::with_capacity(count);
