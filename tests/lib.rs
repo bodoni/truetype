@@ -156,7 +156,7 @@ fn postscript() {
     match table {
         PostScriptInfo::Version30(ref table) => {
             assert_eq!(f32::from(table.version), 3.0);
-            assert_eq!(table.underlinePosition, -75);
+            assert_eq!(table.underline_position, -75);
         },
         _ => unreachable!(),
     }
