@@ -93,7 +93,7 @@ fn horizontal_metrics() {
     let header = HorizontalHeader::read(&mut setup(260)).unwrap();
     let profile = MaximumProfile::read(&mut setup(296)).unwrap();
     let table = HorizontalMetrics::read(&mut setup(55460), &header, &profile).unwrap();
-    assert_eq!(table.metrics.len(), 547);
+    assert_eq!(table.records.len(), 547);
     assert_eq!(table.left_side_bearings.len(), 547 - 547);
 }
 
