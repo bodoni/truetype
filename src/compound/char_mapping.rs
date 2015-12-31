@@ -34,8 +34,8 @@ table! {
     #[doc = "The header of a char-to-glyph mapping."]
     #[derive(Copy)]
     pub CharMappingHeader {
-        version   (u16) |tape, this| { read_version!(tape) },
-        numTables (u16),
+        version      (u16) |tape, this| { read_version!(tape) },
+        table_count  (u16), // numTables
     }
 }
 
@@ -43,40 +43,59 @@ table! {
     #[doc = "A record of a char-to-glyph mapping."]
     #[derive(Copy)]
     pub CharMappingRecord {
-        platformID (u16),
-        encodingID (u16),
-        offset     (u32),
+        platform_id (u16), // platformID
+        encoding_id (u16), // encodingID
+        offset      (u32),
     }
 }
 
 table! {
     #[doc = "A char-to-glyph encoding of format 4."]
     pub CharMappingEncoding4 {
-        format        (u16     ),
-        length        (u16     ),
-        language      (u16     ),
-        segCountX2    (u16     ),
-        searchRange   (u16     ),
-        entrySelector (u16     ),
-        rangeShift    (u16     ),
-        endCode       (Vec<u16>) |tape, this| { read_vector!(tape, this.segments()) },
-        reservedPad   (u16     ),
-        startCode     (Vec<u16>) |tape, this| { read_vector!(tape, this.segments()) },
-        idDelta       (Vec<i16>) |tape, this| { read_vector!(tape, this.segments()) },
-        idRangeOffset (Vec<u16>) |tape, this| { read_vector!(tape, this.segments()) },
-        glyphIdArray  (Vec<u16>) |tape, this| { read_vector!(tape, try!(this.array_length())) },
+        format           (u16),
+        length           (u16),
+        language         (u16),
+        segment_count_x2 (u16), // segCountX2
+        search_range     (u16), // searchRange
+        entry_selector   (u16), // entrySelector
+        range_shift      (u16), // rangeShift
+
+        end_codes (Vec<u16>) |tape, this| { // endCode
+            read_vector!(tape, this.segment_count())
+        },
+
+        reserved_pad (u16), // reservedPad
+
+        start_codes (Vec<u16>) |tape, this| { // startCode
+            read_vector!(tape, this.segment_count())
+        },
+
+        id_deltas (Vec<i16>) |tape, this| { // idDelta
+            read_vector!(tape, this.segment_count())
+        },
+
+        id_range_offsets (Vec<u16>) |tape, this| { // idRangeOffset
+            read_vector!(tape, this.segment_count())
+        },
+
+        glyph_indices (Vec<u16>) |tape, this| { // glyphIdArray
+            read_vector!(tape, try!(this.array_length()))
+        },
     }
 }
 
 table! {
     #[doc = "A char-to-glyph encoding of format 6."]
     pub CharMappingEncoding6 {
-        format       (u16     ),
-        length       (u16     ),
-        language     (u16     ),
-        firstCode    (u16     ),
-        entryCount   (u16     ),
-        glyphIdArray (Vec<u16>) |tape, this| { read_vector!(tape, this.entryCount) },
+        format      (u16),
+        length      (u16),
+        language    (u16),
+        first_code  (u16), // firstCode
+        entry_count (u16), // entryCount
+
+        glyph_indices (Vec<u16>) |tape, this| { // glyphIdArray
+            read_vector!(tape, this.entry_count)
+        },
     }
 }
 
@@ -88,7 +107,7 @@ impl Value for CharMapping {
             _ => raise!("the format of the char-to-glyph mapping header is not supported"),
         };
         let mut records = vec![];
-        for _ in 0..header.numTables {
+        for _ in 0..header.table_count {
             records.push(try!(CharMappingRecord::read(tape)));
         }
         let mut encodings = vec![];
@@ -117,18 +136,18 @@ impl CharMappingEncoding {
 impl CharMappingEncoding4 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
-        let segments = self.segments();
+        let count = self.segment_count();
         let mut map = HashMap::new();
-        for i in 0..(segments - 1) {
-            let startCode = self.startCode[i];
-            let idDelta = self.idDelta[i];
-            let idRangeOffset = self.idRangeOffset[i];
-            for j in startCode..(self.endCode[i] + 1) {
-                let index = if idRangeOffset > 0 {
-                    let offset = (idRangeOffset / 2 + (j - startCode)) - (segments - i) as u16;
-                    self.glyphIdArray[offset as usize]
+        for i in 0..(count - 1) {
+            let start_code = self.start_codes[i];
+            let id_delta = self.id_deltas[i];
+            let id_range_offset = self.id_range_offsets[i];
+            for j in start_code..(self.end_codes[i] + 1) {
+                let index = if id_range_offset > 0 {
+                    let offset = (id_range_offset / 2 + (j - start_code)) - (count - i) as u16;
+                    self.glyph_indices[offset as usize]
                 } else {
-                    (idDelta + j as i16) as u16
+                    (id_delta + j as i16) as u16
                 };
                 map.insert(j, index);
             }
@@ -137,20 +156,20 @@ impl CharMappingEncoding4 {
     }
 
     fn array_length(&self) -> Result<usize> {
-        let segments = self.segments();
-        if segments == 0 {
+        let count = self.segment_count();
+        if count == 0 {
             raise!("found a char-to-glyph mapping with no segments");
         }
-        if self.startCode[segments - 1] != 0xffff || self.endCode[segments - 1] != 0xffff {
+        if self.start_codes[count - 1] != 0xffff || self.end_codes[count - 1] != 0xffff {
             raise!("found a malformed char-to-glyph mapping");
         }
         let mut length = 0;
-        for i in 0..(segments - 1) {
-            let startCode = self.startCode[i];
-            let idRangeOffset = self.idRangeOffset[i];
-            for j in startCode..(self.endCode[i] + 1) {
-                if idRangeOffset > 0 {
-                    let end = (idRangeOffset / 2 + (j - startCode)) - (segments - i) as u16 + 1;
+        for i in 0..(count - 1) {
+            let start_code = self.start_codes[i];
+            let id_range_offset = self.id_range_offsets[i];
+            for j in start_code..(self.end_codes[i] + 1) {
+                if id_range_offset > 0 {
+                    let end = (id_range_offset / 2 + (j - start_code)) - (count - i) as u16 + 1;
                     if end > length {
                         length = end;
                     }
@@ -161,8 +180,8 @@ impl CharMappingEncoding4 {
     }
 
     #[inline]
-    fn segments(&self) -> usize {
-        self.segCountX2 as usize / 2
+    fn segment_count(&self) -> usize {
+        self.segment_count_x2 as usize / 2
     }
 }
 

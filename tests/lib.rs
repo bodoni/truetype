@@ -14,28 +14,28 @@ fn char_mapping_encodings() {
     assert_eq!(tables.len(), 3);
     match &tables[0] {
         &CharMappingEncoding::Format4(ref table) => {
-            assert_eq!(table.segCountX2, 2 * 103);
-            assert_eq!(table.searchRange, 2 * (1 << 103f64.log2().floor() as usize));
-            assert_eq!(table.endCode.len(), 103);
-            assert_eq!(table.startCode.len(), 103);
-            assert_eq!(table.idDelta.len(), 103);
-            assert_eq!(table.idRangeOffset.len(), 103);
-            assert_eq!(table.glyphIdArray.len(), 353);
+            assert_eq!(table.segment_count_x2, 2 * 103);
+            assert_eq!(table.search_range, 2 * (1 << 103f64.log2().floor() as usize));
+            assert_eq!(table.end_codes.len(), 103);
+            assert_eq!(table.start_codes.len(), 103);
+            assert_eq!(table.id_deltas.len(), 103);
+            assert_eq!(table.id_range_offsets.len(), 103);
+            assert_eq!(table.glyph_indices.len(), 353);
             assert_eq!(table.mapping(), fixture::mapping());
         },
         _ => unreachable!(),
     }
     match &tables[1] {
         &CharMappingEncoding::Format6(ref table) => {
-            assert_eq!(table.firstCode, 9);
-            assert_eq!(table.entryCount, 247);
-            assert_eq!(table.glyphIdArray.len(), 247);
+            assert_eq!(table.first_code, 9);
+            assert_eq!(table.entry_count, 247);
+            assert_eq!(table.glyph_indices.len(), 247);
         },
         _ => unreachable!(),
     }
     match &tables[2] {
         &CharMappingEncoding::Format4(ref table) => {
-            assert_eq!(table.segCountX2, 2 * 103);
+            assert_eq!(table.segment_count_x2, 2 * 103);
         },
         _ => unreachable!(),
     }
@@ -48,7 +48,7 @@ fn char_mapping_header() {
     let mapping = CharMapping::read(&mut setup(15620)).unwrap();
     let table = &mapping.header;
     assert_eq!(table.version, 0);
-    assert_eq!(table.numTables, 3);
+    assert_eq!(table.table_count, 3);
 }
 
 #[test]
@@ -58,12 +58,12 @@ fn char_mapping_records() {
     let mapping = CharMapping::read(&mut setup(15620)).unwrap();
     let tables = &mapping.records;
     assert_eq!(tables.len(), 3);
-    assert_eq!(tables[0].platformID, 0);
-    assert_eq!(tables[0].encodingID, 3);
-    assert_eq!(tables[1].platformID, 1);
-    assert_eq!(tables[1].encodingID, 0);
-    assert_eq!(tables[2].platformID, 3);
-    assert_eq!(tables[2].encodingID, 1);
+    assert_eq!(tables[0].platform_id, 0);
+    assert_eq!(tables[0].encoding_id, 3);
+    assert_eq!(tables[1].platform_id, 1);
+    assert_eq!(tables[1].encoding_id, 0);
+    assert_eq!(tables[2].platform_id, 3);
+    assert_eq!(tables[2].encoding_id, 1);
 }
 
 #[test]
