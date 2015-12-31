@@ -131,10 +131,10 @@ fn offset_table() {
     let mut file = setup(0);
     let OffsetTable { header, records } = OffsetTable::read(&mut file).unwrap();
 
-    assert_eq!(header.numTables, 12);
-    assert_eq!(header.searchRange, 8 * 16);
-    assert_eq!(header.entrySelector, 3);
-    assert_eq!(header.rangeShift, header.numTables * 16 - header.searchRange);
+    assert_eq!(header.table_count, 12);
+    assert_eq!(header.search_range, 8 * 16);
+    assert_eq!(header.entry_selector, 3);
+    assert_eq!(header.range_shift, header.table_count * 16 - header.search_range);
 
     assert_eq!(records.len(), 12);
     for (i, record) in records.iter().enumerate() {

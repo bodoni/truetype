@@ -13,11 +13,11 @@ table! {
     #[doc = "The header of an offset table."]
     #[derive(Copy)]
     pub OffsetTableHeader {
-        version       (Fixed),
-        numTables     (u16  ),
-        searchRange   (u16  ),
-        entrySelector (u16  ),
-        rangeShift    (u16  ),
+        version        (Fixed),
+        table_count    (u16  ), // numTables
+        search_range   (u16  ), // searchRange
+        entry_selector (u16  ), // entrySelector
+        range_shift    (u16  ), // rangeShift
     }
 }
 
@@ -26,7 +26,7 @@ table! {
     #[derive(Copy)]
     pub OffsetTableRecord {
         tag      (u32),
-        checkSum (u32),
+        checksum (u32), // checkSum
         offset   (u32),
         length   (u32),
     }
@@ -39,7 +39,7 @@ impl Value for OffsetTable {
         }
         let header = try!(OffsetTableHeader::read(tape));
         let mut records = vec![];
-        for _ in 0..header.numTables {
+        for _ in 0..header.table_count {
             records.push(try!(OffsetTableRecord::read(tape)));
         }
         Ok(OffsetTable { header: header, records: records })
@@ -59,7 +59,7 @@ impl OffsetTableRecord {
             for i in 0..length {
                 checksum += process(i, try!(Value::read(tape))) as u64;
             }
-            Ok(self.checkSum == checksum as u32)
+            Ok(self.checksum == checksum as u32)
         })
     }
 }
@@ -90,7 +90,7 @@ mod tests {
                 let mut reader = Cursor::new(data);
                 let table = OffsetTableRecord {
                     length: $length,
-                    checkSum: $checksum,
+                    checksum: $checksum,
                     .. OffsetTableRecord::default()
                 };
                 table.checksum(&mut reader, |_, chunk| chunk).unwrap()
