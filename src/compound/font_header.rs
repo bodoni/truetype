@@ -26,18 +26,18 @@ table! {
             Ok(value)
         },
 
-        flags               (u16),
-        units_per_em        (u16), // unitsPerEm
-        created             (i64),
-        modified            (i64),
-        min_x               (i16), // xMin
-        min_y               (i16), // yMin
-        max_x               (i16), // xMax
-        max_y               (i16), // yMax
-        mac_style           (u16), // macStyle
-        lowest_ppem         (u16), // lowestRecPPEM
-        font_direction_hint (i16), // fontDirectionHint
-        location_format     (i16), // indexToLocFormat
-        glyph_data_format   (i16), // glyphDataFormat
+        flags                 (u16),
+        units_per_em          (u16), // unitsPerEm
+        created               (i64),
+        modified              (i64),
+        min_x                 (i16), // xMin
+        min_y                 (i16), // yMin
+        max_x                 (i16), // xMax
+        max_y                 (i16), // yMax
+        mac_style             (u16), // macStyle
+        lowest_ppem           (u16), // lowestRecPPEM
+        font_direction_hint   (i16), // fontDirectionHint
+        glyph_location_format (i16), // indexToLocFormat
+        glyph_data_format     (i16), // glyphDataFormat
     }
 }
