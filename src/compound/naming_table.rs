@@ -23,8 +23,8 @@ table! {
             read_vector!(tape, this.count)
         },
 
-        storage (Vec<u8>) |tape, this| {
-            this.read_storage(tape)
+        data (Vec<u8>) |tape, this| {
+            this.read_data(tape)
         },
     }
 }
@@ -46,8 +46,8 @@ table! {
             read_vector!(tape, this.language_tag_count)
         },
 
-        storage (Vec<u8>) |tape, this| {
-            this.read_storage(tape)
+        data (Vec<u8>) |tape, this| {
+            this.read_data(tape)
         },
     }
 }
@@ -89,33 +89,33 @@ impl Value for NamingTable {
 impl NamingTable0 {
     #[inline]
     pub fn strings(&self) -> Result<Vec<String>> {
-        strings(&self.records, &self.storage)
+        strings(&self.records, &self.data)
     }
 
-    fn read_storage<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
+    fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = try!(tape.position());
         let above = 3 * 2 + self.records.len() * mem::size_of::<NameRecord>();
         try!(tape.jump(current - above as u64 + self.offset as u64));
-        read_vector!(tape, storage_length(&self.records), u8)
+        read_vector!(tape, data_length(&self.records), u8)
     }
 }
 
 impl NamingTable1 {
     #[inline]
     pub fn strings(&self) -> Result<Vec<String>> {
-        strings(&self.records, &self.storage)
+        strings(&self.records, &self.data)
     }
 
-    fn read_storage<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
+    fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = try!(tape.position());
         let above = 4 * 2 + self.records.len() * mem::size_of::<NameRecord>() +
                             self.language_tags.len() * mem::size_of::<LanguageTagRecord>();
         try!(tape.jump(current - above as u64 + self.offset as u64));
-        read_vector!(tape, storage_length(&self.records), u8)
+        read_vector!(tape, data_length(&self.records), u8)
     }
 }
 
-fn storage_length(records: &[NameRecord]) -> usize {
+fn data_length(records: &[NameRecord]) -> usize {
     let mut length = 0;
     for record in records {
         let end = record.offset + record.length + 1;
@@ -126,11 +126,11 @@ fn storage_length(records: &[NameRecord]) -> usize {
     length as usize
 }
 
-fn strings(records: &[NameRecord], storage: &[u8]) -> Result<Vec<String>> {
+fn strings(records: &[NameRecord], data: &[u8]) -> Result<Vec<String>> {
     let mut strings = vec![];
     for record in records {
         let (offset, length) = (record.offset as usize, record.length as usize);
-        let bytes = &storage[offset..(offset + length)];
+        let bytes = &data[offset..(offset + length)];
         match record.platform_id {
             1 => match decode_macintosh(bytes, record.encoding_id) {
                 Some(string) => {
