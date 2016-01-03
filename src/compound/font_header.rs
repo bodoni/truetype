@@ -15,7 +15,7 @@ table! {
             Ok(value)
         },
 
-        font_revision       (Fixed), // fontRevision
+        revision            (Fixed), // fontRevision
         checksum_adjustment (u32  ), // checkSumAdjustment
 
         magic_number (u32) |tape, this| { // MagicNumber
@@ -36,7 +36,7 @@ table! {
         max_y                 (i16), // yMax
         mac_style             (u16), // macStyle
         lowest_ppem           (u16), // lowestRecPPEM
-        font_direction_hint   (i16), // fontDirectionHint
+        direction_hint        (i16), // fontDirectionHint
         glyph_location_format (i16), // indexToLocFormat
         glyph_data_format     (i16), // glyphDataFormat
     }
