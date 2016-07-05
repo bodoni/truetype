@@ -5,11 +5,14 @@ use truetype::Value;
 
 mod fixture;
 
+use fixture::Fixture;
+use fixture::Fixture::*;
+
 #[test]
 fn char_mapping_encodings() {
     use truetype::{CharMapping, CharMappingEncoding};
 
-    let mapping = CharMapping::read(&mut setup(15620)).unwrap();
+    let mapping = CharMapping::read(&mut setup(One, 15620)).unwrap();
     let tables = &mapping.encodings;
     assert_eq!(tables.len(), 3);
     match &tables[0] {
@@ -45,7 +48,7 @@ fn char_mapping_encodings() {
 fn char_mapping_header() {
     use truetype::CharMapping;
 
-    let mapping = CharMapping::read(&mut setup(15620)).unwrap();
+    let mapping = CharMapping::read(&mut setup(One, 15620)).unwrap();
     let table = &mapping.header;
     assert_eq!(table.version, 0);
     assert_eq!(table.table_count, 3);
@@ -55,7 +58,7 @@ fn char_mapping_header() {
 fn char_mapping_records() {
     use truetype::CharMapping;
 
-    let mapping = CharMapping::read(&mut setup(15620)).unwrap();
+    let mapping = CharMapping::read(&mut setup(One, 15620)).unwrap();
     let tables = &mapping.records;
     assert_eq!(tables.len(), 3);
     assert_eq!(tables[0].platform_id, 0);
@@ -70,7 +73,7 @@ fn char_mapping_records() {
 fn font_header() {
     use truetype::FontHeader;
 
-    let table = FontHeader::read(&mut setup(204)).unwrap();
+    let table = FontHeader::read(&mut setup(One, 204)).unwrap();
     assert_eq!(format!("{:.3}", f32::from(table.revision)), "1.017");
     assert_eq!(table.units_per_em, 1000);
     assert_eq!(table.mac_style, 0);
@@ -80,7 +83,7 @@ fn font_header() {
 fn horizontal_header() {
     use truetype::HorizontalHeader;
 
-    let table = HorizontalHeader::read(&mut setup(260)).unwrap();
+    let table = HorizontalHeader::read(&mut setup(One, 260)).unwrap();
     assert_eq!(table.ascender, 918);
     assert_eq!(table.descender, -335);
     assert_eq!(table.horizontal_metric_count, 547);
@@ -90,9 +93,9 @@ fn horizontal_header() {
 fn horizontal_metrics() {
     use truetype::{HorizontalHeader, HorizontalMetrics, MaximumProfile};
 
-    let header = HorizontalHeader::read(&mut setup(260)).unwrap();
-    let profile = MaximumProfile::read(&mut setup(296)).unwrap();
-    let table = HorizontalMetrics::read(&mut setup(55460), &header, &profile).unwrap();
+    let header = HorizontalHeader::read(&mut setup(One, 260)).unwrap();
+    let profile = MaximumProfile::read(&mut setup(One, 296)).unwrap();
+    let table = HorizontalMetrics::read(&mut setup(One, 55460), &header, &profile).unwrap();
     assert_eq!(table.records.len(), 547);
     assert_eq!(table.left_side_bearings.len(), 547 - 547);
 }
@@ -101,7 +104,7 @@ fn horizontal_metrics() {
 fn maximum_profile() {
     use truetype::MaximumProfile;
 
-    let table = MaximumProfile::read(&mut setup(296)).unwrap();
+    let table = MaximumProfile::read(&mut setup(One, 296)).unwrap();
     match table {
         MaximumProfile::Version05(ref table) => {
             assert_eq!(table.glyph_count, 547);
@@ -114,7 +117,7 @@ fn maximum_profile() {
 fn naming_table() {
     use truetype::NamingTable;
 
-    let table = NamingTable::read(&mut setup(400)).unwrap();
+    let table = NamingTable::read(&mut setup(One, 400)).unwrap();
     match table {
         NamingTable::Format0(ref table) => {
             assert_eq!(table.count, 26);
@@ -128,7 +131,7 @@ fn naming_table() {
 fn offset_table() {
     use truetype::OffsetTable;
 
-    let mut file = setup(0);
+    let mut file = setup(One, 0);
     let OffsetTable { header, records } = OffsetTable::read(&mut file).unwrap();
 
     assert_eq!(header.table_count, 12);
@@ -147,10 +150,10 @@ fn offset_table() {
 }
 
 #[test]
-fn postscript() {
+fn postscript_info() {
     use truetype::PostScriptInfo;
 
-    let mut file = setup(17700);
+    let mut file = setup(One, 17700);
     let table = PostScriptInfo::read(&mut file).unwrap();
 
     match table {
@@ -166,7 +169,7 @@ fn postscript() {
 fn windows_metrics() {
     use truetype::WindowsMetrics;
 
-    let table = WindowsMetrics::read(&mut setup(304)).unwrap();
+    let table = WindowsMetrics::read(&mut setup(One, 304)).unwrap();
     match table {
         WindowsMetrics::Version3(ref table) => {
             assert_eq!(table.panose, [2, 4, 6, 3, 5, 4, 5, 2, 2, 4]);
@@ -177,14 +180,10 @@ fn windows_metrics() {
     }
 }
 
-fn setup(offset: u64) -> File {
-    use std::fs;
+fn setup(fixture: Fixture, offset: u64) -> File {
     use std::io::{Seek, SeekFrom};
-    use std::path::PathBuf;
 
-    let path = PathBuf::from("tests/fixtures/SourceSerifPro-Regular.otf");
-    assert!(fs::metadata(&path).is_ok());
-    let mut file = File::open(&path).unwrap();
+    let mut file = File::open(fixture.path()).unwrap();
     file.seek(SeekFrom::Start(offset)).unwrap();
     file
 }

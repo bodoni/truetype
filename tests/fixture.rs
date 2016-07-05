@@ -1,4 +1,20 @@
 use std::collections::HashMap;
+use std::path::PathBuf;
+
+pub enum Fixture {
+    One,
+    #[allow(dead_code)]
+    Two,
+}
+
+impl Fixture {
+    pub fn path(&self) -> PathBuf {
+        match *self {
+            Fixture::One => "tests/fixtures/SourceSerifPro-Regular.otf",
+            Fixture::Two => "tests/fixtures/OpenSans-Italic.ttf",
+        }.into()
+    }
+}
 
 pub fn mapping() -> HashMap<u16, u16> {
     macro_rules! map(
