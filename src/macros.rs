@@ -21,53 +21,6 @@ macro_rules! read(
     });
 );
 
-macro_rules! table {
-    ($(#[$attribute:meta])* pub $structure:ident {
-        $($field:ident ($($kind:tt)+) $(|$($argument:ident),+| $body:block)*,)+
-    }) => (
-        table_define! { $(#[$attribute])* pub $structure { $($field ($($kind)+),)+ } }
-        table_read! { pub $structure { $($field ($($kind)+) $(|$($argument),+| $body)*,)+ } }
-    );
-}
-
-macro_rules! table_define {
-    ($(#[$attribute:meta])* pub $structure:ident { $($field:ident ($kind:ty),)+ }) => (itemize! {
-        $(#[$attribute])*
-        #[derive(Clone, Debug, Default, Eq, PartialEq)]
-        pub struct $structure { $(pub $field: $kind,)+ }
-    });
-}
-
-macro_rules! table_read {
-    (pub $structure:ident {
-        $($field:ident ($($kind:tt)+) $(|$($argument:ident),+| $body:block)*,)+
-    }) => (
-        impl ::tape::Value for $structure {
-            fn read<T: ::tape::Tape>(tape: &mut T) -> ::Result<Self> {
-                let mut table = $structure::default();
-                $(
-                    table.$field = read_field!($structure, tape, table, [$($kind)+]
-                                               $(|$($argument),+| $body)*);
-                )+
-                Ok(table)
-            }
-        }
-    );
-}
-
-macro_rules! read_field(
-    ($structure:ident, $tape:ident, $table:ident,
-     [$kind:ty] |$pipe:ident, $chair:ident| $body:block) => ({
-        #[inline(always)]
-        #[allow(unused_variables)]
-        fn read<T: ::tape::Tape>($pipe: &mut T, $chair: &$structure) -> ::Result<$kind> $body
-        try!(read($tape, &$table))
-    });
-    ($structure:ident, $tape:expr, $table:expr, [$kind:ty]) => ({
-        try!(::tape::Value::read($tape))
-    });
-);
-
 macro_rules! read_array(
     (@common $tape:ident, $count:expr) => ({
         let count = $count as usize;
@@ -90,6 +43,19 @@ macro_rules! read_array(
     });
 );
 
+macro_rules! read_field(
+    ($structure:ident, $tape:ident, $table:ident,
+     [$kind:ty] |$pipe:ident, $chair:ident| $body:block) => ({
+        #[inline(always)]
+        #[allow(unused_variables)]
+        fn read<T: ::tape::Tape>($pipe: &mut T, $chair: &$structure) -> ::Result<$kind> $body
+        try!(read($tape, &$table))
+    });
+    ($structure:ident, $tape:expr, $table:expr, [$kind:ty]) => ({
+        try!(::tape::Value::read($tape))
+    });
+);
+
 macro_rules! read_vector(
     ($tape:ident, $count:expr, u8) => (unsafe {
         let count = $count as usize;
@@ -109,3 +75,33 @@ macro_rules! read_vector(
         Ok(values)
     });
 );
+
+macro_rules! table {
+    ($(#[$attribute:meta])* pub $structure:ident {
+        $($field:ident ($($kind:tt)+) $(|$($argument:ident),+| $body:block)*,)+
+    }) => (
+        table! { @define $(#[$attribute])* pub $structure { $($field ($($kind)+),)+ } }
+        table! { @implement pub $structure { $($field ($($kind)+) $(|$($argument),+| $body)*,)+ } }
+    );
+    (@define $(#[$attribute:meta])* pub $structure:ident {
+        $($field:ident ($kind:ty),)+
+    }) => (itemize! {
+        $(#[$attribute])*
+        #[derive(Clone, Debug, Default, Eq, PartialEq)]
+        pub struct $structure { $(pub $field: $kind,)+ }
+    });
+    (@implement pub $structure:ident {
+        $($field:ident ($($kind:tt)+) $(|$($argument:ident),+| $body:block)*,)+
+    }) => (
+        impl ::tape::Value for $structure {
+            fn read<T: ::tape::Tape>(tape: &mut T) -> ::Result<Self> {
+                let mut table = $structure::default();
+                $(
+                    table.$field = read_field!($structure, tape, table, [$($kind)+]
+                                               $(|$($argument),+| $body)*);
+                )+
+                Ok(table)
+            }
+        }
+    );
+}

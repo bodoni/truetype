@@ -3,7 +3,8 @@ use horizontal_header::HorizontalHeader;
 use maximum_profile::MaximumProfile;
 use tape::{Tape, Value};
 
-table_define! {
+table! {
+    @define
     #[doc = "Horizontal metrics."]
     pub HorizontalMetrics {
         records            (Vec<LongHorizontalMetric>), // hMetrics
