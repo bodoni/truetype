@@ -1,6 +1,4 @@
-use primitive::Fixed;
-
-use Result;
+use {Fixed, Result};
 use tape::{Tape, Value};
 
 /// A maximum profile.

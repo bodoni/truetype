@@ -1,4 +1,4 @@
-use primitive::Fixed;
+use Fixed;
 use tape::Value;
 
 const MAGIC_NUMBER: u32 = 0x5F0F3CF5;

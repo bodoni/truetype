@@ -1,8 +1,9 @@
 use Result;
-use compound::{HorizontalHeader, MaximumProfile};
+use horizontal_header::HorizontalHeader;
+use maximum_profile::MaximumProfile;
 use tape::{Tape, Value};
 
-define_table! {
+table_define! {
     #[doc = "Horizontal metrics."]
     pub HorizontalMetrics {
         records            (Vec<LongHorizontalMetric>), // hMetrics

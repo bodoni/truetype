@@ -1,4 +1,4 @@
-use primitive::Fixed;
+use Fixed;
 use tape::Value;
 
 table! {

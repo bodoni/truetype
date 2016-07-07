@@ -1,5 +1,4 @@
-use Result;
-use primitive::Fixed;
+use {Fixed, Result};
 use tape::{Tape, Value};
 
 /// PostScript information.

@@ -1,5 +1,4 @@
-use Result;
-use primitive::{Fixed, Tag};
+use {Fixed, Result, Tag};
 use tape::{Tape, Value};
 
 /// An offset table.
