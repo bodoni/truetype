@@ -3,10 +3,10 @@
 #[macro_use]
 mod macros;
 
+mod char_mapping;
 mod font_header;
 mod horizontal_header;
 mod horizontal_metrics;
-mod mapping;
 mod maximum_profile;
 mod naming_table;
 mod number;
@@ -16,19 +16,19 @@ mod tag;
 mod tape;
 mod windows_metrics;
 
+pub use char_mapping::{
+    CharMapping,
+    CharMappingHeader,
+    CharMappingRecord,
+    EncodingRecord,
+    EncodingRecord4,
+    EncodingRecord6,
+};
 pub use font_header::FontHeader;
 pub use horizontal_header::HorizontalHeader;
 pub use horizontal_metrics::{
     HorizontalMetrics,
     HorizontalMetricRecord,
-};
-pub use mapping::{
-    EncodingRecord,
-    EncodingRecord4,
-    EncodingRecord6,
-    Mapping,
-    MappingHeader,
-    MappingRecord,
 };
 pub use maximum_profile::{
     MaximumProfile,

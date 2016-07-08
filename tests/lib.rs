@@ -12,10 +12,35 @@ macro_rules! setup(
 );
 
 #[test]
-fn encoding_records() {
-    use truetype::{EncodingRecord, Mapping};
+fn char_mapping_header() {
+    use truetype::CharMapping;
 
-    let mapping = Mapping::read(&mut setup!(15620)).unwrap();
+    let mapping = CharMapping::read(&mut setup!(15620)).unwrap();
+    let table = &mapping.header;
+    assert_eq!(table.version, 0);
+    assert_eq!(table.table_count, 3);
+}
+
+#[test]
+fn char_mapping_records() {
+    use truetype::CharMapping;
+
+    let mapping = CharMapping::read(&mut setup!(15620)).unwrap();
+    let tables = &mapping.records;
+    assert_eq!(tables.len(), 3);
+    assert_eq!(tables[0].platform_id, 0);
+    assert_eq!(tables[0].encoding_id, 3);
+    assert_eq!(tables[1].platform_id, 1);
+    assert_eq!(tables[1].encoding_id, 0);
+    assert_eq!(tables[2].platform_id, 3);
+    assert_eq!(tables[2].encoding_id, 1);
+}
+
+#[test]
+fn encoding_records() {
+    use truetype::{CharMapping, EncodingRecord};
+
+    let mapping = CharMapping::read(&mut setup!(15620)).unwrap();
     let tables = &mapping.encodings;
     assert_eq!(tables.len(), 3);
     match &tables[0] {
@@ -76,31 +101,6 @@ fn horizontal_metrics() {
     let table = HorizontalMetrics::read(&mut setup!(55460), &header, &profile).unwrap();
     assert_eq!(table.records.len(), 547);
     assert_eq!(table.left_side_bearings.len(), 547 - 547);
-}
-
-#[test]
-fn mapping_header() {
-    use truetype::Mapping;
-
-    let mapping = Mapping::read(&mut setup!(15620)).unwrap();
-    let table = &mapping.header;
-    assert_eq!(table.version, 0);
-    assert_eq!(table.table_count, 3);
-}
-
-#[test]
-fn mapping_records() {
-    use truetype::Mapping;
-
-    let mapping = Mapping::read(&mut setup!(15620)).unwrap();
-    let tables = &mapping.records;
-    assert_eq!(tables.len(), 3);
-    assert_eq!(tables[0].platform_id, 0);
-    assert_eq!(tables[0].encoding_id, 3);
-    assert_eq!(tables[1].platform_id, 1);
-    assert_eq!(tables[1].encoding_id, 0);
-    assert_eq!(tables[2].platform_id, 3);
-    assert_eq!(tables[2].encoding_id, 1);
 }
 
 #[test]

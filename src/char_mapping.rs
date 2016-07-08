@@ -4,9 +4,9 @@ use {Result, Tape, Value};
 
 /// A char-to-glyph mapping.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
-pub struct Mapping {
-    pub header: MappingHeader,
-    pub records: Vec<MappingRecord>,
+pub struct CharMapping {
+    pub header: CharMappingHeader,
+    pub records: Vec<CharMappingRecord>,
     pub encodings: Vec<EncodingRecord>,
 }
 
@@ -32,7 +32,7 @@ macro_rules! read_version(
 table! {
     #[doc = "The header of a char-to-glyph mapping."]
     #[derive(Copy)]
-    pub MappingHeader {
+    pub CharMappingHeader {
         version (u16) |tape, this| { // version
             read_version!(tape)
         },
@@ -44,7 +44,7 @@ table! {
 table! {
     #[doc = "A record of a char-to-glyph mapping."]
     #[derive(Copy)]
-    pub MappingRecord {
+    pub CharMappingRecord {
         platform_id (u16), // platformID
         encoding_id (u16), // encodingID
         offset      (u32), // offset
@@ -101,16 +101,16 @@ table! {
     }
 }
 
-impl Value for Mapping {
-    fn read<T: Tape>(tape: &mut T) -> Result<Mapping> {
+impl Value for CharMapping {
+    fn read<T: Tape>(tape: &mut T) -> Result<CharMapping> {
         let position = try!(tape.position());
         let header = match try!(tape.peek::<u16>()) {
-            0 => try!(MappingHeader::read(tape)),
+            0 => try!(CharMappingHeader::read(tape)),
             _ => raise!("the format of the char-to-glyph mapping header is not supported"),
         };
         let mut records = vec![];
         for _ in 0..header.table_count {
-            records.push(try!(MappingRecord::read(tape)));
+            records.push(try!(CharMappingRecord::read(tape)));
         }
         let mut encodings = vec![];
         for encoding in records.iter() {
@@ -121,7 +121,7 @@ impl Value for Mapping {
                 _ => unimplemented!(),
             });
         }
-        Ok(Mapping { header: header, records: records, encodings: encodings })
+        Ok(CharMapping { header: header, records: records, encodings: encodings })
     }
 }
 
