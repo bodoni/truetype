@@ -24,10 +24,10 @@ pub use horizontal_metrics::{
     HorizontalMetricRecord,
 };
 pub use mapping::{
+    EncodingRecord,
+    EncodingRecord4,
+    EncodingRecord6,
     Mapping,
-    MappingEncoding,
-    MappingEncoding4,
-    MappingEncoding6,
     MappingHeader,
     MappingRecord,
 };

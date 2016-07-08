@@ -7,16 +7,16 @@ use {Result, Tape, Value};
 pub struct Mapping {
     pub header: MappingHeader,
     pub records: Vec<MappingRecord>,
-    pub encodings: Vec<MappingEncoding>,
+    pub encodings: Vec<EncodingRecord>,
 }
 
 /// An encoding of a char-to-glyph mapping.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum MappingEncoding {
+pub enum EncodingRecord {
     /// Format 4.
-    Format4(MappingEncoding4),
+    Format4(EncodingRecord4),
     /// Format 6.
-    Format6(MappingEncoding6),
+    Format6(EncodingRecord6),
 }
 
 macro_rules! read_version(
@@ -50,7 +50,7 @@ table! {
 
 table! {
     #[doc = "A char-to-glyph encoding of format 4."]
-    pub MappingEncoding4 {
+    pub EncodingRecord4 {
         format           (u16),
         length           (u16),
         language         (u16),
@@ -85,7 +85,7 @@ table! {
 
 table! {
     #[doc = "A char-to-glyph encoding of format 6."]
-    pub MappingEncoding6 {
+    pub EncodingRecord6 {
         format      (u16),
         length      (u16),
         language    (u16),
@@ -113,8 +113,8 @@ impl Value for Mapping {
         for encoding in records.iter() {
             try!(tape.jump(position + encoding.offset as u64));
             encodings.push(match try!(tape.peek::<u16>()) {
-                4 => MappingEncoding::Format4(try!(Value::read(tape))),
-                6 => MappingEncoding::Format6(try!(Value::read(tape))),
+                4 => EncodingRecord::Format4(try!(Value::read(tape))),
+                6 => EncodingRecord::Format6(try!(Value::read(tape))),
                 _ => unimplemented!(),
             });
         }
@@ -122,17 +122,17 @@ impl Value for Mapping {
     }
 }
 
-impl MappingEncoding {
+impl EncodingRecord {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         match self {
-            &MappingEncoding::Format4(ref encoding) => encoding.mapping(),
-            &MappingEncoding::Format6(ref encoding) => encoding.mapping(),
+            &EncodingRecord::Format4(ref encoding) => encoding.mapping(),
+            &EncodingRecord::Format6(ref encoding) => encoding.mapping(),
         }
     }
 }
 
-impl MappingEncoding4 {
+impl EncodingRecord4 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         let count = self.segment_count();
@@ -184,7 +184,7 @@ impl MappingEncoding4 {
     }
 }
 
-impl MappingEncoding6 {
+impl EncodingRecord6 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         unimplemented!();

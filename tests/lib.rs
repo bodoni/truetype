@@ -9,6 +9,42 @@ use fixture::Fixture;
 use fixture::Fixture::*;
 
 #[test]
+fn encoding_records() {
+    use truetype::{EncodingRecord, Mapping};
+
+    let mapping = Mapping::read(&mut setup(One, 15620)).unwrap();
+    let tables = &mapping.encodings;
+    assert_eq!(tables.len(), 3);
+    match &tables[0] {
+        &EncodingRecord::Format4(ref table) => {
+            assert_eq!(table.segment_count_x2, 2 * 103);
+            assert_eq!(table.search_range, 2 * (1 << 103f64.log2().floor() as usize));
+            assert_eq!(table.end_codes.len(), 103);
+            assert_eq!(table.start_codes.len(), 103);
+            assert_eq!(table.id_deltas.len(), 103);
+            assert_eq!(table.id_range_offsets.len(), 103);
+            assert_eq!(table.glyph_indices.len(), 353);
+            assert_eq!(table.mapping(), fixture::mapping());
+        },
+        _ => unreachable!(),
+    }
+    match &tables[1] {
+        &EncodingRecord::Format6(ref table) => {
+            assert_eq!(table.first_code, 9);
+            assert_eq!(table.entry_count, 247);
+            assert_eq!(table.glyph_indices.len(), 247);
+        },
+        _ => unreachable!(),
+    }
+    match &tables[2] {
+        &EncodingRecord::Format4(ref table) => {
+            assert_eq!(table.segment_count_x2, 2 * 103);
+        },
+        _ => unreachable!(),
+    }
+}
+
+#[test]
 fn font_header() {
     use truetype::FontHeader;
 
@@ -37,42 +73,6 @@ fn horizontal_metrics() {
     let table = HorizontalMetrics::read(&mut setup(One, 55460), &header, &profile).unwrap();
     assert_eq!(table.records.len(), 547);
     assert_eq!(table.left_side_bearings.len(), 547 - 547);
-}
-
-#[test]
-fn mapping_encodings() {
-    use truetype::{Mapping, MappingEncoding};
-
-    let mapping = Mapping::read(&mut setup(One, 15620)).unwrap();
-    let tables = &mapping.encodings;
-    assert_eq!(tables.len(), 3);
-    match &tables[0] {
-        &MappingEncoding::Format4(ref table) => {
-            assert_eq!(table.segment_count_x2, 2 * 103);
-            assert_eq!(table.search_range, 2 * (1 << 103f64.log2().floor() as usize));
-            assert_eq!(table.end_codes.len(), 103);
-            assert_eq!(table.start_codes.len(), 103);
-            assert_eq!(table.id_deltas.len(), 103);
-            assert_eq!(table.id_range_offsets.len(), 103);
-            assert_eq!(table.glyph_indices.len(), 353);
-            assert_eq!(table.mapping(), fixture::mapping());
-        },
-        _ => unreachable!(),
-    }
-    match &tables[1] {
-        &MappingEncoding::Format6(ref table) => {
-            assert_eq!(table.first_code, 9);
-            assert_eq!(table.entry_count, 247);
-            assert_eq!(table.glyph_indices.len(), 247);
-        },
-        _ => unreachable!(),
-    }
-    match &tables[2] {
-        &MappingEncoding::Format4(ref table) => {
-            assert_eq!(table.segment_count_x2, 2 * 103);
-        },
-        _ => unreachable!(),
-    }
 }
 
 #[test]
