@@ -69,7 +69,7 @@ table! {
     #[doc = "A language-tag record of a naming table."]
     #[derive(Copy)]
     #[repr(C)]
-    pub LanguageRecord { // langTagRecord
+    pub LanguageRecord { // LangTagRecord
         length (u16), // length
         offset (u16), // offset
     }
