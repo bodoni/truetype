@@ -3,11 +3,11 @@
 #[macro_use]
 mod macros;
 
-mod char_mapping;
 mod fixed;
 mod font_header;
 mod horizontal_header;
 mod horizontal_metrics;
+mod mapping;
 mod maximum_profile;
 mod naming_table;
 mod offset_table;
@@ -16,20 +16,20 @@ mod tag;
 mod tape;
 mod windows_metrics;
 
-pub use char_mapping::{
-    CharMapping,
-    CharMappingEncoding,
-    CharMappingEncoding4,
-    CharMappingEncoding6,
-    CharMappingHeader,
-    CharMappingRecord,
-};
 pub use fixed::Fixed;
 pub use font_header::FontHeader;
 pub use horizontal_header::HorizontalHeader;
 pub use horizontal_metrics::{
     HorizontalMetrics,
     HorizontalMetricRecord,
+};
+pub use mapping::{
+    Mapping,
+    MappingEncoding,
+    MappingEncoding4,
+    MappingEncoding6,
+    MappingHeader,
+    MappingRecord,
 };
 pub use maximum_profile::{
     MaximumProfile,

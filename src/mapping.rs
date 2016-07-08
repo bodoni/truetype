@@ -4,19 +4,19 @@ use {Result, Tape, Value};
 
 /// A char-to-glyph mapping.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
-pub struct CharMapping {
-    pub header: CharMappingHeader,
-    pub records: Vec<CharMappingRecord>,
-    pub encodings: Vec<CharMappingEncoding>,
+pub struct Mapping {
+    pub header: MappingHeader,
+    pub records: Vec<MappingRecord>,
+    pub encodings: Vec<MappingEncoding>,
 }
 
 /// An encoding of a char-to-glyph mapping.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum CharMappingEncoding {
+pub enum MappingEncoding {
     /// Format 4.
-    Format4(CharMappingEncoding4),
+    Format4(MappingEncoding4),
     /// Format 6.
-    Format6(CharMappingEncoding6),
+    Format6(MappingEncoding6),
 }
 
 macro_rules! read_version(
@@ -32,7 +32,7 @@ macro_rules! read_version(
 table! {
     #[doc = "The header of a char-to-glyph mapping."]
     #[derive(Copy)]
-    pub CharMappingHeader {
+    pub MappingHeader {
         version      (u16) |tape, this| { read_version!(tape) },
         table_count  (u16), // numTables
     }
@@ -41,7 +41,7 @@ table! {
 table! {
     #[doc = "A record of a char-to-glyph mapping."]
     #[derive(Copy)]
-    pub CharMappingRecord {
+    pub MappingRecord {
         platform_id (u16), // platformID
         encoding_id (u16), // encodingID
         offset      (u32),
@@ -50,7 +50,7 @@ table! {
 
 table! {
     #[doc = "A char-to-glyph encoding of format 4."]
-    pub CharMappingEncoding4 {
+    pub MappingEncoding4 {
         format           (u16),
         length           (u16),
         language         (u16),
@@ -85,7 +85,7 @@ table! {
 
 table! {
     #[doc = "A char-to-glyph encoding of format 6."]
-    pub CharMappingEncoding6 {
+    pub MappingEncoding6 {
         format      (u16),
         length      (u16),
         language    (u16),
@@ -98,41 +98,41 @@ table! {
     }
 }
 
-impl Value for CharMapping {
-    fn read<T: Tape>(tape: &mut T) -> Result<CharMapping> {
+impl Value for Mapping {
+    fn read<T: Tape>(tape: &mut T) -> Result<Mapping> {
         let position = try!(tape.position());
         let header = match try!(tape.peek::<u16>()) {
-            0 => try!(CharMappingHeader::read(tape)),
+            0 => try!(MappingHeader::read(tape)),
             _ => raise!("the format of the char-to-glyph mapping header is not supported"),
         };
         let mut records = vec![];
         for _ in 0..header.table_count {
-            records.push(try!(CharMappingRecord::read(tape)));
+            records.push(try!(MappingRecord::read(tape)));
         }
         let mut encodings = vec![];
         for encoding in records.iter() {
             try!(tape.jump(position + encoding.offset as u64));
             encodings.push(match try!(tape.peek::<u16>()) {
-                4 => CharMappingEncoding::Format4(try!(Value::read(tape))),
-                6 => CharMappingEncoding::Format6(try!(Value::read(tape))),
+                4 => MappingEncoding::Format4(try!(Value::read(tape))),
+                6 => MappingEncoding::Format6(try!(Value::read(tape))),
                 _ => unimplemented!(),
             });
         }
-        Ok(CharMapping { header: header, records: records, encodings: encodings })
+        Ok(Mapping { header: header, records: records, encodings: encodings })
     }
 }
 
-impl CharMappingEncoding {
+impl MappingEncoding {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         match self {
-            &CharMappingEncoding::Format4(ref encoding) => encoding.mapping(),
-            &CharMappingEncoding::Format6(ref encoding) => encoding.mapping(),
+            &MappingEncoding::Format4(ref encoding) => encoding.mapping(),
+            &MappingEncoding::Format6(ref encoding) => encoding.mapping(),
         }
     }
 }
 
-impl CharMappingEncoding4 {
+impl MappingEncoding4 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         let count = self.segment_count();
@@ -184,7 +184,7 @@ impl CharMappingEncoding4 {
     }
 }
 
-impl CharMappingEncoding6 {
+impl MappingEncoding6 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         unimplemented!();
