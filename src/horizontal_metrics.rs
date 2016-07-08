@@ -4,15 +4,15 @@ table! {
     @define
     #[doc = "Horizontal metrics."]
     pub HorizontalMetrics {
-        records            (Vec<LongHorizontalMetric>), // hMetrics
-        left_side_bearings (Vec<i16>                 ), // leftSideBearing
+        records            (Vec<HorizontalMetricRecord>), // hMetrics
+        left_side_bearings (Vec<i16>                   ), // leftSideBearing
     }
 }
 
 table! {
     #[doc = "A record of horizontal metrics."]
     #[derive(Copy)]
-    pub LongHorizontalMetric { // longHorMetric
+    pub HorizontalMetricRecord { // longHorMetric
         advance_width     (u16), // advanceWidth
         left_side_bearing (i16), // lsb
     }

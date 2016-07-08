@@ -29,7 +29,7 @@ pub use font_header::FontHeader;
 pub use horizontal_header::HorizontalHeader;
 pub use horizontal_metrics::{
     HorizontalMetrics,
-    LongHorizontalMetric,
+    HorizontalMetricRecord,
 };
 pub use maximum_profile::{
     MaximumProfile,
