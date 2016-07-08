@@ -44,9 +44,9 @@ pub use naming_table::{
     NamingTable1,
 };
 pub use offset_table::{
+    OffsetHeader,
+    OffsetRecord,
     OffsetTable,
-    OffsetTableHeader,
-    OffsetTableRecord,
 };
 pub use postscript::{
     PostScript,

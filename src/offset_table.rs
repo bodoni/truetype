@@ -3,14 +3,14 @@ use {Fixed, Result, Tag, Tape, Value};
 /// An offset table.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct OffsetTable {
-    pub header: OffsetTableHeader,
-    pub records: Vec<OffsetTableRecord>,
+    pub header: OffsetHeader,
+    pub records: Vec<OffsetRecord>,
 }
 
 table! {
     #[doc = "The header of an offset table."]
     #[derive(Copy)]
-    pub OffsetTableHeader {
+    pub OffsetHeader {
         version        (Fixed),
         table_count    (u16  ), // numTables
         search_range   (u16  ), // searchRange
@@ -22,7 +22,7 @@ table! {
 table! {
     #[doc = "A record of an offset table."]
     #[derive(Copy)]
-    pub OffsetTableRecord {
+    pub OffsetRecord {
         tag      (u32),
         checksum (u32), // checkSum
         offset   (u32),
@@ -35,16 +35,16 @@ impl Value for OffsetTable {
         if !is_known(try!(tape.peek::<Fixed>())) {
             raise!("the font format is not supported");
         }
-        let header = try!(OffsetTableHeader::read(tape));
+        let header = try!(OffsetHeader::read(tape));
         let mut records = vec![];
         for _ in 0..header.table_count {
-            records.push(try!(OffsetTableRecord::read(tape)));
+            records.push(try!(OffsetRecord::read(tape)));
         }
         Ok(OffsetTable { header: header, records: records })
     }
 }
 
-impl OffsetTableRecord {
+impl OffsetRecord {
     /// Compute the checksum of the corresponding table and compare it with the
     /// one in the record.
     pub fn checksum<T, F>(&self, tape: &mut T, process: F) -> Result<bool>
@@ -78,7 +78,8 @@ fn is_known(version: Fixed) -> bool {
 #[cfg(test)]
 mod tests {
     use std::io::Cursor;
-    use super::OffsetTableRecord;
+
+    use super::OffsetRecord;
 
     #[test]
     fn record_checksum() {
@@ -86,10 +87,10 @@ mod tests {
             ($length:expr, $checksum:expr, $data:expr) => ({
                 let data: &[u8] = $data;
                 let mut reader = Cursor::new(data);
-                let table = OffsetTableRecord {
+                let table = OffsetRecord {
                     length: $length,
                     checksum: $checksum,
-                    .. OffsetTableRecord::default()
+                    .. OffsetRecord::default()
                 };
                 table.checksum(&mut reader, |_, chunk| chunk).unwrap()
             })
