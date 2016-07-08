@@ -11,7 +11,7 @@ mod horizontal_metrics;
 mod maximum_profile;
 mod naming_table;
 mod offset_table;
-mod postscript_info;
+mod postscript;
 mod tag;
 mod tape;
 mod windows_metrics;
@@ -48,10 +48,10 @@ pub use offset_table::{
     OffsetTableHeader,
     OffsetTableRecord,
 };
-pub use postscript_info::{
-    PostScriptInfo,
-    PostScriptInfo10,
-    PostScriptInfo30,
+pub use postscript::{
+    PostScript,
+    PostScript10,
+    PostScript30,
 };
 pub use tag::Tag;
 pub use tape::{Tape, Value};

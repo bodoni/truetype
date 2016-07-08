@@ -2,17 +2,17 @@ use {Fixed, Result, Tape, Value};
 
 /// PostScript information.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum PostScriptInfo {
+pub enum PostScript {
     /// Version 1.0.
-    Version10(PostScriptInfo10),
+    Version10(PostScript10),
     /// Version 3.0.
-    Version30(PostScriptInfo30),
+    Version30(PostScript30),
 }
 
 table! {
     #[doc = "PostScript information of version 1.0."]
     #[derive(Copy)]
-    pub PostScriptInfo10 {
+    pub PostScript10 {
         version             (Fixed),
         italic_angle        (Fixed), // italicAngle
         underline_position  (i16  ), // underlinePosition
@@ -26,13 +26,13 @@ table! {
 }
 
 /// PostScript information of version 3.0.
-pub type PostScriptInfo30 = PostScriptInfo10;
+pub type PostScript30 = PostScript10;
 
-impl Value for PostScriptInfo {
+impl Value for PostScript {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         Ok(match try!(tape.peek::<Fixed>()) {
-            Fixed(0x00010000) => PostScriptInfo::Version10(try!(Value::read(tape))),
-            Fixed(0x00030000) => PostScriptInfo::Version30(try!(Value::read(tape))),
+            Fixed(0x00010000) => PostScript::Version10(try!(Value::read(tape))),
+            Fixed(0x00030000) => PostScript::Version30(try!(Value::read(tape))),
             _ => raise!("the format of the PostScript information is not supported"),
         })
     }
