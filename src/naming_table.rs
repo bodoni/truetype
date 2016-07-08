@@ -39,10 +39,10 @@ table! {
             read_vector!(tape, this.count)
         },
 
-        language_tag_count (u16), // langTagCount
+        language_count (u16), // langTagCount
 
-        language_tags (Vec<LanguageTagRecord>) |tape, this| { // langTagRecord
-            read_vector!(tape, this.language_tag_count)
+        languages (Vec<LanguageRecord>) |tape, this| { // langTagRecord
+            read_vector!(tape, this.language_count)
         },
 
         data (Vec<u8>) |tape, this| {
@@ -69,7 +69,7 @@ table! {
     #[doc = "A language-tag record of a naming table."]
     #[derive(Copy)]
     #[repr(C)]
-    pub LanguageTagRecord { // langTagRecord
+    pub LanguageRecord { // langTagRecord
         length (u16),
         offset (u16),
     }
@@ -108,7 +108,7 @@ impl NamingTable1 {
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = try!(tape.position());
         let above = 4 * 2 + self.records.len() * mem::size_of::<NameRecord>() +
-                            self.language_tags.len() * mem::size_of::<LanguageTagRecord>();
+                            self.languages.len() * mem::size_of::<LanguageRecord>();
         try!(tape.jump(current - above as u64 + self.offset as u64));
         read_vector!(tape, data_length(&self.records), u8)
     }
