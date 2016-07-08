@@ -38,7 +38,7 @@ pub use maximum_profile::{
 };
 pub use naming_table::{
     LanguageRecord,
-    NameRecord,
+    NamingRecord,
     NamingTable,
     NamingTable0,
     NamingTable1,

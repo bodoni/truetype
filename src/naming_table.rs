@@ -14,11 +14,11 @@ pub enum NamingTable {
 table! {
     #[doc = "A naming table of format 0."]
     pub NamingTable0 {
-        format (u16),
-        count  (u16),
+        format (u16), // format
+        count  (u16), // count
         offset (u16), // stringOffset
 
-        records (Vec<NameRecord>) |tape, this| { // nameRecord
+        records (Vec<NamingRecord>) |tape, this| { // nameRecord
             read_vector!(tape, this.count)
         },
 
@@ -31,11 +31,11 @@ table! {
 table! {
     #[doc = "A naming table of format 1."]
     pub NamingTable1 {
-        format (u16),
-        count  (u16),
+        format (u16), // format
+        count  (u16), // count
         offset (u16), // stringOffset
 
-        records (Vec<NameRecord>) |tape, this| { // nameRecord
+        records (Vec<NamingRecord>) |tape, this| { // nameRecord
             read_vector!(tape, this.count)
         },
 
@@ -52,16 +52,16 @@ table! {
 }
 
 table! {
-    #[doc = "A name record of a naming table."]
+    #[doc = "A record of a naming table."]
     #[derive(Copy)]
     #[repr(C)]
-    pub NameRecord {
+    pub NamingRecord { // NameRecord
         platform_id (u16), // platformID
         encoding_id (u16), // encodingID
         language_id (u16), // languageID
         name_id     (u16), // nameID
-        length      (u16),
-        offset      (u16),
+        length      (u16), // length
+        offset      (u16), // offset
     }
 }
 
@@ -70,8 +70,8 @@ table! {
     #[derive(Copy)]
     #[repr(C)]
     pub LanguageRecord { // langTagRecord
-        length (u16),
-        offset (u16),
+        length (u16), // length
+        offset (u16), // offset
     }
 }
 
@@ -93,7 +93,7 @@ impl NamingTable0 {
 
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = try!(tape.position());
-        let above = 3 * 2 + self.records.len() * mem::size_of::<NameRecord>();
+        let above = 3 * 2 + self.records.len() * mem::size_of::<NamingRecord>();
         try!(tape.jump(current - above as u64 + self.offset as u64));
         read_vector!(tape, data_length(&self.records), u8)
     }
@@ -107,14 +107,14 @@ impl NamingTable1 {
 
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = try!(tape.position());
-        let above = 4 * 2 + self.records.len() * mem::size_of::<NameRecord>() +
+        let above = 4 * 2 + self.records.len() * mem::size_of::<NamingRecord>() +
                             self.languages.len() * mem::size_of::<LanguageRecord>();
         try!(tape.jump(current - above as u64 + self.offset as u64));
         read_vector!(tape, data_length(&self.records), u8)
     }
 }
 
-fn data_length(records: &[NameRecord]) -> usize {
+fn data_length(records: &[NamingRecord]) -> usize {
     let mut length = 0;
     for record in records {
         let end = record.offset + record.length + 1;
@@ -125,7 +125,7 @@ fn data_length(records: &[NameRecord]) -> usize {
     length as usize
 }
 
-fn strings(records: &[NameRecord], data: &[u8]) -> Result<Vec<String>> {
+fn strings(records: &[NamingRecord], data: &[u8]) -> Result<Vec<String>> {
     let mut strings = vec![];
     for record in records {
         let (offset, length) = (record.offset as usize, record.length as usize);
