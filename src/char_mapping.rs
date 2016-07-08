@@ -102,7 +102,7 @@ table! {
 }
 
 impl Value for CharMapping {
-    fn read<T: Tape>(tape: &mut T) -> Result<CharMapping> {
+    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         let position = try!(tape.position());
         let header = match try!(tape.peek::<u16>()) {
             0 => try!(CharMappingHeader::read(tape)),
