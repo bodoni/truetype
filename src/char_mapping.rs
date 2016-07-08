@@ -1,7 +1,6 @@
 use std::collections::HashMap;
 
-use Result;
-use tape::{Tape, Value};
+use {Result, Tape, Value};
 
 /// A char-to-glyph mapping.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]

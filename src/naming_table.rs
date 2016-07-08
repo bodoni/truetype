@@ -1,7 +1,6 @@
 use std::mem;
 
-use Result;
-use tape::{Tape, Value};
+use {Result, Tape, Value};
 
 /// A naming table.
 #[derive(Clone, Debug, Eq, PartialEq)]

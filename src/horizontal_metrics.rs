@@ -1,7 +1,4 @@
-use Result;
-use horizontal_header::HorizontalHeader;
-use maximum_profile::MaximumProfile;
-use tape::{Tape, Value};
+use {HorizontalHeader, MaximumProfile, Result, Tape, Value};
 
 table! {
     @define

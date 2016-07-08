@@ -1,5 +1,4 @@
-use {Fixed, Result};
-use tape::{Tape, Value};
+use {Fixed, Result, Tape, Value};
 
 /// PostScript information.
 #[derive(Clone, Debug, Eq, PartialEq)]

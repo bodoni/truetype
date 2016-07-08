@@ -1,5 +1,4 @@
-use {Fixed, Result};
-use tape::{Tape, Value};
+use {Fixed, Result, Tape, Value};
 
 /// A maximum profile.
 #[derive(Clone, Debug, Eq, PartialEq)]

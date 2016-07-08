@@ -1,5 +1,4 @@
-use Fixed;
-use tape::Value;
+use {Fixed, Value};
 
 table! {
     #[doc = "A horizontal header."]

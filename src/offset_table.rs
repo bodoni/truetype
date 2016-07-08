@@ -1,5 +1,4 @@
-use {Fixed, Result, Tag};
-use tape::{Tape, Value};
+use {Fixed, Result, Tag, Tape, Value};
 
 /// An offset table.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]

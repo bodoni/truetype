@@ -1,5 +1,4 @@
-use Result;
-use tape::{Tape, Value};
+use {Result, Tape, Value};
 
 /// OS/2 and Windows metrics.
 #[derive(Clone, Debug, Eq, PartialEq)]
