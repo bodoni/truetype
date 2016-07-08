@@ -1,11 +1,3 @@
-macro_rules! fill(
-    ($tape:ident, $count:expr, $buffer:ident) => (
-        if try!(::std::io::Read::read($tape, &mut $buffer)) != $count {
-            return raise!("failed to read as much as needed");
-        }
-    );
-);
-
 macro_rules! itemize(($($chunk:item)*) => ($($chunk)*));
 
 macro_rules! raise(
@@ -14,9 +6,14 @@ macro_rules! raise(
 );
 
 macro_rules! read(
+    ($tape:ident, $count:expr, $buffer:ident) => (
+        if try!(::std::io::Read::read($tape, &mut $buffer)) != $count {
+            return raise!("failed to read as much as needed");
+        }
+    );
     ($tape:ident, $size:expr) => (unsafe {
         let mut buffer: [u8; $size] = ::std::mem::uninitialized();
-        fill!($tape, $size, buffer);
+        read!($tape, $size, buffer);
         ::std::mem::transmute(buffer)
     });
 );
@@ -48,11 +45,11 @@ macro_rules! read_field(
      [$kind:ty] |$pipe:ident, $chair:ident| $body:block) => ({
         #[inline(always)]
         #[allow(unused_variables)]
-        fn read<T: ::tape::Tape>($pipe: &mut T, $chair: &$structure) -> ::Result<$kind> $body
+        fn read<T: ::Tape>($pipe: &mut T, $chair: &$structure) -> ::Result<$kind> $body
         try!(read($tape, &$table))
     });
     ($structure:ident, $tape:expr, $table:expr, [$kind:ty]) => ({
-        try!(::tape::Value::read($tape))
+        try!(::Value::read($tape))
     });
 );
 
@@ -70,7 +67,7 @@ macro_rules! read_vector(
         let count = $count as usize;
         let mut values = Vec::with_capacity(count);
         for _ in 0..count {
-            values.push(try!(::tape::Value::read($tape)));
+            values.push(try!(::Value::read($tape)));
         }
         Ok(values)
     });
@@ -93,8 +90,8 @@ macro_rules! table {
     (@implement pub $structure:ident {
         $($field:ident ($($kind:tt)+) $(|$($argument:ident),+| $body:block)*,)+
     }) => (
-        impl ::tape::Value for $structure {
-            fn read<T: ::tape::Tape>(tape: &mut T) -> ::Result<Self> {
+        impl ::Value for $structure {
+            fn read<T: ::Tape>(tape: &mut T) -> ::Result<Self> {
                 let mut table = $structure::default();
                 $(
                     table.$field = read_field!($structure, tape, table, [$($kind)+]

@@ -43,5 +43,22 @@ pub trait Value: Sized {
     fn read<T: Tape>(&mut T) -> Result<Self>;
 }
 
-impl<T: Read + Seek> Tape for T {
+impl<T: Read + Seek> Tape for T {}
+
+macro_rules! value {
+    ($name:ident, 1) => (impl Value for $name {
+        fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+            Ok(read!(tape, 1))
+        }
+    });
+    ($name:ident, $size:expr) => (impl Value for $name {
+        fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+            Ok($name::from_be(read!(tape, $size)))
+        }
+    });
 }
+
+value!(i16, 2);
+value!(u16, 2);
+value!(u32, 4);
+value!(i64, 8);

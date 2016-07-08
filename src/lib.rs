@@ -3,12 +3,8 @@
 #[macro_use]
 mod macros;
 
-mod fixed;
-mod primitive;
-mod tag;
-mod tape;
-
 mod char_mapping;
+mod fixed;
 mod font_header;
 mod horizontal_header;
 mod horizontal_metrics;
@@ -16,11 +12,9 @@ mod maximum_profile;
 mod naming_table;
 mod offset_table;
 mod postscript_info;
+mod tag;
+mod tape;
 mod windows_metrics;
-
-pub use fixed::Fixed;
-pub use tag::Tag;
-pub use tape::{Tape, Value};
 
 pub use char_mapping::{
     CharMapping,
@@ -30,6 +24,7 @@ pub use char_mapping::{
     CharMappingHeader,
     CharMappingRecord,
 };
+pub use fixed::Fixed;
 pub use font_header::FontHeader;
 pub use horizontal_header::HorizontalHeader;
 pub use horizontal_metrics::{
@@ -58,6 +53,8 @@ pub use postscript_info::{
     PostScriptInfo10,
     PostScriptInfo30,
 };
+pub use tag::Tag;
+pub use tape::{Tape, Value};
 pub use windows_metrics::{
     WindowsMetrics,
     WindowsMetrics3,

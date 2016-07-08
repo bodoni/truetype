@@ -1,5 +1,4 @@
-use Result;
-use tape::{Tape, Value};
+use {Result, Tape, Value};
 
 /// A fixed-point number.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
