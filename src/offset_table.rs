@@ -1,4 +1,4 @@
-use {Fixed, Result, Tag, Tape, Value};
+use {Number, Result, Tag, Tape, Value};
 
 /// An offset table.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -11,11 +11,11 @@ table! {
     #[doc = "The header of an offset table."]
     #[derive(Copy)]
     pub OffsetHeader {
-        version        (Fixed),
-        table_count    (u16  ), // numTables
-        search_range   (u16  ), // searchRange
-        entry_selector (u16  ), // entrySelector
-        range_shift    (u16  ), // rangeShift
+        version        (Number), // version
+        table_count    (u16   ), // numTables
+        search_range   (u16   ), // searchRange
+        entry_selector (u16   ), // entrySelector
+        range_shift    (u16   ), // rangeShift
     }
 }
 
@@ -23,16 +23,16 @@ table! {
     #[doc = "A record of an offset table."]
     #[derive(Copy)]
     pub OffsetRecord {
-        tag      (u32),
+        tag      (u32), // tag
         checksum (u32), // checkSum
-        offset   (u32),
-        length   (u32),
+        offset   (u32), // offset
+        length   (u32), // length
     }
 }
 
 impl Value for OffsetTable {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        if !is_known(try!(tape.peek::<Fixed>())) {
+        if !is_known(try!(tape.peek::<Number>())) {
             raise!("the font format is not supported");
         }
         let header = try!(OffsetHeader::read(tape));
@@ -63,9 +63,9 @@ impl OffsetRecord {
 }
 
 #[inline]
-fn is_known(version: Fixed) -> bool {
+fn is_known(version: Number) -> bool {
     match version {
-        Fixed(0x00010000) => return true,
+        Number(0x00010000) => return true,
         _ => {},
     }
     match &Tag::from(version).into() {

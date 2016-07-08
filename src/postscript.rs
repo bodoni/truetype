@@ -1,4 +1,4 @@
-use {Fixed, Result, Tape, Value};
+use {Number, Result, Tape, Value};
 
 /// PostScript information.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -13,15 +13,15 @@ table! {
     #[doc = "PostScript information of version 1.0."]
     #[derive(Copy)]
     pub PostScript10 {
-        version             (Fixed),
-        italic_angle        (Fixed), // italicAngle
-        underline_position  (i16  ), // underlinePosition
-        underline_thickness (i16  ), // underlineThickness
-        is_fixed_pitch      (u32  ), // isFixedPitch
-        min_memory_type42   (u32  ), // minMemType42
-        max_memory_type42   (u32  ), // maxMemType42
-        min_memory_type1    (u32  ), // minMemType1
-        max_memory_type1    (u32  ), // maxMemType1
+        version             (Number), // version
+        italic_angle        (Number), // italicAngle
+        underline_position  (i16   ), // underlinePosition
+        underline_thickness (i16   ), // underlineThickness
+        is_fixed_pitch      (u32   ), // isFixedPitch
+        min_memory_type42   (u32   ), // minMemType42
+        max_memory_type42   (u32   ), // maxMemType42
+        min_memory_type1    (u32   ), // minMemType1
+        max_memory_type1    (u32   ), // maxMemType1
     }
 }
 
@@ -30,9 +30,9 @@ pub type PostScript30 = PostScript10;
 
 impl Value for PostScript {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        Ok(match try!(tape.peek::<Fixed>()) {
-            Fixed(0x00010000) => PostScript::Version10(try!(Value::read(tape))),
-            Fixed(0x00030000) => PostScript::Version30(try!(Value::read(tape))),
+        Ok(match try!(tape.peek::<Number>()) {
+            Number(0x00010000) => PostScript::Version10(try!(Value::read(tape))),
+            Number(0x00030000) => PostScript::Version30(try!(Value::read(tape))),
             _ => raise!("the format of the PostScript information is not supported"),
         })
     }

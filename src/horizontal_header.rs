@@ -1,12 +1,12 @@
-use {Fixed, Value};
+use {Number, Value};
 
 table! {
     #[doc = "A horizontal header."]
     #[derive(Copy)]
     pub HorizontalHeader {
-        version (Fixed) |tape, this| {
+        version (Number) |tape, this| { // version
             let value = try!(Value::read(tape));
-            if value != Fixed(0x00010000) {
+            if value != Number(0x00010000) {
                 raise!("the version of the horizontal header is not supported");
             }
             Ok(value)
@@ -22,10 +22,10 @@ table! {
         caret_slope_rise        (i16), // caretSlopeRise
         caret_slope_run         (i16), // caretSlopeRun
         caret_offset            (i16), // caretOffset
-        reserved1               (i16),
-        reserved2               (i16),
-        reserved3               (i16),
-        reserved4               (i16),
+        reserved1               (i16), // reserved1
+        reserved2               (i16), // reserved2
+        reserved3               (i16), // reserved3
+        reserved4               (i16), // reserved4
         metric_data_format      (i16), // metricDataFormat
         horizontal_metric_count (u16), // numberOfHMetrics
     }

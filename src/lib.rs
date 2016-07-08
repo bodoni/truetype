@@ -3,20 +3,19 @@
 #[macro_use]
 mod macros;
 
-mod fixed;
 mod font_header;
 mod horizontal_header;
 mod horizontal_metrics;
 mod mapping;
 mod maximum_profile;
 mod naming_table;
+mod number;
 mod offset_table;
 mod postscript;
 mod tag;
 mod tape;
 mod windows_metrics;
 
-pub use fixed::Fixed;
 pub use font_header::FontHeader;
 pub use horizontal_header::HorizontalHeader;
 pub use horizontal_metrics::{
@@ -43,6 +42,7 @@ pub use naming_table::{
     NamingTable0,
     NamingTable1,
 };
+pub use number::Number;
 pub use offset_table::{
     OffsetHeader,
     OffsetRecord,

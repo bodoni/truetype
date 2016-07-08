@@ -1,8 +1,8 @@
 use std::mem;
 
-use Fixed;
+use Number;
 
-/// A font-table tag.
+/// A table tag.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub struct Tag(pub u32);
 
@@ -27,10 +27,10 @@ impl<'l> From<&'l [u8; 4]> for Tag {
     }
 }
 
-impl From<Fixed> for Tag {
+impl From<Number> for Tag {
     #[inline(always)]
-    fn from(fixed: Fixed) -> Self {
-        Tag(fixed.0)
+    fn from(number: Number) -> Self {
+        Tag(number.0)
     }
 }
 

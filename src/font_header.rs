@@ -1,4 +1,4 @@
-use {Fixed, Value};
+use {Number, Value};
 
 const MAGIC_NUMBER: u32 = 0x5F0F3CF5;
 
@@ -6,16 +6,16 @@ table! {
     #[doc = "A font header."]
     #[derive(Copy)]
     pub FontHeader {
-        version (Fixed) |tape, this| {
+        version (Number) |tape, this| { // version
             let value = try!(Value::read(tape));
-            if value != Fixed(0x00010000) {
+            if value != Number(0x00010000) {
                 raise!("the version of the font header is not supported");
             }
             Ok(value)
         },
 
-        revision            (Fixed), // fontRevision
-        checksum_adjustment (u32  ), // checkSumAdjustment
+        revision            (Number), // fontRevision
+        checksum_adjustment (u32   ), // checkSumAdjustment
 
         magic_number (u32) |tape, this| { // MagicNumber
             let value = try!(Value::read(tape));
@@ -25,10 +25,10 @@ table! {
             Ok(value)
         },
 
-        flags                 (u16),
+        flags                 (u16), // flags
         units_per_em          (u16), // unitsPerEm
-        created               (i64),
-        modified              (i64),
+        created               (i64), // created
+        modified              (i64), // modified
         min_x                 (i16), // xMin
         min_y                 (i16), // yMin
         max_x                 (i16), // xMax
