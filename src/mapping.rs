@@ -33,8 +33,11 @@ table! {
     #[doc = "The header of a char-to-glyph mapping."]
     #[derive(Copy)]
     pub MappingHeader {
-        version      (u16) |tape, this| { read_version!(tape) },
-        table_count  (u16), // numTables
+        version (u16) |tape, this| { // version
+            read_version!(tape)
+        },
+
+        table_count (u16), // numTables
     }
 }
 
@@ -44,16 +47,16 @@ table! {
     pub MappingRecord {
         platform_id (u16), // platformID
         encoding_id (u16), // encodingID
-        offset      (u32),
+        offset      (u32), // offset
     }
 }
 
 table! {
     #[doc = "A char-to-glyph encoding of format 4."]
     pub EncodingRecord4 {
-        format           (u16),
-        length           (u16),
-        language         (u16),
+        format           (u16), // format
+        length           (u16), // length
+        language         (u16), // language
         segment_count_x2 (u16), // segCountX2
         search_range     (u16), // searchRange
         entry_selector   (u16), // entrySelector
@@ -86,9 +89,9 @@ table! {
 table! {
     #[doc = "A char-to-glyph encoding of format 6."]
     pub EncodingRecord6 {
-        format      (u16),
-        length      (u16),
-        language    (u16),
+        format      (u16), // format
+        length      (u16), // length
+        language    (u16), // language
         first_code  (u16), // firstCode
         entry_count (u16), // entryCount
 

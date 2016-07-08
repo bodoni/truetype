@@ -12,7 +12,7 @@ pub enum WindowsMetrics {
 table! {
     #[doc = "OS/2 and Windows metrics of version 3."]
     pub WindowsMetrics3 {
-        version              (u16),
+        version              (u16), // version
         average_char_width   (i16), // xAvgCharWidth
         weight_class         (u16), // usWeightClass
         width_class          (u16), // usWidthClass
@@ -29,7 +29,7 @@ table! {
         strikeout_position   (i16), // yStrikeoutPosition
         family_class         (i16), // sFamilyClass
 
-        panose ([u8; 10]) |tape, this| {
+        panose ([u8; 10]) |tape, this| { // panose
             read_array!(tape, 10, u8)
         },
 
@@ -63,7 +63,7 @@ table! {
 table! {
     #[doc = "OS/2 and Windows metrics of version 5."]
     pub WindowsMetrics5 {
-        version              (u16),
+        version              (u16), // version
         average_char_width   (i16), // xAvgCharWidth
         weight_class         (u16), // usWeightClass
         width_class          (u16), // usWidthClass
@@ -80,7 +80,7 @@ table! {
         strikeout_position   (i16), // yStrikeoutPosition
         family_class         (i16), // sFamilyClass
 
-        panose ([u8; 10]) |tape, this| {
+        panose ([u8; 10]) |tape, this| { // panose
             read_array!(tape, 10, u8)
         },
 
