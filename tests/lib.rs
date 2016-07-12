@@ -1,7 +1,7 @@
 extern crate truetype;
 
 use std::fs::File;
-use truetype::Value;
+use truetype::{Value, Walue};
 
 mod fixture;
 
@@ -9,6 +9,7 @@ use fixture::Fixture;
 
 macro_rules! setup(
     ($offset:expr) => (setup(Fixture::One, $offset));
+    ($fixture:ident, $offset:expr) => (setup(Fixture::$fixture, $offset));
 );
 
 #[test]
@@ -80,6 +81,13 @@ fn font_header() {
     assert_eq!(format!("{:.3}", f32::from(table.revision)), "1.017");
     assert_eq!(table.units_per_em, 1000);
     assert_eq!(table.mac_style, 0);
+}
+
+#[test]
+fn glyph_data() {
+    use truetype::GlyphData;
+
+    let _ = GlyphData::read(&mut setup!(Two, 5326), 0).unwrap();
 }
 
 #[test]

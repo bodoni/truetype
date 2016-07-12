@@ -43,6 +43,12 @@ pub trait Value: Sized {
     fn read<T: Tape>(&mut T) -> Result<Self>;
 }
 
+/// A type that can be read provided a parameter.
+pub trait Walue<P>: Sized {
+    /// Read a value.
+    fn read<T: Tape>(&mut T, P) -> Result<Self>;
+}
+
 impl<T: Read + Seek> Tape for T {}
 
 macro_rules! value {

@@ -5,6 +5,7 @@ mod macros;
 
 mod char_mapping;
 mod font_header;
+mod glyph_data;
 mod horizontal_header;
 mod horizontal_metrics;
 mod maximum_profile;
@@ -25,6 +26,15 @@ pub use char_mapping::{
     EncodingRecord6,
 };
 pub use font_header::FontHeader;
+pub use glyph_data::{
+    CompositGlyphDescription,
+    Glyph,
+    GlyphData,
+    GlyphArgument,
+    GlyphCoordinates,
+    GlyphDescription,
+    SimpleGlyphDescription
+};
 pub use horizontal_header::HorizontalHeader;
 pub use horizontal_metrics::{
     HorizontalMetrics,
@@ -54,7 +64,7 @@ pub use postscript::{
     PostScript30,
 };
 pub use tag::Tag;
-pub use tape::{Tape, Value};
+pub use tape::{Tape, Value, Walue};
 pub use windows_metrics::{
     WindowsMetrics,
     WindowsMetrics3,
