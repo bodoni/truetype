@@ -1,5 +1,6 @@
 use {Result, Tape, Value, Walue};
 
+/// Glyph data.
 #[derive(Clone, Debug)]
 pub struct GlyphData(pub Vec<Glyph>);
 
@@ -61,6 +62,7 @@ table! {
     }
 }
 
+/// An argument of a composit glyph.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum GlyphArgument {
     Int8(i8),
