@@ -48,8 +48,8 @@ pub enum GlyphCoordinates {
 table! {
     #[doc = "A composit-glyph description."]
     pub CompositGlyphDescription {
-        flags       (u16     ), // flags
-        glyph_index (u16     ), // glyphIndex
+        flags       (u16), // flags
+        glyph_index (u16), // glyphIndex
 
         argument1 (GlyphArgument) |tape, this| { // argument1
             Walue::read(tape, this.flags)
