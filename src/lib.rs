@@ -5,7 +5,6 @@ mod macros;
 
 mod char_mapping;
 mod font_header;
-mod glyph_data;
 mod horizontal_header;
 mod horizontal_metrics;
 mod maximum_profile;
@@ -17,6 +16,8 @@ mod tag;
 mod tape;
 mod windows_metrics;
 
+pub mod glyph;
+
 pub use char_mapping::{
     CharMapping,
     CharMappingHeader,
@@ -26,15 +27,6 @@ pub use char_mapping::{
     EncodingRecord6,
 };
 pub use font_header::FontHeader;
-pub use glyph_data::{
-    CompositGlyphDescription,
-    Glyph,
-    GlyphData,
-    GlyphArgument,
-    GlyphCoordinates,
-    GlyphDescription,
-    SimpleGlyphDescription
-};
 pub use horizontal_header::HorizontalHeader;
 pub use horizontal_metrics::{
     HorizontalMetrics,
@@ -73,6 +65,9 @@ pub use windows_metrics::{
 
 /// An error.
 pub type Error = std::io::Error;
+
+/// Glyph data.
+pub type GlyphData = Vec<glyph::Glyph>;
 
 /// A result.
 pub type Result<T> = std::io::Result<T>;
