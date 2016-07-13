@@ -1,4 +1,4 @@
-//! Glyph data.
+//! The glyph data.
 
 use {Result, Tape, Value, Walue};
 
@@ -23,14 +23,14 @@ table! {
 /// A description.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Description {
-    Simple(DescriptionSimple),
-    Composit(DescriptionComposit),
+    Simple(Simple),
+    Composit(Composit),
 }
 
 table! {
     @define
     #[doc = "A simple-glyph description."]
-    pub DescriptionSimple {
+    pub Simple {
         end_points         (Vec<u16>   ), // endPtsOfContours
         instruction_length (u16        ), // instructionLength
         instructions       (Vec<u8>    ), // instructions
@@ -42,7 +42,7 @@ table! {
 
 table! {
     #[doc = "A composit-glyph description."]
-    pub DescriptionComposit {
+    pub Composit {
         flags (u16), // flags
         index (u16), // glyphIndex
 
@@ -111,7 +111,7 @@ impl Walue<i16> for Description {
     }
 }
 
-impl Walue<usize> for DescriptionSimple {
+impl Walue<usize> for Simple {
     fn read<T: Tape>(_: &mut T, _: usize) -> Result<Self> {
         unreachable!()
     }

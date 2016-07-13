@@ -1,4 +1,4 @@
-//! Char-to-glyph mapping.
+//! The char-to-glyph mapping.
 
 use std::collections::HashMap;
 
@@ -16,27 +16,21 @@ pub struct CharMapping {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Encoding {
     /// Format 4.
-    Format4(EncodingFormat4),
+    Format4(Format4),
     /// Format 6.
-    Format6(EncodingFormat6),
+    Format6(Format6),
 }
-
-macro_rules! read_version(
-    ($tape:ident) => ({
-        let value = try!(Value::read($tape));
-        if value != 0 {
-            raise!("the version of the char-to-glyph mapping header is not supported");
-        }
-        Ok(value)
-    });
-);
 
 table! {
     #[doc = "The header of a char-to-glyph mapping."]
     #[derive(Copy)]
     pub Header {
         version (u16) |tape, this| { // version
-            read_version!(tape)
+            let value = try!(Value::read(tape));
+            if value != 0 {
+                raise!("the version of the char-to-glyph mapping header is not supported");
+            }
+            Ok(value)
         },
 
         table_count (u16), // numTables
@@ -55,7 +49,7 @@ table! {
 
 table! {
     #[doc = "A char-to-glyph encoding of format 4."]
-    pub EncodingFormat4 {
+    pub Format4 {
         format           (u16), // format
         length           (u16), // length
         language         (u16), // language
@@ -90,7 +84,7 @@ table! {
 
 table! {
     #[doc = "A char-to-glyph encoding of format 6."]
-    pub EncodingFormat6 {
+    pub Format6 {
         format      (u16), // format
         length      (u16), // length
         language    (u16), // language
@@ -137,7 +131,7 @@ impl Encoding {
     }
 }
 
-impl EncodingFormat4 {
+impl Format4 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         let count = self.segment_count();
@@ -189,7 +183,7 @@ impl EncodingFormat4 {
     }
 }
 
-impl EncodingFormat6 {
+impl Format6 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         unimplemented!();

@@ -1,17 +1,19 @@
+//! The OS/2 and Windows metrics.
+
 use {Result, Tape, Value};
 
 /// OS/2 and Windows metrics.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum WindowsMetrics {
     /// Version 3.
-    Version3(WindowsMetrics3),
+    Version3(Version3),
     /// Version 5.
-    Version5(WindowsMetrics5),
+    Version5(Version5),
 }
 
 table! {
     #[doc = "OS/2 and Windows metrics of version 3."]
-    pub WindowsMetrics3 {
+    pub Version3 {
         version              (u16), // version
         average_char_width   (i16), // xAvgCharWidth
         weight_class         (u16), // usWeightClass
@@ -62,7 +64,7 @@ table! {
 
 table! {
     #[doc = "OS/2 and Windows metrics of version 5."]
-    pub WindowsMetrics5 {
+    pub Version5 {
         version              (u16), // version
         average_char_width   (i16), // xAvgCharWidth
         weight_class         (u16), // usWeightClass

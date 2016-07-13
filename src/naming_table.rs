@@ -1,3 +1,5 @@
+//! The naming table.
+
 use std::mem;
 
 use {Result, Tape, Value};
@@ -6,19 +8,19 @@ use {Result, Tape, Value};
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NamingTable {
     /// Format 0.
-    Format0(NamingTable0),
+    Format0(Format0),
     /// Format 1.
-    Format1(NamingTable1),
+    Format1(Format1),
 }
 
 table! {
     #[doc = "A naming table of format 0."]
-    pub NamingTable0 {
+    pub Format0 {
         format (u16), // format
         count  (u16), // count
         offset (u16), // stringOffset
 
-        records (Vec<NamingRecord>) |tape, this| { // nameRecord
+        records (Vec<Record>) |tape, this| { // nameRecord
             read_vector!(tape, this.count)
         },
 
@@ -30,18 +32,18 @@ table! {
 
 table! {
     #[doc = "A naming table of format 1."]
-    pub NamingTable1 {
+    pub Format1 {
         format (u16), // format
         count  (u16), // count
         offset (u16), // stringOffset
 
-        records (Vec<NamingRecord>) |tape, this| { // nameRecord
+        records (Vec<Record>) |tape, this| { // nameRecord
             read_vector!(tape, this.count)
         },
 
         language_count (u16), // langTagCount
 
-        languages (Vec<LanguageRecord>) |tape, this| { // langTagRecord
+        languages (Vec<Language>) |tape, this| { // langTagRecord
             read_vector!(tape, this.language_count)
         },
 
@@ -55,7 +57,7 @@ table! {
     #[doc = "A record of a naming table."]
     #[derive(Copy)]
     #[repr(C)]
-    pub NamingRecord { // NameRecord
+    pub Record { // NameRecord
         platform_id (u16), // platformID
         encoding_id (u16), // encodingID
         language_id (u16), // languageID
@@ -69,7 +71,7 @@ table! {
     #[doc = "A language-tag record of a naming table."]
     #[derive(Copy)]
     #[repr(C)]
-    pub LanguageRecord { // LangTagRecord
+    pub Language { // LangTagRecord
         length (u16), // length
         offset (u16), // offset
     }
@@ -85,7 +87,7 @@ impl Value for NamingTable {
     }
 }
 
-impl NamingTable0 {
+impl Format0 {
     #[inline]
     pub fn strings(&self) -> Result<Vec<String>> {
         strings(&self.records, &self.data)
@@ -93,13 +95,13 @@ impl NamingTable0 {
 
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = try!(tape.position());
-        let above = 3 * 2 + self.records.len() * mem::size_of::<NamingRecord>();
+        let above = 3 * 2 + self.records.len() * mem::size_of::<Record>();
         try!(tape.jump(current - above as u64 + self.offset as u64));
         read_vector!(tape, data_length(&self.records), u8)
     }
 }
 
-impl NamingTable1 {
+impl Format1 {
     #[inline]
     pub fn strings(&self) -> Result<Vec<String>> {
         strings(&self.records, &self.data)
@@ -107,14 +109,14 @@ impl NamingTable1 {
 
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = try!(tape.position());
-        let above = 4 * 2 + self.records.len() * mem::size_of::<NamingRecord>() +
-                            self.languages.len() * mem::size_of::<LanguageRecord>();
+        let above = 4 * 2 + self.records.len() * mem::size_of::<Record>() +
+                            self.languages.len() * mem::size_of::<Language>();
         try!(tape.jump(current - above as u64 + self.offset as u64));
         read_vector!(tape, data_length(&self.records), u8)
     }
 }
 
-fn data_length(records: &[NamingRecord]) -> usize {
+fn data_length(records: &[Record]) -> usize {
     let mut length = 0;
     for record in records {
         let end = record.offset + record.length + 1;
@@ -125,7 +127,7 @@ fn data_length(records: &[NamingRecord]) -> usize {
     length as usize
 }
 
-fn strings(records: &[NamingRecord], data: &[u8]) -> Result<Vec<String>> {
+fn strings(records: &[Record], data: &[u8]) -> Result<Vec<String>> {
     let mut strings = vec![];
     for record in records {
         let (offset, length) = (record.offset as usize, record.length as usize);

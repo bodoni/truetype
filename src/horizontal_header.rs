@@ -1,3 +1,5 @@
+//! The horizontal header.
+
 use {Number, Value};
 
 table! {

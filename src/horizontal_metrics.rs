@@ -1,18 +1,20 @@
+//! The horizontal metrics.
+
 use {HorizontalHeader, MaximumProfile, Result, Tape, Value};
 
 table! {
     @define
     #[doc = "Horizontal metrics."]
     pub HorizontalMetrics {
-        records            (Vec<HorizontalMetricRecord>), // hMetrics
-        left_side_bearings (Vec<i16>                   ), // leftSideBearing
+        records            (Vec<Record>), // hMetrics
+        left_side_bearings (Vec<i16>   ), // leftSideBearing
     }
 }
 
 table! {
     #[doc = "A record of horizontal metrics."]
     #[derive(Copy)]
-    pub HorizontalMetricRecord { // longHorMetric
+    pub Record { // longHorMetric
         advance_width     (u16), // advanceWidth
         left_side_bearing (i16), // lsb
     }

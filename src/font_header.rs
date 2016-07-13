@@ -1,3 +1,5 @@
+//! The font header.
+
 use {Number, Value};
 
 const MAGIC_NUMBER: u32 = 0x5F0F3CF5;

@@ -1,18 +1,20 @@
+//! The PostScript information.
+
 use {Number, Result, Tape, Value};
 
 /// PostScript information.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PostScript {
     /// Version 1.0.
-    Version10(PostScript10),
+    Version10(Version10),
     /// Version 3.0.
-    Version30(PostScript30),
+    Version30(Version30),
 }
 
 table! {
     #[doc = "PostScript information of version 1.0."]
     #[derive(Copy)]
-    pub PostScript10 {
+    pub Version10 {
         version             (Number), // version
         italic_angle        (Number), // italicAngle
         underline_position  (i16   ), // underlinePosition
@@ -26,7 +28,7 @@ table! {
 }
 
 /// PostScript information of version 3.0.
-pub type PostScript30 = PostScript10;
+pub type Version30 = Version10;
 
 impl Value for PostScript {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {

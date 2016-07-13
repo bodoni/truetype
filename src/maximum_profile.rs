@@ -1,18 +1,20 @@
+//! The maximum profile.
+
 use {Number, Result, Tape, Value};
 
 /// A maximum profile.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum MaximumProfile {
     /// Version 0.5.
-    Version05(MaximumProfile05),
+    Version05(Version05),
     /// Version 1.0.
-    Version10(MaximumProfile10),
+    Version10(Version10),
 }
 
 table! {
     #[doc = "A maximum profile of version 0.5."]
     #[derive(Copy)]
-    pub MaximumProfile05 {
+    pub Version05 {
         version     (Number), // version
         glyph_count (u16   ), // numGlyphs
     }
@@ -21,7 +23,7 @@ table! {
 table! {
     #[doc = "A maximum profile of version 1.0."]
     #[derive(Copy)]
-    pub MaximumProfile10 {
+    pub Version10 {
         version                     (Number), // version
         glyph_count                 (u16   ), // numGlyphs
         max_points                  (u16   ), // maxPoints
