@@ -39,13 +39,13 @@ fn char_mapping_records() {
 
 #[test]
 fn encoding_records() {
-    use truetype::{CharMapping, EncodingRecord};
+    use truetype::char_mapping::{CharMapping, Encoding};
 
     let mapping = CharMapping::read(&mut setup!(15620)).unwrap();
     let tables = &mapping.encodings;
     assert_eq!(tables.len(), 3);
     match &tables[0] {
-        &EncodingRecord::Format4(ref table) => {
+        &Encoding::Format4(ref table) => {
             assert_eq!(table.segment_count_x2, 2 * 103);
             assert_eq!(table.search_range, 2 * (1 << 103f64.log2().floor() as usize));
             assert_eq!(table.end_codes.len(), 103);
@@ -58,7 +58,7 @@ fn encoding_records() {
         _ => unreachable!(),
     }
     match &tables[1] {
-        &EncodingRecord::Format6(ref table) => {
+        &Encoding::Format6(ref table) => {
             assert_eq!(table.first_code, 9);
             assert_eq!(table.entry_count, 247);
             assert_eq!(table.glyph_indices.len(), 247);
@@ -66,7 +66,7 @@ fn encoding_records() {
         _ => unreachable!(),
     }
     match &tables[2] {
-        &EncodingRecord::Format4(ref table) => {
+        &Encoding::Format4(ref table) => {
             assert_eq!(table.segment_count_x2, 2 * 103);
         },
         _ => unreachable!(),

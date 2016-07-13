@@ -1,6 +1,9 @@
-//! Glyphs.
+//! Glyph data.
 
 use {Result, Tape, Value, Walue};
+
+/// Glyph data.
+pub type GlyphData = Vec<Glyph>;
 
 table! {
     #[doc = "A glyph."]

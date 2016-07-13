@@ -1,3 +1,5 @@
+//! Char-to-glyph mapping.
+
 use std::collections::HashMap;
 
 use {Result, Tape, Value};
@@ -5,18 +7,18 @@ use {Result, Tape, Value};
 /// A char-to-glyph mapping.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct CharMapping {
-    pub header: CharMappingHeader,
-    pub records: Vec<CharMappingRecord>,
-    pub encodings: Vec<EncodingRecord>,
+    pub header: Header,
+    pub records: Vec<Record>,
+    pub encodings: Vec<Encoding>,
 }
 
 /// An encoding of a char-to-glyph mapping.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum EncodingRecord {
+pub enum Encoding {
     /// Format 4.
-    Format4(EncodingRecord4),
+    Format4(EncodingFormat4),
     /// Format 6.
-    Format6(EncodingRecord6),
+    Format6(EncodingFormat6),
 }
 
 macro_rules! read_version(
@@ -32,7 +34,7 @@ macro_rules! read_version(
 table! {
     #[doc = "The header of a char-to-glyph mapping."]
     #[derive(Copy)]
-    pub CharMappingHeader {
+    pub Header {
         version (u16) |tape, this| { // version
             read_version!(tape)
         },
@@ -44,7 +46,7 @@ table! {
 table! {
     #[doc = "A record of a char-to-glyph mapping."]
     #[derive(Copy)]
-    pub CharMappingRecord {
+    pub Record {
         platform_id (u16), // platformID
         encoding_id (u16), // encodingID
         offset      (u32), // offset
@@ -53,7 +55,7 @@ table! {
 
 table! {
     #[doc = "A char-to-glyph encoding of format 4."]
-    pub EncodingRecord4 {
+    pub EncodingFormat4 {
         format           (u16), // format
         length           (u16), // length
         language         (u16), // language
@@ -88,7 +90,7 @@ table! {
 
 table! {
     #[doc = "A char-to-glyph encoding of format 6."]
-    pub EncodingRecord6 {
+    pub EncodingFormat6 {
         format      (u16), // format
         length      (u16), // length
         language    (u16), // language
@@ -105,19 +107,19 @@ impl Value for CharMapping {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         let position = try!(tape.position());
         let header = match try!(tape.peek::<u16>()) {
-            0 => try!(CharMappingHeader::read(tape)),
+            0 => try!(Header::read(tape)),
             _ => raise!("the format of the char-to-glyph mapping header is not supported"),
         };
         let mut records = vec![];
         for _ in 0..header.table_count {
-            records.push(try!(CharMappingRecord::read(tape)));
+            records.push(try!(Record::read(tape)));
         }
         let mut encodings = vec![];
         for encoding in records.iter() {
             try!(tape.jump(position + encoding.offset as u64));
             encodings.push(match try!(tape.peek::<u16>()) {
-                4 => EncodingRecord::Format4(try!(Value::read(tape))),
-                6 => EncodingRecord::Format6(try!(Value::read(tape))),
+                4 => Encoding::Format4(try!(Value::read(tape))),
+                6 => Encoding::Format6(try!(Value::read(tape))),
                 _ => unimplemented!(),
             });
         }
@@ -125,17 +127,17 @@ impl Value for CharMapping {
     }
 }
 
-impl EncodingRecord {
+impl Encoding {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         match self {
-            &EncodingRecord::Format4(ref encoding) => encoding.mapping(),
-            &EncodingRecord::Format6(ref encoding) => encoding.mapping(),
+            &Encoding::Format4(ref encoding) => encoding.mapping(),
+            &Encoding::Format6(ref encoding) => encoding.mapping(),
         }
     }
 }
 
-impl EncodingRecord4 {
+impl EncodingFormat4 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         let count = self.segment_count();
@@ -187,7 +189,7 @@ impl EncodingRecord4 {
     }
 }
 
-impl EncodingRecord6 {
+impl EncodingFormat6 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         unimplemented!();

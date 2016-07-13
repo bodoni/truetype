@@ -3,7 +3,6 @@
 #[macro_use]
 mod macros;
 
-mod char_mapping;
 mod font_header;
 mod horizontal_header;
 mod horizontal_metrics;
@@ -16,17 +15,12 @@ mod tag;
 mod tape;
 mod windows_metrics;
 
-pub mod glyph;
+pub mod char_mapping;
+pub mod glyph_data;
 
-pub use char_mapping::{
-    CharMapping,
-    CharMappingHeader,
-    CharMappingRecord,
-    EncodingRecord,
-    EncodingRecord4,
-    EncodingRecord6,
-};
+pub use char_mapping::CharMapping;
 pub use font_header::FontHeader;
+pub use glyph_data::GlyphData;
 pub use horizontal_header::HorizontalHeader;
 pub use horizontal_metrics::{
     HorizontalMetrics,
@@ -65,9 +59,6 @@ pub use windows_metrics::{
 
 /// An error.
 pub type Error = std::io::Error;
-
-/// Glyph data.
-pub type GlyphData = Vec<glyph::Glyph>;
 
 /// A result.
 pub type Result<T> = std::io::Result<T>;
