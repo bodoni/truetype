@@ -2,29 +2,6 @@
 
 use {Result, Tape, Value, Walue};
 
-/// Arguments.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum Arguments {
-    Int8([i8; 2]),
-    Int16([i16; 2]),
-    UInt8([u8; 2]),
-    UInt16([u16; 2]),
-}
-
-/// Coordinates.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Coordinates {
-    UInt8(Vec<u8>),
-    Int16(Vec<i16>),
-}
-
-/// A description.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Description {
-    Simple(Simple),
-    Composit(Composit),
-}
-
 table! {
     #[doc = "A glyph."]
     pub Glyph {
@@ -40,10 +17,17 @@ table! {
     }
 }
 
+/// A description.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Description {
+    Simple(DescriptionSimple),
+    Composit(DescriptionComposit),
+}
+
 table! {
     @define
-    #[doc = "The description of a simple glyph."]
-    pub Simple {
+    #[doc = "A simple-glyph description."]
+    pub DescriptionSimple {
         end_points         (Vec<u16>   ), // endPtsOfContours
         instruction_length (u16        ), // instructionLength
         instructions       (Vec<u8>    ), // instructions
@@ -54,8 +38,8 @@ table! {
 }
 
 table! {
-    #[doc = "The description of a composit glyph."]
-    pub Composit {
+    #[doc = "A composit-glyph description."]
+    pub DescriptionComposit {
         flags (u16), // flags
         index (u16), // glyphIndex
 
@@ -63,6 +47,22 @@ table! {
             Walue::read(tape, this.flags)
         },
     }
+}
+
+/// Coordinates.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Coordinates {
+    UInt8(Vec<u8>),
+    Int16(Vec<i16>),
+}
+
+/// Arguments.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Arguments {
+    Int8([i8; 2]),
+    Int16([i16; 2]),
+    UInt8([u8; 2]),
+    UInt16([u16; 2]),
 }
 
 impl Default for Arguments {
@@ -108,7 +108,7 @@ impl Walue<i16> for Description {
     }
 }
 
-impl Walue<usize> for Simple {
+impl Walue<usize> for DescriptionSimple {
     fn read<T: Tape>(_: &mut T, _: usize) -> Result<Self> {
         unreachable!()
     }
