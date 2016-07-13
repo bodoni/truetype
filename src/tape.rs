@@ -51,15 +51,30 @@ pub trait Walue<P>: Sized {
 
 impl<T: Read + Seek> Tape for T {}
 
+macro_rules! read(
+    ($tape:ident, $count:expr, $buffer:ident) => (
+        if try!(::std::io::Read::read($tape, &mut $buffer)) != $count {
+            return raise!("failed to read as much as needed");
+        }
+    );
+    ($tape:ident, $size:expr) => (unsafe {
+        let mut buffer: [u8; $size] = ::std::mem::uninitialized();
+        read!($tape, $size, buffer);
+        ::std::mem::transmute(buffer)
+    });
+);
+
 macro_rules! value {
-    ($name:ident, 1) => (impl Value for $name {
+    ($kind:ident, 1) => (impl Value for $kind {
+        #[inline]
         fn read<T: Tape>(tape: &mut T) -> Result<Self> {
             Ok(read!(tape, 1))
         }
     });
-    ($name:ident, $size:expr) => (impl Value for $name {
+    ($kind:ident, $size:expr) => (impl Value for $kind {
+        #[inline]
         fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-            Ok($name::from_be(read!(tape, $size)))
+            Ok($kind::from_be(read!(tape, $size)))
         }
     });
 }
