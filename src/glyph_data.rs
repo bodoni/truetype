@@ -1,8 +1,7 @@
 use {Result, Tape, Value, Walue};
 
 /// Glyph data.
-#[derive(Clone, Debug)]
-pub struct GlyphData(pub Vec<Glyph>);
+pub type GlyphData = Vec<Glyph>;
 
 table! {
     #[doc = "A glyph."]
@@ -69,16 +68,6 @@ pub enum GlyphArgument {
     Int16(i16),
     UInt8(u8),
     UInt16(u16),
-}
-
-impl Walue<usize> for GlyphData {
-    fn read<T: Tape>(band: &mut T, count: usize) -> Result<Self> {
-        let mut glyphs = Vec::with_capacity(count);
-        for i in 0..count {
-            glyphs[i] = try!(Value::read(band));
-        }
-        Ok(GlyphData(glyphs))
-    }
 }
 
 impl Default for GlyphDescription {

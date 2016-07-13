@@ -68,3 +68,13 @@ value!(i16, 2);
 value!(u16, 2);
 value!(u32, 4);
 value!(i64, 8);
+
+impl<V> Walue<usize> for Vec<V> where V: Value {
+    fn read<T: Tape>(tape: &mut T, count: usize) -> Result<Self> {
+        let mut values = Vec::with_capacity(count);
+        for _ in 0..count {
+            values.push(try!(Value::read(tape)));
+        }
+        Ok(values)
+    }
+}
