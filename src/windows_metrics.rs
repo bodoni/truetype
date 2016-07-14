@@ -32,7 +32,7 @@ table! {
         family_class         (i16), // sFamilyClass
 
         panose ([u8; 10]) |tape, this| { // panose
-            read_array!(tape, 10, u8)
+            Ok(read_array!(tape, 10, u8))
         },
 
         unicode_range1 (u32), // ulUnicodeRange1
@@ -41,7 +41,7 @@ table! {
         unicode_range4 (u32), // ulUnicodeRange4
 
         vendor_id ([i8; 4]) |tape, this| { // achVendID
-            read_array!(tape, 4, i8)
+            Ok(read_array!(tape, 4, i8))
         },
 
         selection_flags       (u16), // fsSelection
@@ -83,7 +83,7 @@ table! {
         family_class         (i16), // sFamilyClass
 
         panose ([u8; 10]) |tape, this| { // panose
-            read_array!(tape, 10, u8)
+            Ok(read_array!(tape, 10, u8))
         },
 
         unicode_range1 (u32), // ulUnicodeRange1
@@ -92,7 +92,7 @@ table! {
         unicode_range4 (u32), // ulUnicodeRange4
 
         vendor_id ([i8; 4]) |tape, this| { // achVendID
-            read_array!(tape, 4, i8)
+            Ok(read_array!(tape, 4, i8))
         },
 
         selection_flags          (u16), // fsSelection
