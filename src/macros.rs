@@ -27,6 +27,18 @@ macro_rules! read_array(
     });
 );
 
+macro_rules! read_bytes(
+    ($tape:ident, $count:expr) => (unsafe {
+        let count = $count as usize;
+        let mut values = Vec::with_capacity(count);
+        values.set_len(count);
+        if try!(::std::io::Read::read($tape, &mut values)) != count {
+            return raise!("failed to read as much as needed");
+        }
+        Ok(values)
+    });
+);
+
 macro_rules! read_field(
     ($structure:ident, $tape:ident, $table:ident,
      [$kind:ty] |$pipe:ident, $chair:ident| $body:block) => ({
@@ -37,26 +49,6 @@ macro_rules! read_field(
     });
     ($structure:ident, $tape:expr, $table:expr, [$kind:ty]) => ({
         try!(::Value::read($tape))
-    });
-);
-
-macro_rules! read_vector(
-    ($tape:ident, $count:expr, u8) => (unsafe {
-        let count = $count as usize;
-        let mut values = Vec::with_capacity(count);
-        values.set_len(count);
-        if try!(::std::io::Read::read($tape, &mut values)) != count {
-            return raise!("failed to read as much as needed");
-        }
-        Ok(values)
-    });
-    ($tape:ident, $count:expr) => ({
-        let count = $count as usize;
-        let mut values = Vec::with_capacity(count);
-        for _ in 0..count {
-            values.push(try!(::Value::read($tape)));
-        }
-        Ok(values)
     });
 );
 

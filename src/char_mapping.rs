@@ -2,7 +2,7 @@
 
 use std::collections::HashMap;
 
-use {Result, Tape, Value};
+use {Result, Tape, Value, Walue};
 
 /// A char-to-glyph mapping.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -59,25 +59,25 @@ table! {
         range_shift      (u16), // rangeShift
 
         end_codes (Vec<u16>) |tape, this| { // endCode
-            read_vector!(tape, this.segment_count())
+            Walue::read(tape, this.segment_count())
         },
 
         reserved_pad (u16), // reservedPad
 
         start_codes (Vec<u16>) |tape, this| { // startCode
-            read_vector!(tape, this.segment_count())
+            Walue::read(tape, this.segment_count())
         },
 
         id_deltas (Vec<i16>) |tape, this| { // idDelta
-            read_vector!(tape, this.segment_count())
+            Walue::read(tape, this.segment_count())
         },
 
         id_range_offsets (Vec<u16>) |tape, this| { // idRangeOffset
-            read_vector!(tape, this.segment_count())
+            Walue::read(tape, this.segment_count())
         },
 
         glyph_indices (Vec<u16>) |tape, this| { // glyphIdArray
-            read_vector!(tape, try!(this.array_length()))
+            Walue::read(tape, try!(this.array_length()))
         },
     }
 }
@@ -92,7 +92,7 @@ table! {
         entry_count (u16), // entryCount
 
         glyph_indices (Vec<u16>) |tape, this| { // glyphIdArray
-            read_vector!(tape, this.entry_count)
+            Walue::read(tape, this.entry_count as usize)
         },
     }
 }

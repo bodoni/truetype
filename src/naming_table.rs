@@ -2,7 +2,7 @@
 
 use std::mem;
 
-use {Result, Tape, Value};
+use {Result, Tape, Value, Walue};
 
 /// A naming table.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -21,7 +21,7 @@ table! {
         offset (u16), // stringOffset
 
         records (Vec<Record>) |tape, this| { // nameRecord
-            read_vector!(tape, this.count)
+            Walue::read(tape, this.count as usize)
         },
 
         data (Vec<u8>) |tape, this| {
@@ -38,13 +38,13 @@ table! {
         offset (u16), // stringOffset
 
         records (Vec<Record>) |tape, this| { // nameRecord
-            read_vector!(tape, this.count)
+            Walue::read(tape, this.count as usize)
         },
 
         language_count (u16), // langTagCount
 
         languages (Vec<Language>) |tape, this| { // langTagRecord
-            read_vector!(tape, this.language_count)
+            Walue::read(tape, this.language_count as usize)
         },
 
         data (Vec<u8>) |tape, this| {
@@ -97,7 +97,7 @@ impl Format0 {
         let current = try!(tape.position());
         let above = 3 * 2 + self.records.len() * mem::size_of::<Record>();
         try!(tape.jump(current - above as u64 + self.offset as u64));
-        read_vector!(tape, data_length(&self.records), u8)
+        read_bytes!(tape, data_length(&self.records))
     }
 }
 
@@ -112,7 +112,7 @@ impl Format1 {
         let above = 4 * 2 + self.records.len() * mem::size_of::<Record>() +
                             self.languages.len() * mem::size_of::<Language>();
         try!(tape.jump(current - above as u64 + self.offset as u64));
-        read_vector!(tape, data_length(&self.records), u8)
+        read_bytes!(tape, data_length(&self.records))
     }
 }
 
