@@ -112,7 +112,36 @@ impl Walue<i16> for Description {
 }
 
 impl Walue<usize> for Simple {
-    fn read<T: Tape>(_: &mut T, _: usize) -> Result<Self> {
-        unreachable!()
+    fn read<T: Tape>(band: &mut T, contour_count: usize) -> Result<Self> {
+        let end_points = try!(<Vec<u16>>::read(band, contour_count));
+        for i in 1..contour_count {
+            if end_points[i-1] > end_points[i] {
+                raise!("found a malformed glyph description");
+            }
+        }
+        let instruction_length = try!(Value::read(band));
+        let instructions = read_bytes!(band, instruction_length);
+        let point_count = end_points.last().map(|&i| i as usize + 1).unwrap_or(0);
+        let mut flags = Vec::with_capacity(point_count);
+        let mut flag_count = 0;
+        while flag_count < point_count {
+            let flag = try!(u8::read(band));
+            let count = if flag & 0b1000 == 0 { 1 } else { try!(u8::read(band)) as usize };
+            if count == 0 || flag_count + count > point_count {
+                raise!("found a malformed glyph description");
+            }
+            for _ in 0..count {
+                flags.push(flag);
+            }
+            flag_count += count;
+        }
+        Ok(Simple {
+            end_points: end_points,
+            instruction_length: instruction_length,
+            instructions: instructions,
+            flags: flags,
+            x: Default::default(),
+            y: Default::default(),
+        })
     }
 }

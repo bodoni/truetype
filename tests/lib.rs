@@ -87,7 +87,7 @@ fn font_header() {
 fn glyph_data() {
     use truetype::GlyphData;
 
-    let _ = GlyphData::read(&mut setup!(Two, 5326), 0).unwrap();
+    let _ = GlyphData::read(&mut setup!(Two, 9608), 1).unwrap();
 }
 
 #[test]
