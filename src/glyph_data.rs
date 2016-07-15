@@ -24,7 +24,7 @@ table! {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Description {
     Simple(Simple),
-    Composit(Composit),
+    Compound(Compound),
 }
 
 table! {
@@ -41,18 +41,22 @@ table! {
 }
 
 table! {
-    #[doc = "A composit-glyph description."]
-    pub Composit {
+    #[doc = "A compound-glyph description."]
+    pub Compound {
         flags (u16), // flags
         index (u16), // glyphIndex
 
         arguments (Arguments) |tape, this| { // argument1, argument2
             Walue::read(tape, this.flags)
         },
+
+        options (Options) |tape, this| {
+            Walue::read(tape, this.flags)
+        },
     }
 }
 
-/// Arguments.
+/// Arguments of a compound glyph.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Arguments {
     Int8([i8; 2]),
@@ -61,17 +65,13 @@ pub enum Arguments {
     UInt16([u16; 2]),
 }
 
-impl Default for Arguments {
-    #[inline]
-    fn default() -> Self {
-        Arguments::Int8(Default::default())
-    }
-}
-
-impl Walue<u16> for Arguments {
-    fn read<T: Tape>(_: &mut T, _: u16) -> Result<Self> {
-        unreachable!()
-    }
+/// Options of a compound glyph.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Options {
+    None,
+    Type1,
+    Type2,
+    Type3,
 }
 
 impl Default for Description {
@@ -86,7 +86,7 @@ impl Walue<i16> for Description {
         if contour_count >= 0 {
             Ok(Description::Simple(try!(Walue::read(tape, contour_count as usize))))
         } else {
-            Ok(Description::Composit(try!(Value::read(tape))))
+            Ok(Description::Compound(try!(Value::read(tape))))
         }
     }
 }
@@ -150,5 +150,34 @@ impl Walue<usize> for Simple {
             x: x,
             y: y,
         })
+    }
+}
+
+impl Default for Arguments {
+    #[inline]
+    fn default() -> Self {
+        Arguments::Int8(Default::default())
+    }
+}
+
+impl Walue<u16> for Arguments {
+    fn read<T: Tape>(_: &mut T, _: u16) -> Result<Self> {
+        unreachable!()
+    }
+}
+
+impl Default for Options {
+    #[inline]
+    fn default() -> Self {
+        Options::None
+    }
+}
+
+impl Walue<u16> for Options {
+    fn read<T: Tape>(_: &mut T, flags: u16) -> Result<Self> {
+        if flags & 0b00000001000 == 0 {
+            return Ok(Options::None);
+        }
+        unreachable!()
     }
 }
