@@ -82,20 +82,20 @@ impl Default for Description {
 }
 
 impl Walue<i16> for Description {
-    fn read<T: Tape>(band: &mut T, contour_count: i16) -> Result<Self> {
+    fn read<T: Tape>(tape: &mut T, contour_count: i16) -> Result<Self> {
         if contour_count >= 0 {
-            Ok(Description::Simple(try!(Walue::read(band, contour_count as usize))))
+            Ok(Description::Simple(try!(Walue::read(tape, contour_count as usize))))
         } else {
-            Ok(Description::Composit(try!(Value::read(band))))
+            Ok(Description::Composit(try!(Value::read(tape))))
         }
     }
 }
 
 impl Walue<usize> for Simple {
-    fn read<T: Tape>(band: &mut T, contour_count: usize) -> Result<Self> {
+    fn read<T: Tape>(tape: &mut T, contour_count: usize) -> Result<Self> {
         macro_rules! reject(() => (raise!("found a malformed glyph description")));
 
-        let end_points = try!(<Vec<u16>>::read(band, contour_count));
+        let end_points = try!(<Vec<u16>>::read(tape, contour_count));
         for i in 1..contour_count {
             if end_points[i-1] > end_points[i] {
                 reject!();
@@ -103,17 +103,17 @@ impl Walue<usize> for Simple {
         }
         let point_count = end_points.last().map(|&i| i as usize + 1).unwrap_or(0);
 
-        let instruction_length = try!(Value::read(band));
-        let instructions = read_bytes!(band, instruction_length);
+        let instruction_length = try!(Value::read(tape));
+        let instructions = read_bytes!(tape, instruction_length);
 
         let mut flags = Vec::with_capacity(point_count);
         let mut flag_count = 0;
         while flag_count < point_count {
-            let flag = try!(u8::read(band));
+            let flag = try!(u8::read(tape));
             if flag & 0b11000000 > 0 {
                 reject!();
             }
-            let count = if flag & 0b1000 == 0 { 1 } else { try!(u8::read(band)) as usize };
+            let count = if flag & 0b1000 == 0 { 1 } else { try!(u8::read(tape)) as usize };
             if count == 0 || flag_count + count > point_count {
                 reject!();
             }
@@ -126,10 +126,10 @@ impl Walue<usize> for Simple {
         macro_rules! read_coordinate(
             ($i:ident, $mask1:expr, $mask2:expr) => ({
                 if flags[$i] & $mask1 > 0 {
-                    let value = try!(u8::read(band)) as i16;
+                    let value = try!(u8::read(tape)) as i16;
                     if flags[$i] & $mask2 > 0 { value } else { -value }
                 } else {
-                    if flags[$i] & $mask2 > 0 { 0 } else { try!(i16::read(band)) }
+                    if flags[$i] & $mask2 > 0 { 0 } else { try!(i16::read(tape)) }
                 }
             });
         );
