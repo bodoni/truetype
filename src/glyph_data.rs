@@ -113,7 +113,7 @@ impl Walue<usize> for Simple {
             if flag.is_invalid() {
                 reject!();
             }
-            let count = if flag.is_repeat() { try!(u8::read(tape)) as usize } else { 1 };
+            let count = if flag.is_repeated() { try!(u8::read(tape)) as usize } else { 1 };
             if count == 0 || flag_count + count > point_count {
                 reject!();
             }
@@ -224,7 +224,7 @@ mod flags {
         pub Simple(u8) {
             0b0000_0010 => is_x_short,
             0b0000_0100 => is_y_short,
-            0b0000_1000 => is_repeat,
+            0b0000_1000 => is_repeated,
             0b0001_0000 => is_x_positive,
             0b0001_0000 => is_x_same,
             0b0010_0000 => is_y_positive,
