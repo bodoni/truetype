@@ -31,12 +31,12 @@ table! {
     @define
     #[doc = "A simple-glyph description."]
     pub Simple {
-        end_points         (Vec<u16>   ), // endPtsOfContours
-        instruction_length (u16        ), // instructionLength
-        instructions       (Vec<u8>    ), // instructions
-        flags              (Vec<u8>    ), // flags
-        x                  (Coordinates), // xCoordinates
-        y                  (Coordinates), // yCoordinates
+        end_points         (Vec<u16>), // endPtsOfContours
+        instruction_length (u16     ), // instructionLength
+        instructions       (Vec<u8> ), // instructions
+        flags              (Vec<u8> ), // flags
+        x                  (Vec<i16>), // xCoordinates
+        y                  (Vec<i16>), // yCoordinates
     }
 }
 
@@ -50,13 +50,6 @@ table! {
             Walue::read(tape, this.flags)
         },
     }
-}
-
-/// Coordinates.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Coordinates {
-    UInt8(Vec<u8>),
-    Int16(Vec<i16>),
 }
 
 /// Arguments.
@@ -81,19 +74,6 @@ impl Walue<u16> for Arguments {
     }
 }
 
-impl Default for Coordinates {
-    #[inline]
-    fn default() -> Self {
-        Coordinates::UInt8(Default::default())
-    }
-}
-
-impl Walue<u16> for Coordinates {
-    fn read<T: Tape>(_: &mut T, _: u16) -> Result<Self> {
-        unreachable!()
-    }
-}
-
 impl Default for Description {
     #[inline]
     fn default() -> Self {
@@ -113,35 +93,71 @@ impl Walue<i16> for Description {
 
 impl Walue<usize> for Simple {
     fn read<T: Tape>(band: &mut T, contour_count: usize) -> Result<Self> {
+        macro_rules! reject(() => (raise!("found a malformed glyph description")));
+
         let end_points = try!(<Vec<u16>>::read(band, contour_count));
         for i in 1..contour_count {
             if end_points[i-1] > end_points[i] {
-                raise!("found a malformed glyph description");
+                reject!();
             }
         }
+        let point_count = end_points.last().map(|&i| i as usize + 1).unwrap_or(0);
+
         let instruction_length = try!(Value::read(band));
         let instructions = read_bytes!(band, instruction_length);
-        let point_count = end_points.last().map(|&i| i as usize + 1).unwrap_or(0);
+
         let mut flags = Vec::with_capacity(point_count);
         let mut flag_count = 0;
         while flag_count < point_count {
             let flag = try!(u8::read(band));
+            if flag & 0b11000000 > 0 {
+                reject!();
+            }
             let count = if flag & 0b1000 == 0 { 1 } else { try!(u8::read(band)) as usize };
             if count == 0 || flag_count + count > point_count {
-                raise!("found a malformed glyph description");
+                reject!();
             }
             for _ in 0..count {
                 flags.push(flag);
             }
             flag_count += count;
         }
+
+        let mut x = Vec::with_capacity(point_count);
+        let mut y = Vec::with_capacity(point_count);
+
+        macro_rules! read_coordinate(
+            ($values:ident[$i:ident], $mask1:expr, $mask2:expr) => ({
+                let value = if flags[$i] & $mask1 > 0 {
+                    let value = try!(u8::read(band)) as i16;
+                    if flags[$i] & $mask2 > 0 { value } else { -value }
+                } else {
+                    if flags[$i] & $mask2 > 0 {
+                        if $i == 0 {
+                            reject!();
+                        }
+                        $values[$i-1]
+                    } else {
+                        let value = try!(i16::read(band));
+                        if $i == 0 { value } else { $values[$i-1] + value }
+                    }
+                };
+                $values.push(value)
+            });
+        );
+
+        for i in 0..point_count {
+            read_coordinate!(x[i], 0b010, 0b010000);
+            read_coordinate!(y[i], 0b100, 0b100000);
+        }
+
         Ok(Simple {
             end_points: end_points,
             instruction_length: instruction_length,
             instructions: instructions,
             flags: flags,
-            x: Default::default(),
-            y: Default::default(),
+            x: x,
+            y: y,
         })
     }
 }
