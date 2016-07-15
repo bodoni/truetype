@@ -125,7 +125,6 @@ impl Walue<usize> for Simple {
 
         let mut x = Vec::with_capacity(point_count);
         let mut y = Vec::with_capacity(point_count);
-
         macro_rules! read_coordinate(
             ($values:ident[$i:ident], $mask1:expr, $mask2:expr) => ({
                 let value = if flags[$i] & $mask1 > 0 {
@@ -145,9 +144,10 @@ impl Walue<usize> for Simple {
                 $values.push(value)
             });
         );
-
         for i in 0..point_count {
             read_coordinate!(x[i], 0b010, 0b010000);
+        }
+        for i in 0..point_count {
             read_coordinate!(y[i], 0b100, 0b100000);
         }
 
