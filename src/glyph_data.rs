@@ -188,11 +188,10 @@ impl Walue<u16> for Options {
 
 mod flags {
     macro_rules! flags {
-        ($(#[$attribute:meta])* pub $structure:ident($kind:ident) {
+        (pub $structure:ident($kind:ident) {
             $($mask:expr => $name:ident,)*
         }) => (
-            $(#[$attribute])*
-            #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+            #[derive(Clone, Copy)]
             pub struct $structure(pub $kind);
 
             impl $structure {
