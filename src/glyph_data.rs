@@ -124,31 +124,22 @@ impl Walue<usize> for Simple {
         }
 
         macro_rules! read_coordinate(
-            ($values:ident[$i:ident], $mask1:expr, $mask2:expr) => ({
-                let value = if flags[$i] & $mask1 > 0 {
+            ($i:ident, $mask1:expr, $mask2:expr) => ({
+                if flags[$i] & $mask1 > 0 {
                     let value = try!(u8::read(band)) as i16;
                     if flags[$i] & $mask2 > 0 { value } else { -value }
                 } else {
-                    if flags[$i] & $mask2 > 0 {
-                        if $i == 0 {
-                            reject!();
-                        }
-                        $values[$i-1]
-                    } else {
-                        let value = try!(i16::read(band));
-                        if $i == 0 { value } else { $values[$i-1] + value }
-                    }
-                };
-                $values.push(value)
+                    if flags[$i] & $mask2 > 0 { 0 } else { try!(i16::read(band)) }
+                }
             });
         );
         let mut x = Vec::with_capacity(point_count);
         for i in 0..point_count {
-            read_coordinate!(x[i], 0b010, 0b010000);
+            x.push(read_coordinate!(i, 0b010, 0b010000));
         }
         let mut y = Vec::with_capacity(point_count);
         for i in 0..point_count {
-            read_coordinate!(y[i], 0b100, 0b100000);
+            y.push(read_coordinate!(i, 0b100, 0b100000));
         }
 
         Ok(Simple {

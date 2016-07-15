@@ -94,8 +94,8 @@ fn glyph_data() {
     assert_eq!((glyph.min_y, glyph.max_y), (0, 1462));
     match glyph.description {
         Description::Simple(ref description) => {
-            assert_eq!(&description.x, &[193, 1034, 1034, 193, 104, 737, 737, 104]);
-            assert_eq!(&description.y, &[1462, 1462, 0, 0, 104, 104, 1358, 1358])
+            assert_eq!(&description.x, &[193, 841, 0, -841, 104, 633, 0, -633]);
+            assert_eq!(&description.y, &[1462, 0, -1462, 0, 104, 0, 1254, 0])
         },
         _ => unreachable!(),
     }
