@@ -109,37 +109,40 @@ impl Walue<usize> for Simple {
         let mut flags = Vec::with_capacity(point_count);
         let mut flag_count = 0;
         while flag_count < point_count {
-            let flag = try!(u8::read(tape));
-            if flag & 0b11000000 > 0 {
+            let flag = try!(flags::Simple::read(tape));
+            if flag.is_invalid() {
                 reject!();
             }
-            let count = if flag & 0b1000 == 0 { 1 } else { try!(u8::read(tape)) as usize };
+            let count = if flag.is_repeat() { try!(u8::read(tape)) as usize } else { 1 };
             if count == 0 || flag_count + count > point_count {
                 reject!();
             }
             for _ in 0..count {
-                flags.push(flag);
+                flags.push(flag.into());
             }
             flag_count += count;
         }
 
-        macro_rules! read_coordinate(
-            ($i:ident, $mask1:expr, $mask2:expr) => ({
-                if flags[$i] & $mask1 > 0 {
-                    let value = try!(u8::read(tape)) as i16;
-                    if flags[$i] & $mask2 > 0 { value } else { -value }
-                } else {
-                    if flags[$i] & $mask2 > 0 { 0 } else { try!(i16::read(tape)) }
-                }
-            });
-        );
         let mut x = Vec::with_capacity(point_count);
         for i in 0..point_count {
-            x.push(read_coordinate!(i, 0b010, 0b010000));
+            let flag = flags::Simple(flags[i]);
+            if flag.is_x_short() {
+                let value = try!(u8::read(tape)) as i16;
+                x.push(if flag.is_x_positive() { value } else { -value });
+            } else {
+                x.push(if flag.is_x_same() { 0 } else { try!(i16::read(tape)) });
+            }
         }
+
         let mut y = Vec::with_capacity(point_count);
         for i in 0..point_count {
-            y.push(read_coordinate!(i, 0b100, 0b100000));
+            let flag = flags::Simple(flags[i]);
+            if flag.is_y_short() {
+                let value = try!(u8::read(tape)) as i16;
+                y.push(if flag.is_y_positive() { value } else { -value });
+            } else {
+                y.push(if flag.is_y_same() { 0 } else { try!(i16::read(tape)) });
+            }
         }
 
         Ok(Simple {
@@ -175,9 +178,64 @@ impl Default for Options {
 
 impl Walue<u16> for Options {
     fn read<T: Tape>(_: &mut T, flags: u16) -> Result<Self> {
-        if flags & 0b00000001000 == 0 {
+        let flags = flags::Compound(flags);
+        if !flags.has_options() {
             return Ok(Options::None);
         }
         unreachable!()
+    }
+}
+
+mod flags {
+    macro_rules! flags {
+        ($(#[$attribute:meta])* pub $structure:ident($kind:ident) {
+            $($mask:expr => $name:ident,)*
+        }) => (
+            $(#[$attribute])*
+            #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+            pub struct $structure(pub $kind);
+
+            impl $structure {
+                $(
+                    #[inline(always)]
+                    pub fn $name(&self) -> bool {
+                        self.0 & $mask > 0
+                    }
+                )*
+            }
+
+            impl ::Value for $structure {
+                #[inline(always)]
+                fn read<T: ::Tape>(tape: &mut T) -> ::Result<Self> {
+                    Ok($structure(try!($kind::read(tape))))
+                }
+            }
+
+            impl From<$structure> for $kind {
+                #[inline(always)]
+                fn from(flags: $structure) -> $kind {
+                    flags.0
+                }
+            }
+        );
+    }
+
+    flags! {
+        pub Simple(u8) {
+            0b0000_0010 => is_x_short,
+            0b0000_0100 => is_y_short,
+            0b0000_1000 => is_repeat,
+            0b0001_0000 => is_x_positive,
+            0b0001_0000 => is_x_same,
+            0b0010_0000 => is_y_positive,
+            0b0010_0000 => is_y_same,
+            0b1100_0000 => is_invalid,
+        }
+    }
+
+    flags! {
+        pub Compound(u16) {
+            0b0000_0000_0000_1000 => has_options,
+        }
     }
 }
