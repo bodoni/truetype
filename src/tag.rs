@@ -1,6 +1,6 @@
 use std::mem;
 
-use Number;
+use q32;
 
 /// A table tag.
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
@@ -27,9 +27,9 @@ impl<'l> From<&'l [u8; 4]> for Tag {
     }
 }
 
-impl From<Number> for Tag {
+impl From<q32> for Tag {
     #[inline(always)]
-    fn from(number: Number) -> Self {
+    fn from(number: q32) -> Self {
         Tag(number.0)
     }
 }

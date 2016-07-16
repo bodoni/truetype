@@ -25,7 +25,7 @@ pub use horizontal_header::HorizontalHeader;
 pub use horizontal_metrics::HorizontalMetrics;
 pub use maximum_profile::MaximumProfile;
 pub use naming_table::NamingTable;
-pub use number::Number;
+pub use number::{q16, q32};
 pub use offset_table::OffsetTable;
 pub use postscript::PostScript;
 pub use tag::Tag;

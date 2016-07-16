@@ -1,6 +1,6 @@
 //! The maximum profile.
 
-use {Number, Result, Tape, Value};
+use {Result, Tape, Value, q32};
 
 /// A maximum profile.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -15,8 +15,8 @@ table! {
     #[doc = "A maximum profile of version 0.5."]
     #[derive(Copy)]
     pub Version05 {
-        version     (Number), // version
-        glyph_count (u16   ), // numGlyphs
+        version     (q32), // version
+        glyph_count (u16), // numGlyphs
     }
 }
 
@@ -24,21 +24,21 @@ table! {
     #[doc = "A maximum profile of version 1.0."]
     #[derive(Copy)]
     pub Version10 {
-        version                     (Number), // version
-        glyph_count                 (u16   ), // numGlyphs
-        max_points                  (u16   ), // maxPoints
-        max_contours                (u16   ), // maxContours
-        max_composite_points        (u16   ), // maxCompositePoints
-        max_composite_contours      (u16   ), // maxCompositeContours
-        max_zones                   (u16   ), // maxZones
-        max_twilight_points         (u16   ), // maxTwilightPoints
-        max_storage                 (u16   ), // maxStorage
-        max_function_definitions    (u16   ), // maxFunctionDefs
-        max_instruction_definitions (u16   ), // maxInstructionDefs
-        max_stack_elements          (u16   ), // maxStackElements
-        max_size_of_instructions    (u16   ), // maxSizeOfInstructions
-        max_component_elements      (u16   ), // maxComponentElements
-        max_component_depth         (u16   ), // maxComponentDepth
+        version                     (q32), // version
+        glyph_count                 (u16), // numGlyphs
+        max_points                  (u16), // maxPoints
+        max_contours                (u16), // maxContours
+        max_composite_points        (u16), // maxCompositePoints
+        max_composite_contours      (u16), // maxCompositeContours
+        max_zones                   (u16), // maxZones
+        max_twilight_points         (u16), // maxTwilightPoints
+        max_storage                 (u16), // maxStorage
+        max_function_definitions    (u16), // maxFunctionDefs
+        max_instruction_definitions (u16), // maxInstructionDefs
+        max_stack_elements          (u16), // maxStackElements
+        max_size_of_instructions    (u16), // maxSizeOfInstructions
+        max_component_elements      (u16), // maxComponentElements
+        max_component_depth         (u16), // maxComponentDepth
     }
 }
 
@@ -54,9 +54,9 @@ impl MaximumProfile {
 
 impl Value for MaximumProfile {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        Ok(match try!(tape.peek::<Number>()) {
-            Number(0x00005000) => MaximumProfile::Version05(try!(Value::read(tape))),
-            Number(0x00010000) => MaximumProfile::Version10(try!(Value::read(tape))),
+        Ok(match try!(tape.peek::<q32>()) {
+            q32(0x00005000) => MaximumProfile::Version05(try!(Value::read(tape))),
+            q32(0x00010000) => MaximumProfile::Version10(try!(Value::read(tape))),
             _ => raise!("the format of the maximum profile is not supported"),
         })
     }

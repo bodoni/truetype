@@ -1,6 +1,6 @@
 //! The offset table.
 
-use {Number, Result, Tag, Tape, Value};
+use {Result, Tag, Tape, Value, q32};
 
 /// An offset table.
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -13,11 +13,11 @@ table! {
     #[doc = "The header of an offset table."]
     #[derive(Copy)]
     pub Header {
-        version        (Number), // version
-        table_count    (u16   ), // numTables
-        search_range   (u16   ), // searchRange
-        entry_selector (u16   ), // entrySelector
-        range_shift    (u16   ), // rangeShift
+        version        (q32), // version
+        table_count    (u16), // numTables
+        search_range   (u16), // searchRange
+        entry_selector (u16), // entrySelector
+        range_shift    (u16), // rangeShift
     }
 }
 
@@ -34,7 +34,7 @@ table! {
 
 impl Value for OffsetTable {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        if !is_known(try!(tape.peek::<Number>())) {
+        if !is_known(try!(tape.peek::<q32>())) {
             raise!("the font format is not supported");
         }
         let header = try!(Header::read(tape));
@@ -65,9 +65,9 @@ impl Record {
 }
 
 #[inline]
-fn is_known(version: Number) -> bool {
+fn is_known(version: q32) -> bool {
     match version {
-        Number(0x00010000) => return true,
+        q32(0x00010000) => return true,
         _ => {},
     }
     match &Tag::from(version).into() {
