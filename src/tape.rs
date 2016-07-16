@@ -79,6 +79,7 @@ macro_rules! value {
     });
 }
 
+value!(i8, 1);
 value!(u8, 1);
 value!(i16, 2);
 value!(u16, 2);

@@ -1,6 +1,6 @@
 //! The glyph data.
 
-use {Result, Tape, Value, Walue};
+use {Result, Tape, Value, Walue, q16};
 
 /// Glyph data.
 pub type GlyphData = Vec<Glyph>;
@@ -31,62 +31,78 @@ table! {
     @define
     #[doc = "A simple-glyph description."]
     pub Simple {
-        end_points         (Vec<u16>), // endPtsOfContours
-        instruction_length (u16     ), // instructionLength
-        instructions       (Vec<u8> ), // instructions
-        flags              (Vec<u8> ), // flags
-        x                  (Vec<i16>), // xCoordinates
-        y                  (Vec<i16>), // yCoordinates
+        end_points       (Vec<u16>), // endPtsOfContours
+        instruction_size (u16     ), // instructionLength
+        instructions     (Vec<u8> ), // instructions
+        flags            (Vec<u8> ), // flags
+        x                (Vec<i16>), // xCoordinates
+        y                (Vec<i16>), // yCoordinates
     }
+}
+
+/// A compound-glyph description.
+#[derive(Clone, Debug, Default, Eq, PartialEq)]
+pub struct Compound {
+    components: Vec<Component>,
+    instruction_size: u16,
+    instructions: Vec<u8>,
 }
 
 table! {
-    #[doc = "A compound-glyph description."]
-    pub Compound {
-        flags (u16), // flags
-        index (u16), // glyphIndex
-
-        arguments (Arguments) |tape, this| { // argument1, argument2
-            Walue::read(tape, this.flags)
-        },
-
-        options (Options) |tape, this| {
-            Walue::read(tape, this.flags)
-        },
+    @define
+    #[doc = "A component."]
+    pub Component {
+        flags     (u16      ), // flags
+        index     (u16      ), // glyphIndex
+        arguments (Arguments), // argument1, argument2
+        options   (Options  ),
     }
 }
 
-/// Arguments of a compound glyph.
+/// Arguments of a component.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Arguments {
-    Int8([i8; 2]),
-    Int16([i16; 2]),
-    UInt8([u8; 2]),
-    UInt16([u16; 2]),
+    Offsets(i16, i16),
+    Indices(u16, u16),
 }
 
-/// Options of a compound glyph.
+/// Options of a component.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Options {
     None,
-    Type1,
-    Type2,
-    Type3,
+    Scalar(q16),
+    Vector(q16, q16),
+    Matrix(q16, q16, q16, q16),
 }
 
 impl Default for Description {
     #[inline]
     fn default() -> Self {
-        Description::Simple(Default::default())
+        Description::Compound(Default::default())
     }
 }
 
 impl Walue<i16> for Description {
     fn read<T: Tape>(tape: &mut T, contour_count: i16) -> Result<Self> {
         if contour_count >= 0 {
-            Ok(Description::Simple(try!(Walue::read(tape, contour_count as usize))))
+            Ok(Description::Simple(read_walue!(tape, contour_count as usize)))
         } else {
-            Ok(Description::Compound(try!(Value::read(tape))))
+            let mut components = vec![];
+            let mut has_instructions = false;
+            let mut has_more_components = true;
+            while has_more_components {
+                components.push(read_value!(tape, Component));
+                let flags = flags::Component(components.last().map(|c| c.flags).unwrap());
+                has_instructions |= flags.has_instructions();
+                has_more_components = flags.has_more_components();
+            }
+            let instruction_size = if has_instructions { read_value!(tape, u16) } else { 0 };
+            let instructions = read_bytes!(tape, instruction_size);
+            Ok(Description::Compound(Compound {
+                components: components,
+                instruction_size: instruction_size,
+                instructions: instructions,
+            }))
         }
     }
 }
@@ -95,7 +111,7 @@ impl Walue<usize> for Simple {
     fn read<T: Tape>(tape: &mut T, contour_count: usize) -> Result<Self> {
         macro_rules! reject(() => (raise!("found a malformed glyph description")));
 
-        let end_points = try!(<Vec<u16>>::read(tape, contour_count));
+        let end_points = read_walue!(tape, contour_count, Vec<u16>);
         for i in 1..contour_count {
             if end_points[i-1] > end_points[i] {
                 reject!();
@@ -103,17 +119,17 @@ impl Walue<usize> for Simple {
         }
         let point_count = end_points.last().map(|&i| i as usize + 1).unwrap_or(0);
 
-        let instruction_length = try!(Value::read(tape));
-        let instructions = read_bytes!(tape, instruction_length);
+        let instruction_size = read_value!(tape);
+        let instructions = read_bytes!(tape, instruction_size);
 
         let mut flags = Vec::with_capacity(point_count);
         let mut flag_count = 0;
         while flag_count < point_count {
-            let flag = try!(flags::Simple::read(tape));
+            let flag = read_value!(tape, flags::Simple);
             if flag.is_invalid() {
                 reject!();
             }
-            let count = if flag.is_repeated() { try!(u8::read(tape)) as usize } else { 1 };
+            let count = if flag.is_repeated() { read_value!(tape, u8) as usize } else { 1 };
             if count == 0 || flag_count + count > point_count {
                 reject!();
             }
@@ -129,10 +145,10 @@ impl Walue<usize> for Simple {
                 for i in 0..point_count {
                     let flag = flags::Simple(flags[i]);
                     if flag.$is_short() {
-                        let value = try!(u8::read(tape)) as i16;
+                        let value = read_value!(tape, u8) as i16;
                         values.push(if flag.$is_positive() { value } else { -value });
                     } else {
-                        values.push(if flag.$is_same() { 0 } else { try!(i16::read(tape)) });
+                        values.push(if flag.$is_same() { 0 } else { read_value!(tape, i16) });
                     }
                 }
                 values
@@ -143,7 +159,7 @@ impl Walue<usize> for Simple {
 
         Ok(Simple {
             end_points: end_points,
-            instruction_length: instruction_length,
+            instruction_size: instruction_size,
             instructions: instructions,
             flags: flags,
             x: x,
@@ -152,33 +168,74 @@ impl Walue<usize> for Simple {
     }
 }
 
+impl Value for Component {
+    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+        let flags = read_value!(tape);
+        if flags::Component(flags).is_invalid() {
+            raise!("found a malformed component");
+        }
+        Ok(Component {
+            flags: flags,
+            index: read_value!(tape),
+            arguments: read_walue!(tape, flags),
+            options: read_walue!(tape, flags),
+        })
+    }
+}
+
 impl Default for Arguments {
-    #[inline]
     fn default() -> Self {
-        Arguments::Int8(Default::default())
+        unreachable!()
     }
 }
 
 impl Walue<u16> for Arguments {
-    fn read<T: Tape>(_: &mut T, _: u16) -> Result<Self> {
-        unreachable!()
+    fn read<T: Tape>(tape: &mut T, flags: u16) -> Result<Self> {
+        let flags = flags::Component(flags);
+        match (flags.are_arguments_words(), flags.are_arguments_xy()) {
+            (true, true) => {
+                let x = read_value!(tape, i16);
+                let y = read_value!(tape, i16);
+                Ok(Arguments::Offsets(x, y))
+            },
+            (false, true) => {
+                let x = read_value!(tape, i8) as i16;
+                let y = read_value!(tape, i8) as i16;
+                Ok(Arguments::Offsets(x, y))
+            },
+            (true, false) => {
+                let i = read_value!(tape, u16);
+                let j = read_value!(tape, u16);
+                Ok(Arguments::Indices(i, j))
+            },
+            (false, false) => {
+                let i = read_value!(tape, u8) as u16;
+                let j = read_value!(tape, u8) as u16;
+                Ok(Arguments::Indices(i, j))
+            },
+        }
     }
 }
 
 impl Default for Options {
-    #[inline]
     fn default() -> Self {
-        Options::None
+        unreachable!()
     }
 }
 
 impl Walue<u16> for Options {
-    fn read<T: Tape>(_: &mut T, flags: u16) -> Result<Self> {
-        let flags = flags::Compound(flags);
-        if !flags.has_options() {
-            return Ok(Options::None);
+    fn read<T: Tape>(tape: &mut T, flags: u16) -> Result<Self> {
+        let flags = flags::Component(flags);
+        if flags.has_scalar_scale() {
+            Ok(Options::Scalar(read_value!(tape)))
+        } else if flags.has_vector_scale() {
+            Ok(Options::Vector(read_value!(tape), read_value!(tape)))
+        } else if flags.has_matrix_scale() {
+            Ok(Options::Matrix(read_value!(tape), read_value!(tape),
+                               read_value!(tape), read_value!(tape)))
+        } else {
+            Ok(Options::None)
         }
-        unreachable!()
     }
 }
 
@@ -202,7 +259,7 @@ mod flags {
             impl ::Value for $structure {
                 #[inline(always)]
                 fn read<T: ::Tape>(tape: &mut T) -> ::Result<Self> {
-                    Ok($structure(try!($kind::read(tape))))
+                    Ok($structure(read_value!(tape, $kind)))
                 }
             }
 
@@ -229,8 +286,17 @@ mod flags {
     }
 
     flags! {
-        pub Compound(u16) {
-            0b0000_0000_0000_1000 => has_options,
+        pub Component(u16) {
+            0b0000_0000_0000_0001 => are_arguments_words,
+            0b0000_0000_0000_0010 => are_arguments_xy,
+            0b0000_0000_0000_1000 => has_scalar_scale,
+            0b0000_0000_0010_0000 => has_more_components,
+            0b0000_0000_0100_0000 => has_vector_scale,
+            0b0000_0000_1000_0000 => has_matrix_scale,
+            0b0000_0001_0000_0000 => has_instructions,
+            // 0b0000_0010_0000_0000 => should_use_metrics,
+            // 0b0000_0100_0000_0000 => has_overlap,
+            0b1111_1000_0001_0000 => is_invalid,
         }
     }
 }

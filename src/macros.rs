@@ -41,8 +41,18 @@ macro_rules! read_field(
         fn read<T: ::Tape>($pipe: &mut T, $chair: &$structure) -> ::Result<$kind> $body
         try!(read($tape, &$table))
     });
-    ($structure:ident, $tape:expr, $table:expr, [$kind:ty]) => ({
-        try!(::Value::read($tape))
+    ($structure:ident, $tape:ident, $table:expr, [$kind:ty]) => (read_value!($tape));
+);
+
+macro_rules! read_value(
+    ($tape:ident) => (try!(::Value::read($tape)));
+    ($tape:ident, $kind:ty) => (try!(<$kind as ::Value>::read($tape)));
+);
+
+macro_rules! read_walue(
+    ($tape:ident, $parameter:expr) => (try!(::Walue::read($tape, $parameter)));
+    ($tape:ident, $parameter:expr, $kind:ty) => ({
+        try!(<$kind as ::Walue<_>>::read($tape, $parameter))
     });
 );
 
