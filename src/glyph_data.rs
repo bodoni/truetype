@@ -123,27 +123,23 @@ impl Walue<usize> for Simple {
             flag_count += count;
         }
 
-        let mut x = Vec::with_capacity(point_count);
-        for i in 0..point_count {
-            let flag = flags::Simple(flags[i]);
-            if flag.is_x_short() {
-                let value = try!(u8::read(tape)) as i16;
-                x.push(if flag.is_x_positive() { value } else { -value });
-            } else {
-                x.push(if flag.is_x_same() { 0 } else { try!(i16::read(tape)) });
-            }
-        }
-
-        let mut y = Vec::with_capacity(point_count);
-        for i in 0..point_count {
-            let flag = flags::Simple(flags[i]);
-            if flag.is_y_short() {
-                let value = try!(u8::read(tape)) as i16;
-                y.push(if flag.is_y_positive() { value } else { -value });
-            } else {
-                y.push(if flag.is_y_same() { 0 } else { try!(i16::read(tape)) });
-            }
-        }
+        macro_rules! read_coordinates(
+            ($is_short:ident, $is_positive:ident, $is_same:ident) => ({
+                let mut values = Vec::with_capacity(point_count);
+                for i in 0..point_count {
+                    let flag = flags::Simple(flags[i]);
+                    if flag.$is_short() {
+                        let value = try!(u8::read(tape)) as i16;
+                        values.push(if flag.$is_positive() { value } else { -value });
+                    } else {
+                        values.push(if flag.$is_same() { 0 } else { try!(i16::read(tape)) });
+                    }
+                }
+                values
+            });
+        );
+        let x = read_coordinates!(is_x_short, is_x_positive, is_x_same);
+        let y = read_coordinates!(is_y_short, is_y_positive, is_y_same);
 
         Ok(Simple {
             end_points: end_points,
