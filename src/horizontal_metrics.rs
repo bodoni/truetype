@@ -1,6 +1,6 @@
 //! The horizontal metrics.
 
-use {HorizontalHeader, MaximumProfile, Result, Tape, Value};
+use {HorizontalHeader, MaximumProfile, Result, Tape};
 
 table! {
     @define
@@ -25,19 +25,19 @@ impl HorizontalMetrics {
     pub fn read<T: Tape>(tape: &mut T, header: &HorizontalHeader, profile: &MaximumProfile)
                          -> Result<Self> {
 
-        let metrics = header.horizontal_metric_count as usize;
-        let glyphs = profile.glyph_count();
-        debug_assert!(metrics <= glyphs);
-        let bearings = glyphs - metrics;
+        let metric_count = header.horizontal_metric_count as usize;
+        let glyph_count = profile.glyph_count();
+        debug_assert!(metric_count <= glyph_count);
+        let bearing_count = glyph_count - metric_count;
         let mut table = HorizontalMetrics {
-            records: Vec::with_capacity(metrics),
-            left_side_bearings: Vec::with_capacity(bearings),
+            records: Vec::with_capacity(metric_count),
+            left_side_bearings: Vec::with_capacity(bearing_count),
         };
-        for _ in 0..metrics {
-            table.records.push(try!(Value::read(tape)));
+        for _ in 0..metric_count {
+            table.records.push(read_value!(tape));
         }
-        for _ in 0..bearings {
-            table.left_side_bearings.push(try!(Value::read(tape)));
+        for _ in 0..bearing_count {
+            table.left_side_bearings.push(read_value!(tape));
         }
         Ok(table)
     }

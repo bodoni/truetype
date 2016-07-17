@@ -1,6 +1,6 @@
 //! The font header.
 
-use {Value, q32};
+use q32;
 
 const MAGIC_NUMBER: u32 = 0x5F0F3CF5;
 
@@ -9,7 +9,7 @@ table! {
     #[derive(Copy)]
     pub FontHeader {
         version (q32) |tape, this| { // version
-            let value = try!(Value::read(tape));
+            let value = read_value!(tape);
             if value != q32(0x00010000) {
                 raise!("the version of the font header is not supported");
             }
@@ -20,7 +20,7 @@ table! {
         checksum_adjustment (u32), // checkSumAdjustment
 
         magic_number (u32) |tape, this| { // MagicNumber
-            let value = try!(Value::read(tape));
+            let value = read_value!(tape);
             if value != MAGIC_NUMBER {
                 raise!("the font header is corrupted");
             }

@@ -37,10 +37,10 @@ impl Value for OffsetTable {
         if !is_known(try!(tape.peek::<q32>())) {
             raise!("the font format is not supported");
         }
-        let header = try!(Header::read(tape));
+        let header = read_value!(tape, Header);
         let mut records = vec![];
         for _ in 0..header.table_count {
-            records.push(try!(Record::read(tape)));
+            records.push(read_value!(tape));
         }
         Ok(OffsetTable { header: header, records: records })
     }
@@ -57,7 +57,7 @@ impl Record {
             try!(tape.jump(self.offset as u64));
             let mut checksum: u64 = 0;
             for i in 0..length {
-                checksum += process(i, try!(Value::read(tape))) as u64;
+                checksum += process(i, read_value!(tape)) as u64;
             }
             Ok(self.checksum == checksum as u32)
         })

@@ -118,8 +118,8 @@ table! {
 impl Value for WindowsMetrics {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         Ok(match try!(tape.peek::<u16>()) {
-            3 => WindowsMetrics::Version3(try!(Value::read(tape))),
-            5 => WindowsMetrics::Version5(try!(Value::read(tape))),
+            3 => WindowsMetrics::Version3(read_value!(tape)),
+            5 => WindowsMetrics::Version5(read_value!(tape)),
             _ => raise!("the format of the OS/2 and Windows metrics is not supported"),
         })
     }

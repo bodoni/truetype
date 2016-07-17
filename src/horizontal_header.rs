@@ -1,13 +1,13 @@
 //! The horizontal header.
 
-use {Value, q32};
+use q32;
 
 table! {
     #[doc = "A horizontal header."]
     #[derive(Copy)]
     pub HorizontalHeader {
         version (q32) |tape, this| { // version
-            let value = try!(Value::read(tape));
+            let value = read_value!(tape);
             if value != q32(0x00010000) {
                 raise!("the version of the horizontal header is not supported");
             }

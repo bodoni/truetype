@@ -33,8 +33,8 @@ pub type Version30 = Version10;
 impl Value for PostScript {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         Ok(match try!(tape.peek::<q32>()) {
-            q32(0x00010000) => PostScript::Version10(try!(Value::read(tape))),
-            q32(0x00030000) => PostScript::Version30(try!(Value::read(tape))),
+            q32(0x00010000) => PostScript::Version10(read_value!(tape)),
+            q32(0x00030000) => PostScript::Version30(read_value!(tape)),
             _ => raise!("the format of the PostScript information is not supported"),
         })
     }
