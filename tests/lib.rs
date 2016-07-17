@@ -111,7 +111,7 @@ fn glyph_location() {
 
     let table = ok!(GlyphLocation::read(&mut setup!(Two, 7728), (0, 547)));
     match table {
-        GlyphLocation::Short(ref offsets) => {
+        GlyphLocation::HalfOffsets(ref offsets) => {
             assert_eq!(&offsets[0..10], &[0, 27, 27, 27, 27, 73, 102, 189, 293, 403]);
         },
         _ => unreachable!(),

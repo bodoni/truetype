@@ -90,10 +90,10 @@ impl<'l> Walue<&'l GlyphLocation> for GlyphData {
     fn read<T: Tape>(tape: &mut T, location: &GlyphLocation) -> Result<Self> {
         macro_rules! reject(() => (raise!("found a malformed index-to-location table")));
         let offsets: Vec<_> =  match location {
-            &GlyphLocation::Short(ref offsets) => {
+            &GlyphLocation::HalfOffsets(ref offsets) => {
                 offsets.iter().map(|&offset| 2 * (offset as u64)).collect()
             },
-            &GlyphLocation::Long(ref offsets) => {
+            &GlyphLocation::Offsets(ref offsets) => {
                 offsets.iter().map(|&offset| offset as u64).collect()
             },
         };

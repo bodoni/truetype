@@ -5,10 +5,10 @@ use {Result, Tape, Walue};
 /// An index-to-location table.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum GlyphLocation {
-    /// Short offsets divided by two.
-    Short(Vec<u16>),
-    /// Long offsets.
-    Long(Vec<u32>),
+    /// Offsets devided by two.
+    HalfOffsets(Vec<u16>),
+    /// Offsets.
+    Offsets(Vec<u32>),
 }
 
 impl Walue<(i32, usize)> for GlyphLocation {
@@ -16,8 +16,8 @@ impl Walue<(i32, usize)> for GlyphLocation {
                      -> Result<Self> {
 
         match glyph_location_format {
-            0 => Ok(GlyphLocation::Short(read_walue!(tape, glyph_count + 1))),
-            1 => Ok(GlyphLocation::Long(read_walue!(tape, glyph_count + 1))),
+            0 => Ok(GlyphLocation::HalfOffsets(read_walue!(tape, glyph_count + 1))),
+            1 => Ok(GlyphLocation::Offsets(read_walue!(tape, glyph_count + 1))),
             _ => raise!("the index-to-location format is unknown"),
         }
     }
