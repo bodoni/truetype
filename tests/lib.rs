@@ -18,8 +18,8 @@ macro_rules! setup(
 fn char_mapping_header() {
     use truetype::CharMapping;
 
-    let mapping = ok!(CharMapping::read(&mut setup!(15620)));
-    let table = &mapping.header;
+    let table = ok!(CharMapping::read(&mut setup!(15620)));
+    let table = &table.header;
     assert_eq!(table.version, 0);
     assert_eq!(table.table_count, 3);
 }
@@ -28,8 +28,8 @@ fn char_mapping_header() {
 fn char_mapping_records() {
     use truetype::CharMapping;
 
-    let mapping = ok!(CharMapping::read(&mut setup!(15620)));
-    let tables = &mapping.records;
+    let table = ok!(CharMapping::read(&mut setup!(15620)));
+    let tables = &table.records;
     assert_eq!(tables.len(), 3);
     assert_eq!(tables[0].platform_id, 0);
     assert_eq!(tables[0].encoding_id, 3);
@@ -43,8 +43,8 @@ fn char_mapping_records() {
 fn encoding_records() {
     use truetype::char_mapping::{CharMapping, Encoding};
 
-    let mapping = ok!(CharMapping::read(&mut setup!(15620)));
-    let tables = &mapping.encodings;
+    let table = ok!(CharMapping::read(&mut setup!(15620)));
+    let tables = &table.encodings;
     assert_eq!(tables.len(), 3);
     match &tables[0] {
         &Encoding::Format4(ref table) => {
@@ -129,9 +129,11 @@ fn horizontal_header() {
 
 #[test]
 fn horizontal_metrics() {
-    use truetype::HorizontalMetrics;
+    use truetype::{HorizontalHeader, HorizontalMetrics, MaximumProfile};
 
-    let table = ok!(HorizontalMetrics::read(&mut setup!(55460), (547, 547)));
+    let parameter1 = HorizontalHeader::read(&mut setup!(260)).unwrap();
+    let parameter2 = MaximumProfile::read(&mut setup!(296)).unwrap();
+    let table = HorizontalMetrics::read(&mut setup!(55460), (&parameter1, &parameter2)).unwrap();
     assert_eq!(table.records.len(), 547);
     assert_eq!(table.left_side_bearings.len(), 547 - 547);
 }
