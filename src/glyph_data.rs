@@ -23,7 +23,9 @@ table! {
 /// A description.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Description {
+    /// A simple-glyph description.
     Simple(Simple),
+    /// A compound-glyph description.
     Compound(Compound),
 }
 
@@ -62,16 +64,22 @@ table! {
 /// Arguments of a component.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Arguments {
+    /// Offsets relative to the current point.
     Offsets(i16, i16),
+    /// Indices of the points to match.
     Indices(u16, u16),
 }
 
 /// Options of a component.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Options {
+    /// No options.
     None,
+    /// A scaling coefficient for both coordinates.
     Scalar(q16),
+    /// Separate scaling coefficients for the two coordinates.
     Vector(q16, q16),
+    /// A 2-by-2 affine transformation matrix.
     Matrix(q16, q16, q16, q16),
 }
 

@@ -81,6 +81,7 @@ fn font_header() {
     assert_eq!(format!("{:.3}", f32::from(table.revision)), "1.017");
     assert_eq!(table.units_per_em, 1000);
     assert_eq!(table.mac_style, 0);
+    assert_eq!(table.glyph_location_format, 0);
 }
 
 #[test]
@@ -88,14 +89,27 @@ fn glyph_data() {
     use truetype::GlyphData;
     use truetype::glyph_data::Description;
 
-    let data = GlyphData::read(&mut setup!(Two, 9608), 1).unwrap();
-    let glyph = &data[0];
+    let table = GlyphData::read(&mut setup!(Two, 9608), 1).unwrap();
+    let glyph = &table[0];
     assert_eq!((glyph.min_x, glyph.max_x), (193, 1034));
     assert_eq!((glyph.min_y, glyph.max_y), (0, 1462));
     match glyph.description {
         Description::Simple(ref description) => {
             assert_eq!(&description.x, &[193, 841, 0, -841, 104, 633, 0, -633]);
             assert_eq!(&description.y, &[1462, 0, -1462, 0, 104, 0, 1254, 0])
+        },
+        _ => unreachable!(),
+    }
+}
+
+#[test]
+fn glyph_location() {
+    use truetype::GlyphLocation;
+
+    let table = GlyphLocation::read(&mut setup!(Two, 7728), (0, 547)).unwrap();
+    match table {
+        GlyphLocation::Short(ref offsets) => {
+            assert_eq!(&offsets[0..10], &[0, 27, 27, 27, 27, 73, 102, 189, 293, 403]);
         },
         _ => unreachable!(),
     }
