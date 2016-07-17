@@ -78,7 +78,7 @@ pub enum Options {
 impl Default for Description {
     #[inline]
     fn default() -> Self {
-        Description::Compound(Default::default())
+        Description::Simple(Default::default())
     }
 }
 
@@ -184,6 +184,7 @@ impl Value for Component {
 }
 
 impl Default for Arguments {
+    #[inline]
     fn default() -> Self {
         unreachable!()
     }
@@ -218,6 +219,7 @@ impl Walue<u16> for Arguments {
 }
 
 impl Default for Options {
+    #[inline]
     fn default() -> Self {
         unreachable!()
     }
@@ -294,8 +296,6 @@ mod flags {
             0b0000_0000_0100_0000 => has_vector_scale,
             0b0000_0000_1000_0000 => has_matrix_scale,
             0b0000_0001_0000_0000 => has_instructions,
-            // 0b0000_0010_0000_0000 => should_use_metrics,
-            // 0b0000_0100_0000_0000 => has_overlap,
             0b1111_1000_0001_0000 => is_invalid,
         }
     }

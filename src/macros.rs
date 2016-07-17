@@ -45,13 +45,13 @@ macro_rules! read_field(
 );
 
 macro_rules! read_value(
-    ($tape:ident) => (try!(::Value::read($tape)));
-    ($tape:ident, $kind:ty) => (try!(<$kind as ::Value>::read($tape)));
+    ($tape:expr) => (try!(::Value::read($tape)));
+    ($tape:expr, $kind:ty) => (try!(<$kind as ::Value>::read($tape)));
 );
 
 macro_rules! read_walue(
-    ($tape:ident, $parameter:expr) => (try!(::Walue::read($tape, $parameter)));
-    ($tape:ident, $parameter:expr, $kind:ty) => ({
+    ($tape:expr, $parameter:expr) => (try!(::Walue::read($tape, $parameter)));
+    ($tape:expr, $parameter:expr, $kind:ty) => ({
         try!(<$kind as ::Walue<_>>::read($tape, $parameter))
     });
 );
