@@ -3,7 +3,7 @@
 use {Result, Tag, Tape, Value, q32};
 
 /// An offset table.
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OffsetTable {
     pub header: Header,
     pub records: Vec<Record>,
@@ -89,11 +89,7 @@ mod tests {
             ($length:expr, $checksum:expr, $data:expr) => ({
                 let data: &[u8] = $data;
                 let mut reader = Cursor::new(data);
-                let table = Record {
-                    length: $length,
-                    checksum: $checksum,
-                    .. Record::default()
-                };
+                let table = Record { tag: 0, length: $length, offset: 0, checksum: $checksum };
                 table.checksum(&mut reader, |_, chunk| chunk).unwrap()
             })
         );

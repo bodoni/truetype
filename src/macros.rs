@@ -55,10 +55,10 @@ macro_rules! read_bytes(
 
 macro_rules! read_field(
     ($structure:ident, $tape:ident, $table:ident,
-     [$kind:ty] |$pipe:ident, $chair:ident| $body:block) => ({
+     [$kind:ty] |$band:ident, $chair:ident| $body:block) => ({
         #[inline(always)]
         #[allow(unused_variables)]
-        fn read<T: ::Tape>($pipe: &mut T, $chair: &$structure) -> ::Result<$kind> $body
+        fn read<T: ::Tape>($band: &mut T, $chair: &$structure) -> ::Result<$kind> $body
         try!(read($tape, &$table))
     });
     ($structure:ident, $tape:ident, $table:expr, [$kind:ty]) => (read_value!($tape));
@@ -87,7 +87,7 @@ macro_rules! table {
         $($field:ident ($kind:ty),)+
     }) => (itemize! {
         $(#[$attribute])*
-        #[derive(Clone, Debug, Default, Eq, PartialEq)]
+        #[derive(Clone, Debug, Eq, PartialEq)]
         pub struct $structure { $(pub $field: $kind,)+ }
     });
     (@implement pub $structure:ident {
@@ -95,11 +95,12 @@ macro_rules! table {
     }) => (
         impl ::Value for $structure {
             fn read<T: ::Tape>(tape: &mut T) -> ::Result<Self> {
-                let mut table = $structure::default();
-                $(
-                    table.$field = read_field!($structure, tape, table, [$($kind)+]
-                                               $(|$($argument),+| $body)*);
-                )+
+                let mut table: $structure = unsafe { ::std::mem::uninitialized() };
+                $({
+                    let value = read_field!($structure, tape, table,
+                                            [$($kind)+] $(|$($argument),+| $body)*);
+                    ::std::mem::forget(::std::mem::replace(&mut table.$field, value));
+                })+
                 Ok(table)
             }
         }

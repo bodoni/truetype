@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use {Result, Tape, Value, Walue};
 
 /// A char-to-glyph mapping.
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CharMapping {
     pub header: Header,
     pub records: Vec<Record>,

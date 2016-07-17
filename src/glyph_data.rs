@@ -44,7 +44,7 @@ table! {
 }
 
 /// A compound-glyph description.
-#[derive(Clone, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Compound {
     components: Vec<Component>,
     instruction_size: u16,
@@ -115,13 +115,6 @@ impl<'l> Walue<&'l GlyphLocation> for GlyphData {
             glyphs.push(Some(read_value!(tape)));
         }
         Ok(GlyphData(glyphs))
-    }
-}
-
-impl Default for Description {
-    #[inline]
-    fn default() -> Self {
-        Description::Simple(Default::default())
     }
 }
 
@@ -226,13 +219,6 @@ impl Value for Component {
     }
 }
 
-impl Default for Arguments {
-    #[inline]
-    fn default() -> Self {
-        unreachable!()
-    }
-}
-
 impl Walue<u16> for Arguments {
     fn read<T: Tape>(tape: &mut T, flags: u16) -> Result<Self> {
         let flags = flags::Component(flags);
@@ -258,13 +244,6 @@ impl Walue<u16> for Arguments {
                 Ok(Arguments::Indices(i, j))
             },
         }
-    }
-}
-
-impl Default for Options {
-    #[inline]
-    fn default() -> Self {
-        unreachable!()
     }
 }
 

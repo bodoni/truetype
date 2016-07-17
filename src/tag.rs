@@ -3,7 +3,7 @@ use std::mem;
 use q32;
 
 /// A table tag.
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct Tag(pub u32);
 
 impl From<Tag> for [u8; 4] {
