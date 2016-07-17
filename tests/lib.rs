@@ -7,6 +7,8 @@ mod fixture;
 
 use fixture::Fixture;
 
+macro_rules! ok(($result:expr) => ($result.unwrap()));
+
 macro_rules! setup(
     ($offset:expr) => (setup(Fixture::One, $offset));
     ($fixture:ident, $offset:expr) => (setup(Fixture::$fixture, $offset));
@@ -16,7 +18,7 @@ macro_rules! setup(
 fn char_mapping_header() {
     use truetype::CharMapping;
 
-    let mapping = CharMapping::read(&mut setup!(15620)).unwrap();
+    let mapping = ok!(CharMapping::read(&mut setup!(15620)));
     let table = &mapping.header;
     assert_eq!(table.version, 0);
     assert_eq!(table.table_count, 3);
@@ -26,7 +28,7 @@ fn char_mapping_header() {
 fn char_mapping_records() {
     use truetype::CharMapping;
 
-    let mapping = CharMapping::read(&mut setup!(15620)).unwrap();
+    let mapping = ok!(CharMapping::read(&mut setup!(15620)));
     let tables = &mapping.records;
     assert_eq!(tables.len(), 3);
     assert_eq!(tables[0].platform_id, 0);
@@ -41,7 +43,7 @@ fn char_mapping_records() {
 fn encoding_records() {
     use truetype::char_mapping::{CharMapping, Encoding};
 
-    let mapping = CharMapping::read(&mut setup!(15620)).unwrap();
+    let mapping = ok!(CharMapping::read(&mut setup!(15620)));
     let tables = &mapping.encodings;
     assert_eq!(tables.len(), 3);
     match &tables[0] {
@@ -77,7 +79,7 @@ fn encoding_records() {
 fn font_header() {
     use truetype::FontHeader;
 
-    let table = FontHeader::read(&mut setup!(204)).unwrap();
+    let table = ok!(FontHeader::read(&mut setup!(204)));
     assert_eq!(format!("{:.3}", f32::from(table.revision)), "1.017");
     assert_eq!(table.units_per_em, 1000);
     assert_eq!(table.mac_style, 0);
@@ -89,7 +91,7 @@ fn glyph_data() {
     use truetype::GlyphData;
     use truetype::glyph_data::Description;
 
-    let table = GlyphData::read(&mut setup!(Two, 9608), 1).unwrap();
+    let table = ok!(GlyphData::read(&mut setup!(Two, 9608), 1));
     let glyph = &table[0];
     assert_eq!((glyph.min_x, glyph.max_x), (193, 1034));
     assert_eq!((glyph.min_y, glyph.max_y), (0, 1462));
@@ -106,7 +108,7 @@ fn glyph_data() {
 fn glyph_location() {
     use truetype::GlyphLocation;
 
-    let table = GlyphLocation::read(&mut setup!(Two, 7728), (0, 547)).unwrap();
+    let table = ok!(GlyphLocation::read(&mut setup!(Two, 7728), (0, 547)));
     match table {
         GlyphLocation::Short(ref offsets) => {
             assert_eq!(&offsets[0..10], &[0, 27, 27, 27, 27, 73, 102, 189, 293, 403]);
@@ -119,7 +121,7 @@ fn glyph_location() {
 fn horizontal_header() {
     use truetype::HorizontalHeader;
 
-    let table = HorizontalHeader::read(&mut setup!(260)).unwrap();
+    let table = ok!(HorizontalHeader::read(&mut setup!(260)));
     assert_eq!(table.ascender, 918);
     assert_eq!(table.descender, -335);
     assert_eq!(table.horizontal_metric_count, 547);
@@ -129,7 +131,7 @@ fn horizontal_header() {
 fn horizontal_metrics() {
     use truetype::HorizontalMetrics;
 
-    let table = HorizontalMetrics::read(&mut setup!(55460), (547, 547)).unwrap();
+    let table = ok!(HorizontalMetrics::read(&mut setup!(55460), (547, 547)));
     assert_eq!(table.records.len(), 547);
     assert_eq!(table.left_side_bearings.len(), 547 - 547);
 }
@@ -138,7 +140,7 @@ fn horizontal_metrics() {
 fn maximum_profile() {
     use truetype::MaximumProfile;
 
-    let table = MaximumProfile::read(&mut setup!(296)).unwrap();
+    let table = ok!(MaximumProfile::read(&mut setup!(296)));
     match table {
         MaximumProfile::Version05(ref table) => {
             assert_eq!(table.glyph_count, 547);
@@ -151,11 +153,11 @@ fn maximum_profile() {
 fn naming_table() {
     use truetype::NamingTable;
 
-    let table = NamingTable::read(&mut setup!(400)).unwrap();
+    let table = ok!(NamingTable::read(&mut setup!(400)));
     match table {
         NamingTable::Format0(ref table) => {
             assert_eq!(table.count, 26);
-            assert_eq!(table.strings().unwrap()[9], "Frank Grießhammer");
+            assert_eq!(ok!(table.strings())[9], "Frank Grießhammer");
         },
         _ => unreachable!(),
     }
@@ -166,20 +168,18 @@ fn offset_table() {
     use truetype::OffsetTable;
 
     let mut file = setup!(0);
-    let OffsetTable { header, records } = OffsetTable::read(&mut file).unwrap();
-
+    let OffsetTable { header, records } = ok!(OffsetTable::read(&mut file));
     assert_eq!(header.table_count, 12);
     assert_eq!(header.search_range, 8 * 16);
     assert_eq!(header.entry_selector, 3);
     assert_eq!(header.range_shift, header.table_count * 16 - header.search_range);
-
     assert_eq!(records.len(), 12);
     for (i, record) in records.iter().enumerate() {
-        assert!(if i == 6 {
-            record.checksum(&mut file, |i, chunk| if i == 2 { 0 } else { chunk })
+        if i == 6 {
+            assert!(ok!(record.checksum(&mut file, |i, chunk| if i == 2 { 0 } else { chunk })));
         } else {
-            record.checksum(&mut file, |_, chunk| chunk)
-        }.unwrap());
+            assert!(ok!(record.checksum(&mut file, |_, chunk| chunk)));
+        }
     }
 }
 
@@ -188,8 +188,7 @@ fn postscript() {
     use truetype::PostScript;
 
     let mut file = setup!(17700);
-    let table = PostScript::read(&mut file).unwrap();
-
+    let table = ok!(PostScript::read(&mut file));
     match table {
         PostScript::Version30(ref table) => {
             assert_eq!(f32::from(table.version), 3.0);
@@ -203,7 +202,7 @@ fn postscript() {
 fn windows_metrics() {
     use truetype::WindowsMetrics;
 
-    let table = WindowsMetrics::read(&mut setup!(304)).unwrap();
+    let table = ok!(WindowsMetrics::read(&mut setup!(304)));
     match table {
         WindowsMetrics::Version3(ref table) => {
             assert_eq!(table.panose, [2, 4, 6, 3, 5, 4, 5, 2, 2, 4]);
@@ -217,8 +216,8 @@ fn windows_metrics() {
 fn setup(fixture: Fixture, offset: u64) -> File {
     use std::io::{Seek, SeekFrom};
 
-    let mut file = File::open(fixture.path()).unwrap();
-    file.seek(SeekFrom::Start(offset)).unwrap();
+    let mut file = ok!(File::open(fixture.path()));
+    ok!(file.seek(SeekFrom::Start(offset)));
     file
 }
 
