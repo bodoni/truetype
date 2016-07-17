@@ -1,6 +1,6 @@
 //! The horizontal metrics.
 
-use {HorizontalHeader, MaximumProfile, Result, Tape};
+use {Result, Tape, Walue};
 
 table! {
     @define
@@ -20,13 +20,8 @@ table! {
     }
 }
 
-impl HorizontalMetrics {
-    /// Read the table.
-    pub fn read<T: Tape>(tape: &mut T, header: &HorizontalHeader, profile: &MaximumProfile)
-                         -> Result<Self> {
-
-        let metric_count = header.horizontal_metric_count as usize;
-        let glyph_count = profile.glyph_count();
+impl Walue<(usize, usize)> for HorizontalMetrics {
+    fn read<T: Tape>(tape: &mut T, (metric_count, glyph_count): (usize, usize)) -> Result<Self> {
         debug_assert!(metric_count <= glyph_count);
         let bearing_count = glyph_count - metric_count;
         let mut table = HorizontalMetrics {
