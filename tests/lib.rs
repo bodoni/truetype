@@ -88,11 +88,12 @@ fn font_header() {
 
 #[test]
 fn glyph_data() {
-    use truetype::GlyphData;
+    use truetype::{GlyphData, GlyphLocation};
     use truetype::glyph_data::Description;
 
-    let table = ok!(GlyphData::read(&mut setup!(Two, 9608), 1));
-    let glyph = &table[0];
+    let parameter = ok!(GlyphLocation::read(&mut setup!(Two, 7728), (0, 547)));
+    let table = ok!(GlyphData::read(&mut setup!(Two, 9608), &parameter));
+    let glyph = table[0].as_ref().unwrap();
     assert_eq!((glyph.min_x, glyph.max_x), (193, 1034));
     assert_eq!((glyph.min_y, glyph.max_y), (0, 1462));
     match glyph.description {

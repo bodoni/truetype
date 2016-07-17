@@ -1,9 +1,10 @@
 //! The glyph data.
 
-use {Result, Tape, Value, Walue, q16};
+use {GlyphLocation, Result, Tape, Value, Walue, q16};
 
 /// Glyph data.
-pub type GlyphData = Vec<Glyph>;
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct GlyphData(pub Vec<Option<Glyph>>);
 
 table! {
     #[doc = "A glyph."]
@@ -83,6 +84,40 @@ pub enum Options {
     Matrix(q16, q16, q16, q16),
 }
 
+deref! { GlyphData::0 => [Option<Glyph>] }
+
+impl<'l> Walue<&'l GlyphLocation> for GlyphData {
+    fn read<T: Tape>(tape: &mut T, location: &GlyphLocation) -> Result<Self> {
+        macro_rules! reject(() => (raise!("found a malformed index-to-location table")));
+        let offsets: Vec<_> =  match location {
+            &GlyphLocation::Short(ref offsets) => {
+                offsets.iter().map(|&offset| 2 * (offset as u64)).collect()
+            },
+            &GlyphLocation::Long(ref offsets) => {
+                offsets.iter().map(|&offset| offset as u64).collect()
+            },
+        };
+        if offsets.is_empty() {
+            reject!();
+        }
+        let glyph_count = offsets.len() - 1;
+        let mut glyphs = Vec::with_capacity(glyph_count);
+        let position = try!(tape.position());
+        for i in 0..glyph_count {
+            if offsets[i] > offsets[i + 1] {
+                reject!();
+            }
+            if offsets[i] == offsets[i + 1] {
+                glyphs.push(None);
+                continue;
+            }
+            try!(tape.jump(position + offsets[i]));
+            glyphs.push(Some(read_value!(tape)));
+        }
+        Ok(GlyphData(glyphs))
+    }
+}
+
 impl Default for Description {
     #[inline]
     fn default() -> Self {
@@ -121,7 +156,7 @@ impl Walue<usize> for Simple {
 
         let end_points = read_walue!(tape, contour_count, Vec<u16>);
         for i in 1..contour_count {
-            if end_points[i-1] > end_points[i] {
+            if end_points[i - 1] > end_points[i] {
                 reject!();
             }
         }
@@ -137,8 +172,8 @@ impl Walue<usize> for Simple {
             if flag.is_invalid() {
                 reject!();
             }
-            let count = if flag.is_repeated() { read_value!(tape, u8) as usize } else { 1 };
-            if count == 0 || flag_count + count > point_count {
+            let count = 1 + if flag.is_repeated() { read_value!(tape, u8) as usize } else { 0 };
+            if flag_count + count > point_count {
                 reject!();
             }
             for _ in 0..count {

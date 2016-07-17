@@ -1,3 +1,23 @@
+macro_rules! deref {
+    ($name:ident::$field:tt => $target:ty) => (itemize! {
+        impl ::std::ops::Deref for $name {
+            type Target = $target;
+
+            #[inline]
+            fn deref(&self) -> &Self::Target {
+                &self.$field
+            }
+        }
+
+        impl ::std::ops::DerefMut for $name {
+            #[inline]
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.$field
+            }
+        }
+    });
+}
+
 macro_rules! itemize(($($chunk:item)*) => ($($chunk)*));
 
 macro_rules! raise(

@@ -5,9 +5,9 @@ use {Result, Tape, Walue};
 /// An index-to-location table.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum GlyphLocation {
-    /// Short locations.
+    /// Short offsets divided by two.
     Short(Vec<u16>),
-    /// Long locations.
+    /// Long offsets.
     Long(Vec<u32>),
 }
 
