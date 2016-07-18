@@ -88,10 +88,12 @@ fn font_header() {
 
 #[test]
 fn glyph_data() {
-    use truetype::{GlyphData, GlyphLocation};
+    use truetype::{FontHeader, GlyphData, GlyphLocation, MaximumProfile};
     use truetype::glyph_data::Description;
 
-    let parameter = ok!(GlyphLocation::read(&mut setup!(Two, 7728), (0, 547)));
+    let parameter1 = ok!(FontHeader::read(&mut setup!(Two, 316)));
+    let parameter2 = ok!(MaximumProfile::read(&mut setup!(Two, 408)));
+    let parameter = ok!(GlyphLocation::read(&mut setup!(Two, 7728), (&parameter1, &parameter2)));
     let table = ok!(GlyphData::read(&mut setup!(Two, 9608), &parameter));
     let glyph = table[0].as_ref().unwrap();
     assert_eq!((glyph.min_x, glyph.max_x), (193, 1034));
@@ -107,9 +109,11 @@ fn glyph_data() {
 
 #[test]
 fn glyph_location() {
-    use truetype::GlyphLocation;
+    use truetype::{FontHeader, GlyphLocation, MaximumProfile};
 
-    let table = ok!(GlyphLocation::read(&mut setup!(Two, 7728), (0, 547)));
+    let parameter1 = ok!(FontHeader::read(&mut setup!(Two, 316)));
+    let parameter2 = ok!(MaximumProfile::read(&mut setup!(Two, 408)));
+    let table = ok!(GlyphLocation::read(&mut setup!(Two, 7728), (&parameter1, &parameter2)));
     match table {
         GlyphLocation::HalfOffsets(ref offsets) => {
             assert_eq!(&offsets[0..10], &[0, 27, 27, 27, 27, 73, 102, 189, 293, 403]);
