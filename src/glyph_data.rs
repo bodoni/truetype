@@ -113,6 +113,9 @@ impl<'l> Walue<&'l GlyphLocation> for GlyphData {
             }
             try!(tape.jump(position + offsets[i]));
             glyphs.push(Some(read_value!(tape)));
+            if try!(tape.position()) > position + offsets[i + 1] {
+                reject!();
+            }
         }
         Ok(GlyphData(glyphs))
     }
