@@ -25,22 +25,6 @@ macro_rules! raise(
     ($($argument:tt)+) => (raise!(format!($($argument)+)));
 );
 
-macro_rules! read_array(
-    (@common $tape:ident, $count:expr) => ({
-        let mut array: [u8; $count] = ::std::mem::uninitialized();
-        if try!(::std::io::Read::read($tape, &mut array)) != $count {
-            return raise!("failed to read as much as needed");
-        }
-        array
-    });
-    ($tape:ident, $count:expr, i8) => (unsafe {
-        ::std::mem::transmute(read_array!(@common $tape, $count))
-    });
-    ($tape:ident, $count:expr, u8) => (unsafe {
-        read_array!(@common $tape, $count)
-    });
-);
-
 macro_rules! read_bytes(
     ($tape:ident, $count:expr) => (unsafe {
         let count = $count as usize;

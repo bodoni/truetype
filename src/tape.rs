@@ -86,6 +86,30 @@ value!(u16, 2);
 value!(u32, 4);
 value!(i64, 8);
 
+macro_rules! value(
+    ([i8; $count:expr]) => (impl Value for [i8; $count] {
+        fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+            let mut array: [u8; $count] = unsafe { ::std::mem::uninitialized() };
+            if try!(::std::io::Read::read(tape, &mut array)) != $count {
+                raise!("failed to read as much as needed")
+            }
+            Ok(unsafe { ::std::mem::transmute(array) })
+        }
+    });
+    ([u8; $count:expr]) => (impl Value for [u8; $count] {
+        fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+            let mut array: [u8; $count] = unsafe { ::std::mem::uninitialized() };
+            if try!(::std::io::Read::read(tape, &mut array)) != $count {
+                raise!("failed to read as much as needed")
+            }
+            Ok(array)
+        }
+    });
+);
+
+value!([i8; 4]);
+value!([u8; 10]);
+
 impl<V> Walue<usize> for Vec<V> where V: Value {
     fn read<T: Tape>(tape: &mut T, count: usize) -> Result<Self> {
         let mut values = Vec::with_capacity(count);
