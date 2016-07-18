@@ -3,7 +3,6 @@ use std::path::PathBuf;
 
 pub enum Fixture {
     One,
-    #[allow(dead_code)]
     Two,
 }
 
@@ -13,6 +12,30 @@ impl Fixture {
             Fixture::One => "tests/fixtures/SourceSerifPro-Regular.otf",
             Fixture::Two => "tests/fixtures/OpenSans-Italic.ttf",
         }.into()
+    }
+
+    pub fn offset(&self, table: &str) -> u64 {
+        match *self {
+            Fixture::One => match table {
+                "OS/2" => 304,
+                "cmap" => 15620,
+                "head" => 204,
+                "hhea" => 260,
+                "hmtx" => 55460,
+                "maxp" => 296,
+                "name" => 400,
+                "post" => 17700,
+                _ => unreachable!(),
+            },
+            Fixture::Two => match table {
+                "glyf" => 9608,
+                "head" => 316,
+                "loca" => 7728,
+                "maxp" => 408,
+                "post" => 196560,
+                _ => unreachable!(),
+            },
+        }
     }
 }
 

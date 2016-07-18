@@ -10,15 +10,16 @@ use fixture::Fixture;
 macro_rules! ok(($result:expr) => ($result.unwrap()));
 
 macro_rules! setup(
-    ($offset:expr) => (setup(Fixture::One, $offset));
-    ($fixture:ident, $offset:expr) => (setup(Fixture::$fixture, $offset));
+    () => (setup(Fixture::One, None));
+    ($table:expr) => (setup(Fixture::One, Some($table)));
+    ($fixture:ident, $table:expr) => (setup(Fixture::$fixture, Some($table)));
 );
 
 #[test]
 fn char_mapping_header() {
     use truetype::CharMapping;
 
-    let table = ok!(CharMapping::read(&mut setup!(15620)));
+    let table = ok!(CharMapping::read(&mut setup!("cmap")));
     let table = &table.header;
     assert_eq!(table.version, 0);
     assert_eq!(table.table_count, 3);
@@ -28,7 +29,7 @@ fn char_mapping_header() {
 fn char_mapping_records() {
     use truetype::CharMapping;
 
-    let table = ok!(CharMapping::read(&mut setup!(15620)));
+    let table = ok!(CharMapping::read(&mut setup!("cmap")));
     let tables = &table.records;
     assert_eq!(tables.len(), 3);
     assert_eq!(tables[0].platform_id, 0);
@@ -43,7 +44,7 @@ fn char_mapping_records() {
 fn encoding_records() {
     use truetype::char_mapping::{CharMapping, Encoding};
 
-    let table = ok!(CharMapping::read(&mut setup!(15620)));
+    let table = ok!(CharMapping::read(&mut setup!("cmap")));
     let tables = &table.encodings;
     assert_eq!(tables.len(), 3);
     match &tables[0] {
@@ -79,7 +80,7 @@ fn encoding_records() {
 fn font_header() {
     use truetype::FontHeader;
 
-    let table = ok!(FontHeader::read(&mut setup!(204)));
+    let table = ok!(FontHeader::read(&mut setup!("head")));
     assert_eq!(format!("{:.3}", f32::from(table.revision)), "1.017");
     assert_eq!(table.units_per_em, 1000);
     assert_eq!(table.mac_style, 0);
@@ -91,10 +92,10 @@ fn glyph_data() {
     use truetype::{FontHeader, GlyphData, GlyphLocation, MaximumProfile};
     use truetype::glyph_data::Description;
 
-    let parameter1 = ok!(FontHeader::read(&mut setup!(Two, 316)));
-    let parameter2 = ok!(MaximumProfile::read(&mut setup!(Two, 408)));
-    let parameter = ok!(GlyphLocation::read(&mut setup!(Two, 7728), (&parameter1, &parameter2)));
-    let table = ok!(GlyphData::read(&mut setup!(Two, 9608), &parameter));
+    let parameter1 = ok!(FontHeader::read(&mut setup!(Two, "head")));
+    let parameter2 = ok!(MaximumProfile::read(&mut setup!(Two, "maxp")));
+    let parameter = ok!(GlyphLocation::read(&mut setup!(Two, "loca"), (&parameter1, &parameter2)));
+    let table = ok!(GlyphData::read(&mut setup!(Two, "glyf"), &parameter));
     let glyph = table[0].as_ref().unwrap();
     assert_eq!((glyph.min_x, glyph.max_x), (193, 1034));
     assert_eq!((glyph.min_y, glyph.max_y), (0, 1462));
@@ -111,9 +112,9 @@ fn glyph_data() {
 fn glyph_location() {
     use truetype::{FontHeader, GlyphLocation, MaximumProfile};
 
-    let parameter1 = ok!(FontHeader::read(&mut setup!(Two, 316)));
-    let parameter2 = ok!(MaximumProfile::read(&mut setup!(Two, 408)));
-    let table = ok!(GlyphLocation::read(&mut setup!(Two, 7728), (&parameter1, &parameter2)));
+    let parameter1 = ok!(FontHeader::read(&mut setup!(Two, "head")));
+    let parameter2 = ok!(MaximumProfile::read(&mut setup!(Two, "maxp")));
+    let table = ok!(GlyphLocation::read(&mut setup!(Two, "loca"), (&parameter1, &parameter2)));
     match table {
         GlyphLocation::HalfOffsets(ref offsets) => {
             assert_eq!(&offsets[0..10], &[0, 27, 27, 27, 27, 73, 102, 189, 293, 403]);
@@ -126,7 +127,7 @@ fn glyph_location() {
 fn horizontal_header() {
     use truetype::HorizontalHeader;
 
-    let table = ok!(HorizontalHeader::read(&mut setup!(260)));
+    let table = ok!(HorizontalHeader::read(&mut setup!("hhea")));
     assert_eq!(table.ascender, 918);
     assert_eq!(table.descender, -335);
     assert_eq!(table.horizontal_metric_count, 547);
@@ -136,9 +137,9 @@ fn horizontal_header() {
 fn horizontal_metrics() {
     use truetype::{HorizontalHeader, HorizontalMetrics, MaximumProfile};
 
-    let parameter1 = HorizontalHeader::read(&mut setup!(260)).unwrap();
-    let parameter2 = MaximumProfile::read(&mut setup!(296)).unwrap();
-    let table = HorizontalMetrics::read(&mut setup!(55460), (&parameter1, &parameter2)).unwrap();
+    let parameter1 = HorizontalHeader::read(&mut setup!("hhea")).unwrap();
+    let parameter2 = MaximumProfile::read(&mut setup!("maxp")).unwrap();
+    let table = HorizontalMetrics::read(&mut setup!("hmtx"), (&parameter1, &parameter2)).unwrap();
     assert_eq!(table.records.len(), 547);
     assert_eq!(table.left_side_bearings.len(), 547 - 547);
 }
@@ -147,7 +148,7 @@ fn horizontal_metrics() {
 fn maximum_profile() {
     use truetype::MaximumProfile;
 
-    let table = ok!(MaximumProfile::read(&mut setup!(296)));
+    let table = ok!(MaximumProfile::read(&mut setup!("maxp")));
     match table {
         MaximumProfile::Version05(ref table) => {
             assert_eq!(table.glyph_count, 547);
@@ -160,7 +161,7 @@ fn maximum_profile() {
 fn naming_table() {
     use truetype::NamingTable;
 
-    let table = ok!(NamingTable::read(&mut setup!(400)));
+    let table = ok!(NamingTable::read(&mut setup!("name")));
     match table {
         NamingTable::Format0(ref table) => {
             assert_eq!(table.count, 26);
@@ -174,7 +175,7 @@ fn naming_table() {
 fn offset_table() {
     use truetype::OffsetTable;
 
-    let mut file = setup!(0);
+    let mut file = setup!();
     let OffsetTable { header, records } = ok!(OffsetTable::read(&mut file));
     assert_eq!(header.table_count, 12);
     assert_eq!(header.search_range, 8 * 16);
@@ -194,7 +195,7 @@ fn offset_table() {
 fn postscript() {
     use truetype::PostScript;
 
-    let table = ok!(PostScript::read(&mut setup!(Two, 196560)));
+    let table = ok!(PostScript::read(&mut setup!(Two, "post")));
     match table {
         PostScript::Version20(ref table) => {
             assert_eq!(table.glyph_count, 938);
@@ -205,7 +206,7 @@ fn postscript() {
         _ => unreachable!(),
     }
 
-    let table = ok!(PostScript::read(&mut setup!(17700)));
+    let table = ok!(PostScript::read(&mut setup!("post")));
     match table {
         PostScript::Version30(ref table) => {
             assert_eq!(f32::from(table.version), 3.0);
@@ -219,7 +220,7 @@ fn postscript() {
 fn windows_metrics() {
     use truetype::WindowsMetrics;
 
-    let table = ok!(WindowsMetrics::read(&mut setup!(304)));
+    let table = ok!(WindowsMetrics::read(&mut setup!("OS/2")));
     match table {
         WindowsMetrics::Version3(ref table) => {
             assert_eq!(table.panose, [2, 4, 6, 3, 5, 4, 5, 2, 2, 4]);
@@ -230,11 +231,13 @@ fn windows_metrics() {
     }
 }
 
-fn setup(fixture: Fixture, offset: u64) -> File {
+fn setup(fixture: Fixture, table: Option<&str>) -> File {
     use std::io::{Seek, SeekFrom};
 
     let mut file = ok!(File::open(fixture.path()));
-    ok!(file.seek(SeekFrom::Start(offset)));
+    if let Some(table) = table {
+        ok!(file.seek(SeekFrom::Start(fixture.offset(table))));
+    }
     file
 }
 
