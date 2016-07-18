@@ -190,8 +190,18 @@ fn offset_table() {
 fn postscript() {
     use truetype::PostScript;
 
-    let mut file = setup!(17700);
-    let table = ok!(PostScript::read(&mut file));
+    let table = ok!(PostScript::read(&mut setup!(Two, 196560)));
+    match table {
+        PostScript::Version20(ref table) => {
+            assert_eq!(table.glyph_count, 938);
+            assert_eq!(table.glyph_names.len(), 938);
+            assert_eq!(&table.glyph_names[0], ".notdef");
+            assert_eq!(&table.glyph_names[42], "G");
+        },
+        _ => unreachable!(),
+    }
+
+    let table = ok!(PostScript::read(&mut setup!(17700)));
     match table {
         PostScript::Version30(ref table) => {
             assert_eq!(f32::from(table.version), 3.0);
