@@ -10,8 +10,8 @@ use fixture::Fixture;
 macro_rules! ok(($result:expr) => ($result.unwrap()));
 
 macro_rules! setup(
-    () => (setup(Fixture::One, None));
-    ($table:expr) => (setup(Fixture::One, Some($table)));
+    () => (setup(Fixture::CFF, None));
+    ($table:expr) => (setup(Fixture::CFF, Some($table)));
     ($fixture:ident, $table:expr) => (setup(Fixture::$fixture, Some($table)));
 );
 
@@ -92,10 +92,10 @@ fn glyph_data() {
     use truetype::{FontHeader, GlyphData, GlyphLocation, MaximumProfile};
     use truetype::glyph_data::Description;
 
-    let parameter1 = ok!(FontHeader::read(&mut setup!(Two, "head")));
-    let parameter2 = ok!(MaximumProfile::read(&mut setup!(Two, "maxp")));
-    let parameter = ok!(GlyphLocation::read(&mut setup!(Two, "loca"), (&parameter1, &parameter2)));
-    let table = ok!(GlyphData::read(&mut setup!(Two, "glyf"), &parameter));
+    let parameter1 = ok!(FontHeader::read(&mut setup!(TTF, "head")));
+    let parameter2 = ok!(MaximumProfile::read(&mut setup!(TTF, "maxp")));
+    let parameter = ok!(GlyphLocation::read(&mut setup!(TTF, "loca"), (&parameter1, &parameter2)));
+    let table = ok!(GlyphData::read(&mut setup!(TTF, "glyf"), &parameter));
     let glyph = ok!(table[0].as_ref());
     assert_eq!((glyph.min_x, glyph.max_x), (193, 1034));
     assert_eq!((glyph.min_y, glyph.max_y), (0, 1462));
@@ -112,9 +112,9 @@ fn glyph_data() {
 fn glyph_location() {
     use truetype::{FontHeader, GlyphLocation, MaximumProfile};
 
-    let parameter1 = ok!(FontHeader::read(&mut setup!(Two, "head")));
-    let parameter2 = ok!(MaximumProfile::read(&mut setup!(Two, "maxp")));
-    let table = ok!(GlyphLocation::read(&mut setup!(Two, "loca"), (&parameter1, &parameter2)));
+    let parameter1 = ok!(FontHeader::read(&mut setup!(TTF, "head")));
+    let parameter2 = ok!(MaximumProfile::read(&mut setup!(TTF, "maxp")));
+    let table = ok!(GlyphLocation::read(&mut setup!(TTF, "loca"), (&parameter1, &parameter2)));
     match table {
         GlyphLocation::HalfOffsets(ref offsets) => {
             assert_eq!(&offsets[0..10], &[0, 27, 27, 27, 27, 73, 102, 189, 293, 403]);
@@ -195,7 +195,7 @@ fn offset_table() {
 fn postscript() {
     use truetype::PostScript;
 
-    let table = ok!(PostScript::read(&mut setup!(Two, "post")));
+    let table = ok!(PostScript::read(&mut setup!(TTF, "post")));
     match table {
         PostScript::Version20(ref table) => {
             assert_eq!(table.glyph_count, 938);

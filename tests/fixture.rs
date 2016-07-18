@@ -2,21 +2,21 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 
 pub enum Fixture {
-    One,
-    Two,
+    CFF,
+    TTF,
 }
 
 impl Fixture {
     pub fn path(&self) -> PathBuf {
         match *self {
-            Fixture::One => "tests/fixtures/SourceSerifPro-Regular.otf",
-            Fixture::Two => "tests/fixtures/OpenSans-Italic.ttf",
+            Fixture::CFF => "tests/fixtures/SourceSerifPro-Regular.otf",
+            Fixture::TTF => "tests/fixtures/OpenSans-Italic.ttf",
         }.into()
     }
 
     pub fn offset(&self, table: &str) -> u64 {
         match *self {
-            Fixture::One => match table {
+            Fixture::CFF => match table {
                 "OS/2" => 304,
                 "cmap" => 15620,
                 "head" => 204,
@@ -27,7 +27,7 @@ impl Fixture {
                 "post" => 17700,
                 _ => unreachable!(),
             },
-            Fixture::Two => match table {
+            Fixture::TTF => match table {
                 "glyf" => 9608,
                 "head" => 316,
                 "loca" => 7728,
