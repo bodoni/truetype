@@ -96,7 +96,7 @@ fn glyph_data() {
     let parameter2 = ok!(MaximumProfile::read(&mut setup!(Two, "maxp")));
     let parameter = ok!(GlyphLocation::read(&mut setup!(Two, "loca"), (&parameter1, &parameter2)));
     let table = ok!(GlyphData::read(&mut setup!(Two, "glyf"), &parameter));
-    let glyph = table[0].as_ref().unwrap();
+    let glyph = ok!(table[0].as_ref());
     assert_eq!((glyph.min_x, glyph.max_x), (193, 1034));
     assert_eq!((glyph.min_y, glyph.max_y), (0, 1462));
     match glyph.description {
@@ -137,9 +137,9 @@ fn horizontal_header() {
 fn horizontal_metrics() {
     use truetype::{HorizontalHeader, HorizontalMetrics, MaximumProfile};
 
-    let parameter1 = HorizontalHeader::read(&mut setup!("hhea")).unwrap();
-    let parameter2 = MaximumProfile::read(&mut setup!("maxp")).unwrap();
-    let table = HorizontalMetrics::read(&mut setup!("hmtx"), (&parameter1, &parameter2)).unwrap();
+    let parameter1 = ok!(HorizontalHeader::read(&mut setup!("hhea")));
+    let parameter2 = ok!(MaximumProfile::read(&mut setup!("maxp")));
+    let table = ok!(HorizontalMetrics::read(&mut setup!("hmtx"), (&parameter1, &parameter2)));
     assert_eq!(table.records.len(), 547);
     assert_eq!(table.left_side_bearings.len(), 547 - 547);
 }
@@ -235,9 +235,7 @@ fn setup(fixture: Fixture, table: Option<&str>) -> File {
     use std::io::{Seek, SeekFrom};
 
     let mut file = ok!(File::open(fixture.path()));
-    if let Some(table) = table {
-        ok!(file.seek(SeekFrom::Start(fixture.offset(table))));
-    }
+    ok!(file.seek(SeekFrom::Start(table.map(|table| fixture.offset(table)).unwrap_or(0))));
     file
 }
 
