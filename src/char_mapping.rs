@@ -77,7 +77,7 @@ table! {
         },
 
         glyph_indices (Vec<u16>) |tape, this| { // glyphIdArray
-            Walue::read(tape, try!(this.array_length()))
+            Walue::read(tape, try!(this.glyph_index_count()))
         },
     }
 }
@@ -153,13 +153,14 @@ impl Format4 {
         map
     }
 
-    fn array_length(&self) -> Result<usize> {
+    fn glyph_index_count(&self) -> Result<usize> {
+        macro_rules! reject(() => (raise!("found a malformed char-to-glyph mapping")));
         let count = self.segment_count();
         if count == 0 {
-            raise!("found a char-to-glyph mapping with no segments");
+            reject!();
         }
         if self.start_codes[count - 1] != 0xffff || self.end_codes[count - 1] != 0xffff {
-            raise!("found a malformed char-to-glyph mapping");
+            reject!();
         }
         let mut length = 0;
         for i in 0..(count - 1) {
