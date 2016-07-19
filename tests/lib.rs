@@ -114,8 +114,7 @@ fn glyph_location() {
 
     let parameter1 = ok!(FontHeader::read(&mut setup!(TTF, "head")));
     let parameter2 = ok!(MaximumProfile::read(&mut setup!(TTF, "maxp")));
-    let table = ok!(GlyphLocation::read(&mut setup!(TTF, "loca"), (&parameter1, &parameter2)));
-    match table {
+    match ok!(GlyphLocation::read(&mut setup!(TTF, "loca"), (&parameter1, &parameter2))) {
         GlyphLocation::HalfOffsets(ref offsets) => {
             assert_eq!(&offsets[0..10], &[0, 27, 27, 27, 27, 73, 102, 189, 293, 403]);
         },
@@ -148,8 +147,7 @@ fn horizontal_metrics() {
 fn maximum_profile() {
     use truetype::MaximumProfile;
 
-    let table = ok!(MaximumProfile::read(&mut setup!("maxp")));
-    match table {
+    match ok!(MaximumProfile::read(&mut setup!("maxp"))) {
         MaximumProfile::Version05(ref table) => {
             assert_eq!(table.glyph_count, 547);
         },
@@ -161,8 +159,7 @@ fn maximum_profile() {
 fn naming_table() {
     use truetype::NamingTable;
 
-    let table = ok!(NamingTable::read(&mut setup!("name")));
-    match table {
+    match ok!(NamingTable::read(&mut setup!("name"))) {
         NamingTable::Format0(ref table) => {
             assert_eq!(table.count, 26);
             assert_eq!(ok!(table.strings())[9], "Frank Grießhammer");
@@ -195,8 +192,7 @@ fn offset_table() {
 fn postscript() {
     use truetype::PostScript;
 
-    let table = ok!(PostScript::read(&mut setup!(TTF, "post")));
-    match table {
+    match ok!(PostScript::read(&mut setup!(TTF, "post"))) {
         PostScript::Version20(ref table) => {
             assert_eq!(table.glyph_count, 938);
             assert_eq!(table.glyph_names.len(), 938);
@@ -205,9 +201,7 @@ fn postscript() {
         },
         _ => unreachable!(),
     }
-
-    let table = ok!(PostScript::read(&mut setup!("post")));
-    match table {
+    match ok!(PostScript::read(&mut setup!("post"))) {
         PostScript::Version30(ref table) => {
             assert_eq!(f32::from(table.version), 3.0);
             assert_eq!(table.underline_position, -75);
@@ -220,8 +214,7 @@ fn postscript() {
 fn windows_metrics() {
     use truetype::WindowsMetrics;
 
-    let table = ok!(WindowsMetrics::read(&mut setup!("OS/2")));
-    match table {
+    match ok!(WindowsMetrics::read(&mut setup!("OS/2"))) {
         WindowsMetrics::Version3(ref table) => {
             assert_eq!(table.panose, [2, 4, 6, 3, 5, 4, 5, 2, 2, 4]);
             assert_eq!(stringify(&table.vendor_id), "ADBE");
