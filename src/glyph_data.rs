@@ -46,9 +46,9 @@ table! {
 /// A compound-glyph description.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Compound {
-    components: Vec<Component>,
-    instruction_size: u16,
-    instructions: Vec<u8>,
+    pub components: Vec<Component>,
+    pub instruction_size: u16,
+    pub instructions: Vec<u8>,
 }
 
 table! {
