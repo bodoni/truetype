@@ -48,7 +48,7 @@ table! {
 }
 
 table! {
-    #[doc = "A char-to-glyph encoding of format 4."]
+    #[doc = "A char-to-glyph encoding in format 4."]
     pub Format4 {
         format           (u16), // format
         length           (u16), // length
@@ -83,7 +83,7 @@ table! {
 }
 
 table! {
-    #[doc = "A char-to-glyph encoding of format 6."]
+    #[doc = "A char-to-glyph encoding in format 6."]
     pub Format6 {
         format      (u16), // format
         length      (u16), // length

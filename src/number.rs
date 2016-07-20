@@ -24,13 +24,13 @@ macro_rules! number(
 );
 
 number! {
-    #[doc = "A fixed-point number of format Q2.14."]
+    #[doc = "A fixed-point number in format Q2.14."]
     #[allow(non_camel_case_types)]
     pub q16(u16 | 14)
 }
 
 number! {
-    #[doc = "A fixed-point number of format Q16.16."]
+    #[doc = "A fixed-point number in format Q16.16."]
     #[allow(non_camel_case_types)]
     pub q32(u32 | 16)
 }

@@ -14,7 +14,7 @@ pub enum NamingTable {
 }
 
 table! {
-    #[doc = "A naming table of format 0."]
+    #[doc = "A naming table in format 0."]
     pub Format0 {
         format (u16), // format
         count  (u16), // count
@@ -31,7 +31,7 @@ table! {
 }
 
 table! {
-    #[doc = "A naming table of format 1."]
+    #[doc = "A naming table in format 1."]
     pub Format1 {
         format (u16), // format
         count  (u16), // count
