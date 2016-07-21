@@ -65,6 +65,7 @@ table! {
 flags! {
     #[doc = "Flags of a point."]
     pub PointFlags(u8) {
+        0b0000_0001 => is_on_curve,
         0b0000_0010 => is_x_short,
         0b0000_0100 => is_y_short,
         0b0000_1000 => is_repeated,
@@ -81,12 +82,17 @@ flags! {
     pub ComponentFlags(u16) {
         0b0000_0000_0000_0001 => are_arguments_words,
         0b0000_0000_0000_0010 => are_arguments_xy,
+        0b0000_0000_0000_0100 => should_round_xy_to_grid,
         0b0000_0000_0000_1000 => has_scalar_scale,
         0b0000_0000_0010_0000 => has_more_components,
         0b0000_0000_0100_0000 => has_vector_scale,
         0b0000_0000_1000_0000 => has_matrix_scale,
         0b0000_0001_0000_0000 => has_instructions,
-        0b1111_1000_0001_0000 => is_invalid,
+        0b0000_0010_0000_0000 => should_use_metrics,
+        0b0000_0100_0000_0000 => has_overlap,
+        0b0000_1000_0000_0000 => is_offset_scaled,
+        0b0001_0000_0000_0000 => is_offset_unscaled,
+        0b1110_0000_0001_0000 => is_invalid,
     }
 }
 
