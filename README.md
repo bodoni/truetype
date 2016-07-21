@@ -1,8 +1,8 @@
 # TrueType [![Version][version-img]][version-url] [![Status][status-img]][status-url]
 
-The package provides a parser for TrueType fonts. You might be interested to
-have a look at a higher-level package called [`opentype`][opentype], which
-internally relies on this package.
+The package provides a parser for TrueType fonts. It is recommended to use a
+higher-level parser called [`opentype`][opentype], which internally relies on
+this package.
 
 ## [Documentation][doc]
 
