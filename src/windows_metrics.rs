@@ -11,14 +11,28 @@ pub enum WindowsMetrics {
     Version5(Version5),
 }
 
+macro_rules! read_flags(
+    ($tape:ident, $kind:ty) => ({
+        let value = read_value!($tape, $kind);
+        if value.is_invalid() {
+            raise!("the OS/2 and Windows metrics table is corrupted");
+        }
+        Ok(value)
+    });
+);
+
 table! {
     #[doc = "OS/2 and Windows metrics of version 3."]
     pub Version3 {
-        version               (u16     ), // version
-        average_char_width    (i16     ), // xAvgCharWidth
-        weight_class          (u16     ), // usWeightClass
-        width_class           (u16     ), // usWidthClass
-        type_flags            (u16     ), // fsType
+        version               (u16), // version
+        average_char_width    (i16), // xAvgCharWidth
+        weight_class          (u16), // usWeightClass
+        width_class           (u16), // usWidthClass
+
+        type_flags (TypeFlags) |tape, this| { // fsType
+            read_flags!(tape, TypeFlags)
+        },
+
         subscript_x_size      (i16     ), // ySubscriptXSize
         subscript_y_size      (i16     ), // ySubscriptYSize
         subscript_x_offset    (i16     ), // ySubscriptXOffset
@@ -36,32 +50,40 @@ table! {
         unicode_range3        (u32     ), // ulUnicodeRange3
         unicode_range4        (u32     ), // ulUnicodeRange4
         vendor_id             ([i8; 4] ), // achVendID
-        selection_flags       (u16     ), // fsSelection
-        first_char_index      (u16     ), // usFirstCharIndex
-        last_char_index       (u16     ), // usLastCharIndex
-        typographic_ascender  (i16     ), // sTypoAscender
-        typographic_descender (i16     ), // sTypoDescender
-        typographic_line_gap  (i16     ), // sTypoLineGap
-        windows_ascender      (u16     ), // usWinAscent
-        windows_descender     (u16     ), // usWinDescent
-        code_page_range1      (u32     ), // ulCodePageRange1
-        code_page_range2      (u32     ), // ulCodePageRange2
-        x_height              (i16     ), // sxHeight
-        cap_height            (i16     ), // sCapHeight
-        default_char          (u16     ), // usDefaultChar
-        break_char            (u16     ), // usBreakChar
-        max_context           (u16     ), // usMaxContext
+
+        selection_flags (SelectionFlags) |tape, this| { // fsSelection
+            read_flags!(tape, SelectionFlags)
+        },
+
+        first_char_index      (u16), // usFirstCharIndex
+        last_char_index       (u16), // usLastCharIndex
+        typographic_ascender  (i16), // sTypoAscender
+        typographic_descender (i16), // sTypoDescender
+        typographic_line_gap  (i16), // sTypoLineGap
+        windows_ascender      (u16), // usWinAscent
+        windows_descender     (u16), // usWinDescent
+        code_page_range1      (u32), // ulCodePageRange1
+        code_page_range2      (u32), // ulCodePageRange2
+        x_height              (i16), // sxHeight
+        cap_height            (i16), // sCapHeight
+        default_char          (u16), // usDefaultChar
+        break_char            (u16), // usBreakChar
+        max_context           (u16), // usMaxContext
     }
 }
 
 table! {
     #[doc = "OS/2 and Windows metrics of version 5."]
     pub Version5 {
-        version               (u16     ), // version
-        average_char_width    (i16     ), // xAvgCharWidth
-        weight_class          (u16     ), // usWeightClass
-        width_class           (u16     ), // usWidthClass
-        type_flags            (u16     ), // fsType
+        version               (u16), // version
+        average_char_width    (i16), // xAvgCharWidth
+        weight_class          (u16), // usWeightClass
+        width_class           (u16), // usWidthClass
+
+        type_flags (TypeFlags) |tape, this| { // fsType
+            read_flags!(tape, TypeFlags)
+        },
+
         subscript_x_size      (i16     ), // ySubscriptXSize
         subscript_y_size      (i16     ), // ySubscriptYSize
         subscript_x_offset    (i16     ), // ySubscriptXOffset
@@ -79,24 +101,42 @@ table! {
         unicode_range3        (u32     ), // ulUnicodeRange3
         unicode_range4        (u32     ), // ulUnicodeRange4
         vendor_id             ([i8; 4] ), // achVendID
-        selection_flags       (u16     ), // fsSelection
-        first_char_index      (u16     ), // usFirstCharIndex
-        last_char_index       (u16     ), // usLastCharIndex
-        typographic_ascender  (i16     ), // sTypoAscender
-        typographic_descender (i16     ), // sTypoDescender
-        typographic_line_gap  (i16     ), // sTypoLineGap
-        windows_ascender      (u16     ), // usWinAscent
-        windows_descender     (u16     ), // usWinDescent
-        code_page_range1      (u32     ), // ulCodePageRange1
-        code_page_range2      (u32     ), // ulCodePageRange2
-        x_height              (i16     ), // sxHeight
-        cap_height            (i16     ), // sCapHeight
-        default_char          (u16     ), // usDefaultChar
-        break_char            (u16     ), // usBreakChar
-        max_context           (u16     ), // usMaxContext
+
+        selection_flags (SelectionFlags) |tape, this| { // fsSelection
+            read_flags!(tape, SelectionFlags)
+        },
+
+        first_char_index      (u16), // usFirstCharIndex
+        last_char_index       (u16), // usLastCharIndex
+        typographic_ascender  (i16), // sTypoAscender
+        typographic_descender (i16), // sTypoDescender
+        typographic_line_gap  (i16), // sTypoLineGap
+        windows_ascender      (u16), // usWinAscent
+        windows_descender     (u16), // usWinDescent
+        code_page_range1      (u32), // ulCodePageRange1
+        code_page_range2      (u32), // ulCodePageRange2
+        x_height              (i16), // sxHeight
+        cap_height            (i16), // sCapHeight
+        default_char          (u16), // usDefaultChar
+        break_char            (u16), // usBreakChar
+        max_context           (u16), // usMaxContext
 
         lower_optical_point_size (u16), // usLowerOpticalPointSize
         upper_optical_point_size (u16), // usUpperOpticalPointSize
+    }
+}
+
+flags! {
+    #[doc = "Type flags."]
+    pub TypeFlags(u16) {
+        0b1111_1100_0000_0000 => is_invalid,
+    }
+}
+
+flags! {
+    #[doc = "Font selection flags."]
+    pub SelectionFlags(u16) {
+        0b1111_1100_0000_0000 => is_invalid,
     }
 }
 

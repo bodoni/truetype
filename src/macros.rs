@@ -18,6 +18,39 @@ macro_rules! deref {
     });
 }
 
+macro_rules! flags {
+    ($(#[$attribute:meta])* pub $structure:ident($kind:ident) {
+        $($mask:expr => $name:ident,)*
+    }) => (
+        $(#[$attribute])*
+        #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+        pub struct $structure(pub $kind);
+
+        impl $structure {
+            $(
+                #[inline(always)]
+                pub fn $name(&self) -> bool {
+                    self.0 & $mask > 0
+                }
+            )*
+        }
+
+        impl ::Value for $structure {
+            #[inline(always)]
+            fn read<T: ::Tape>(tape: &mut T) -> ::Result<Self> {
+                Ok($structure(read_value!(tape, $kind)))
+            }
+        }
+
+        impl From<$structure> for $kind {
+            #[inline(always)]
+            fn from(flags: $structure) -> $kind {
+                flags.0
+            }
+        }
+    );
+}
+
 macro_rules! itemize(($($chunk:item)*) => ($($chunk)*));
 
 macro_rules! raise(

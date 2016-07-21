@@ -34,12 +34,12 @@ table! {
     @define
     #[doc = "A simple-glyph description."]
     pub Simple {
-        end_points       (Vec<u16>), // endPtsOfContours
-        instruction_size (u16     ), // instructionLength
-        instructions     (Vec<u8> ), // instructions
-        flags            (Vec<u8> ), // flags
-        x                (Vec<i16>), // xCoordinates
-        y                (Vec<i16>), // yCoordinates
+        end_points       (Vec<u16>       ), // endPtsOfContours
+        instruction_size (u16            ), // instructionLength
+        instructions     (Vec<u8>        ), // instructions
+        flags            (Vec<PointFlags>), // flags
+        x                (Vec<i16>       ), // xCoordinates
+        y                (Vec<i16>       ), // yCoordinates
     }
 }
 
@@ -53,12 +53,40 @@ pub struct Compound {
 
 table! {
     @define
-    #[doc = "A component."]
+    #[doc = "A component of a compound glyph."]
     pub Component {
-        flags     (u16      ), // flags
-        index     (u16      ), // glyphIndex
-        arguments (Arguments), // argument1, argument2
-        options   (Options  ),
+        flags     (ComponentFlags), // flags
+        index     (u16           ), // glyphIndex
+        arguments (Arguments     ), // argument1, argument2
+        options   (Options       ),
+    }
+}
+
+flags! {
+    #[doc = "Flags of a point."]
+    pub PointFlags(u8) {
+        0b0000_0010 => is_x_short,
+        0b0000_0100 => is_y_short,
+        0b0000_1000 => is_repeated,
+        0b0001_0000 => is_x_positive,
+        0b0001_0000 => is_x_same,
+        0b0010_0000 => is_y_positive,
+        0b0010_0000 => is_y_same,
+        0b1100_0000 => is_invalid,
+    }
+}
+
+flags! {
+    #[doc = "Flags of a component."]
+    pub ComponentFlags(u16) {
+        0b0000_0000_0000_0001 => are_arguments_words,
+        0b0000_0000_0000_0010 => are_arguments_xy,
+        0b0000_0000_0000_1000 => has_scalar_scale,
+        0b0000_0000_0010_0000 => has_more_components,
+        0b0000_0000_0100_0000 => has_vector_scale,
+        0b0000_0000_1000_0000 => has_matrix_scale,
+        0b0000_0001_0000_0000 => has_instructions,
+        0b1111_1000_0001_0000 => is_invalid,
     }
 }
 
@@ -127,13 +155,14 @@ impl Walue<i16> for Description {
             Ok(Description::Simple(read_walue!(tape, contour_count as usize)))
         } else {
             let mut components = vec![];
-            let mut has_instructions = false;
+            let mut component_count = 0;
             let mut has_more_components = true;
+            let mut has_instructions = false;
             while has_more_components {
                 components.push(read_value!(tape, Component));
-                let flags = flags::Component(components.last().map(|c| c.flags).unwrap());
-                has_instructions |= flags.has_instructions();
-                has_more_components = flags.has_more_components();
+                has_instructions |= components[component_count].flags.has_instructions();
+                has_more_components = components[component_count].flags.has_more_components();
+                component_count += 1;
             }
             let instruction_size = if has_instructions { read_value!(tape, u16) } else { 0 };
             let instructions = read_bytes!(tape, instruction_size);
@@ -164,7 +193,7 @@ impl Walue<usize> for Simple {
         let mut flags = Vec::with_capacity(point_count);
         let mut flag_count = 0;
         while flag_count < point_count {
-            let flag = read_value!(tape, flags::Simple);
+            let flag = read_value!(tape, PointFlags);
             if flag.is_invalid() {
                 reject!();
             }
@@ -173,7 +202,7 @@ impl Walue<usize> for Simple {
                 reject!();
             }
             for _ in 0..count {
-                flags.push(flag.into());
+                flags.push(flag);
             }
             flag_count += count;
         }
@@ -182,12 +211,11 @@ impl Walue<usize> for Simple {
             ($is_short:ident, $is_positive:ident, $is_same:ident) => ({
                 let mut values = Vec::with_capacity(point_count);
                 for i in 0..point_count {
-                    let flag = flags::Simple(flags[i]);
-                    if flag.$is_short() {
+                    if flags[i].$is_short() {
                         let value = read_value!(tape, u8) as i16;
-                        values.push(if flag.$is_positive() { value } else { -value });
+                        values.push(if flags[i].$is_positive() { value } else { -value });
                     } else {
-                        values.push(if flag.$is_same() { 0 } else { read_value!(tape, i16) });
+                        values.push(if flags[i].$is_same() { 0 } else { read_value!(tape, i16) });
                     }
                 }
                 values
@@ -209,8 +237,8 @@ impl Walue<usize> for Simple {
 
 impl Value for Component {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        let flags = read_value!(tape);
-        if flags::Component(flags).is_invalid() {
+        let flags = read_value!(tape, ComponentFlags);
+        if flags.is_invalid() {
             raise!("found a malformed component");
         }
         Ok(Component {
@@ -222,9 +250,8 @@ impl Value for Component {
     }
 }
 
-impl Walue<u16> for Arguments {
-    fn read<T: Tape>(tape: &mut T, flags: u16) -> Result<Self> {
-        let flags = flags::Component(flags);
+impl Walue<ComponentFlags> for Arguments {
+    fn read<T: Tape>(tape: &mut T, flags: ComponentFlags) -> Result<Self> {
         match (flags.are_arguments_words(), flags.are_arguments_xy()) {
             (true, true) => {
                 let x = read_value!(tape, i16);
@@ -250,9 +277,8 @@ impl Walue<u16> for Arguments {
     }
 }
 
-impl Walue<u16> for Options {
-    fn read<T: Tape>(tape: &mut T, flags: u16) -> Result<Self> {
-        let flags = flags::Component(flags);
+impl Walue<ComponentFlags> for Options {
+    fn read<T: Tape>(tape: &mut T, flags: ComponentFlags) -> Result<Self> {
         if flags.has_scalar_scale() {
             Ok(Options::Scalar(read_value!(tape)))
         } else if flags.has_vector_scale() {
@@ -262,66 +288,6 @@ impl Walue<u16> for Options {
                                read_value!(tape), read_value!(tape)))
         } else {
             Ok(Options::None)
-        }
-    }
-}
-
-mod flags {
-    macro_rules! flags {
-        (pub $structure:ident($kind:ident) {
-            $($mask:expr => $name:ident,)*
-        }) => (
-            #[derive(Clone, Copy)]
-            pub struct $structure(pub $kind);
-
-            impl $structure {
-                $(
-                    #[inline(always)]
-                    pub fn $name(&self) -> bool {
-                        self.0 & $mask > 0
-                    }
-                )*
-            }
-
-            impl ::Value for $structure {
-                #[inline(always)]
-                fn read<T: ::Tape>(tape: &mut T) -> ::Result<Self> {
-                    Ok($structure(read_value!(tape, $kind)))
-                }
-            }
-
-            impl From<$structure> for $kind {
-                #[inline(always)]
-                fn from(flags: $structure) -> $kind {
-                    flags.0
-                }
-            }
-        );
-    }
-
-    flags! {
-        pub Simple(u8) {
-            0b0000_0010 => is_x_short,
-            0b0000_0100 => is_y_short,
-            0b0000_1000 => is_repeated,
-            0b0001_0000 => is_x_positive,
-            0b0001_0000 => is_x_same,
-            0b0010_0000 => is_y_positive,
-            0b0010_0000 => is_y_same,
-            0b1100_0000 => is_invalid,
-        }
-    }
-
-    flags! {
-        pub Component(u16) {
-            0b0000_0000_0000_0001 => are_arguments_words,
-            0b0000_0000_0000_0010 => are_arguments_xy,
-            0b0000_0000_0000_1000 => has_scalar_scale,
-            0b0000_0000_0010_0000 => has_more_components,
-            0b0000_0000_0100_0000 => has_vector_scale,
-            0b0000_0000_1000_0000 => has_matrix_scale,
-            0b0000_0001_0000_0000 => has_instructions,
-            0b1111_1000_0001_0000 => is_invalid,
         }
     }
 }

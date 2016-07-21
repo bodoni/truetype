@@ -1,6 +1,6 @@
 [package]
 name = "truetype"
-version = "0.9.1"
+version = "0.10.0"
 license = "Apache-2.0/MIT"
 authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
 description = "The package provides a parser for TrueType fonts."

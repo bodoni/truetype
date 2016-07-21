@@ -4,6 +4,8 @@ use q32;
 
 const MAGIC_NUMBER: u32 = 0x5F0F3CF5;
 
+macro_rules! reject(() => (raise!("the font header is corrupted")));
+
 table! {
     #[doc = "A font header."]
     #[derive(Copy)]
@@ -22,12 +24,19 @@ table! {
         magic_number (u32) |tape, this| { // MagicNumber
             let value = read_value!(tape);
             if value != MAGIC_NUMBER {
-                raise!("the font header is corrupted");
+                reject!();
             }
             Ok(value)
         },
 
-        flags                 (u16), // flags
+        flags (Flags) |tape, this| { // flags
+            let value = read_value!(tape, Flags);
+            if value.is_invalid() {
+                reject!();
+            }
+            Ok(value)
+        },
+
         units_per_em          (u16), // unitsPerEm
         created               (i64), // created
         modified              (i64), // modified
@@ -40,5 +49,12 @@ table! {
         direction_hint        (i16), // fontDirectionHint
         glyph_location_format (i16), // indexToLocFormat
         glyph_data_format     (i16), // glyphDataFormat
+    }
+}
+
+flags! {
+    #[doc = "Flags of a font header."]
+    pub Flags(u16) {
+        0b1000_0000_0000_0000 => is_invalid,
     }
 }
