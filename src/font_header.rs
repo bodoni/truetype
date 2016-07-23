@@ -55,6 +55,8 @@ table! {
 flags! {
     #[doc = "Flags of a font header."]
     pub Flags(u16) {
+        0b0000_0000_0000_0001 => is_baseline_at_0,
+        0b0000_0000_0000_0010 => is_left_sidebearing_at_0,
         0b1000_0000_0000_0000 => is_invalid,
     }
 }
