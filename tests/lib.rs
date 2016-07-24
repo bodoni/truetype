@@ -141,6 +141,7 @@ fn horizontal_metrics() {
     let table = ok!(HorizontalMetrics::read(&mut setup!("hmtx"), (&parameter1, &parameter2)));
     assert_eq!(table.records.len(), 547);
     assert_eq!(table.left_side_bearings.len(), 547 - 547);
+    assert_eq!(table.get(42), (549, 45));
 }
 
 #[test]

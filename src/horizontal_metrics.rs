@@ -20,13 +20,31 @@ table! {
     }
 }
 
+impl HorizontalMetrics {
+    /// Return the advance width and left side bearing.
+    pub fn get(&self, mut index: usize) -> (u16, i16) {
+        let longs = self.records.len();
+        if index < longs {
+            (self.records[index].advance_width, self.records[index].left_side_bearing)
+        } else {
+            let shorts = self.left_side_bearings.len();
+            index -= longs;
+            if index < shorts {
+                (self.records[longs - 1].advance_width, self.left_side_bearings[index])
+            } else {
+                (self.records[longs - 1].advance_width, self.left_side_bearings[shorts - 1])
+            }
+        }
+    }
+}
+
 impl<'l> Walue<(&'l HorizontalHeader, &'l MaximumProfile)> for HorizontalMetrics {
     fn read<T: Tape>(tape: &mut T, (header, profile): (&HorizontalHeader, &MaximumProfile))
                      -> Result<Self> {
 
         let metric_count = header.horizontal_metric_count as usize;
         let glyph_count = profile.glyph_count();
-        if metric_count > glyph_count {
+        if metric_count == 0 || metric_count > glyph_count {
             raise!("found a malformed horizontal header");
         }
         let bearing_count = glyph_count - metric_count;
