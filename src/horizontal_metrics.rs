@@ -26,7 +26,9 @@ impl<'l> Walue<(&'l HorizontalHeader, &'l MaximumProfile)> for HorizontalMetrics
 
         let metric_count = header.horizontal_metric_count as usize;
         let glyph_count = profile.glyph_count();
-        debug_assert!(metric_count <= glyph_count);
+        if metric_count > glyph_count {
+            raise!("found a malformed horizontal header");
+        }
         let bearing_count = glyph_count - metric_count;
         let mut table = HorizontalMetrics {
             records: Vec::with_capacity(metric_count),
