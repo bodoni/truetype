@@ -1,4 +1,6 @@
-//! The offset table.
+//! The [offset table][1].
+//!
+//! [1]: https://www.microsoft.com/typography/otspec/otff.htm
 
 use {Result, Tag, Tape, Value, q32};
 

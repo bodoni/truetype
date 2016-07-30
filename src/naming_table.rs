@@ -1,4 +1,6 @@
-//! The naming table.
+//! The [naming table][1].
+//!
+//! [1]: https://www.microsoft.com/typography/otspec/name.htm
 
 use std::mem;
 

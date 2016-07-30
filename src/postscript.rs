@@ -1,4 +1,6 @@
-//! The PostScript information.
+//! The [PostScript information][1].
+//!
+//! [1]: https://www.microsoft.com/typography/otspec/post.htm
 
 use {Result, Tape, Value, Walue, q32};
 

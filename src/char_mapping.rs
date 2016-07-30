@@ -1,4 +1,6 @@
-//! The char-to-glyph mapping.
+//! The [char-to-glyph mapping][1].
+//!
+//! [1]: https://www.microsoft.com/typography/otspec/cmap.htm
 
 use std::collections::HashMap;
 

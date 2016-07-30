@@ -1,4 +1,6 @@
-//! The maximum profile.
+//! The [maximum profile][1].
+//!
+//! [1]: https://www.microsoft.com/typography/otspec/maxp.htm
 
 use {Result, Tape, Value, q32};
 

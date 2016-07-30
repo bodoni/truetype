@@ -1,4 +1,6 @@
-//! The index-to-location table.
+//! The [index-to-location table][1].
+//!
+//! [1]: https://www.microsoft.com/typography/otspec/loca.htm
 
 use {FontHeader, MaximumProfile, Result, Tape, Walue};
 

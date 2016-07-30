@@ -1,4 +1,6 @@
-//! The horizontal header.
+//! The [horizontal header][1].
+//!
+//! [1]: https://www.microsoft.com/typography/otspec/hhea.htm
 
 use q32;
 

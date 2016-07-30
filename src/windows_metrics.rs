@@ -1,4 +1,6 @@
-//! The OS/2 and Windows metrics.
+//! The [OS/2 and Windows metrics][1].
+//!
+//! [1]: https://www.microsoft.com/typography/otspec/os2.htm
 
 use {Result, Tape, Value};
 

@@ -1,4 +1,6 @@
-//! The font header.
+//! The [font header][1].
+//!
+//! [1]: https://www.microsoft.com/typography/otspec/head.htm
 
 use q32;
 

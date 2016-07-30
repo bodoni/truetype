@@ -1,4 +1,6 @@
-//! The glyph data.
+//! The [glyph data][1].
+//!
+//! [1]: https://www.microsoft.com/typography/otspec/glyf.htm
 
 use {GlyphLocation, Result, Tape, Value, Walue, q16};
 
