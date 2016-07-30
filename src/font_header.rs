@@ -39,18 +39,18 @@ table! {
             Ok(value)
         },
 
-        units_per_em          (u16), // unitsPerEm
-        created               (i64), // created
-        modified              (i64), // modified
-        min_x                 (i16), // xMin
-        min_y                 (i16), // yMin
-        max_x                 (i16), // xMax
-        max_y                 (i16), // yMax
-        mac_style             (u16), // macStyle
-        lowest_ppem           (u16), // lowestRecPPEM
-        direction_hint        (i16), // fontDirectionHint
-        glyph_location_format (i16), // indexToLocFormat
-        glyph_data_format     (i16), // glyphDataFormat
+        units_per_em         (u16), // unitsPerEm
+        created              (i64), // created
+        modified             (i64), // modified
+        min_x                (i16), // xMin
+        min_y                (i16), // yMin
+        max_x                (i16), // xMax
+        max_y                (i16), // yMax
+        mac_style            (u16), // macStyle
+        lowest_ppem          (u16), // lowestRecPPEM
+        direction_hint       (i16), // fontDirectionHint
+        glyph_mapping_format (i16), // indexToLocFormat
+        glyph_data_format    (i16), // glyphDataFormat
     }
 }
 

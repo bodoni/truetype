@@ -2,7 +2,7 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/glyf.htm
 
-use {GlyphLocation, Result, Tape, Value, Walue, q16};
+use {GlyphMapping, Result, Tape, Value, Walue, q16};
 
 /// Glyph data.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -122,14 +122,14 @@ pub enum Options {
 
 deref! { GlyphData::0 => [Option<Glyph>] }
 
-impl<'l> Walue<&'l GlyphLocation> for GlyphData {
-    fn read<T: Tape>(tape: &mut T, location: &GlyphLocation) -> Result<Self> {
-        macro_rules! reject(() => (raise!("found a malformed index-to-location table")));
-        let offsets: Vec<_> =  match location {
-            &GlyphLocation::HalfOffsets(ref offsets) => {
+impl<'l> Walue<&'l GlyphMapping> for GlyphData {
+    fn read<T: Tape>(tape: &mut T, mapping: &GlyphMapping) -> Result<Self> {
+        macro_rules! reject(() => (raise!("found a malformed glyph-to-location mapping")));
+        let offsets: Vec<_> =  match mapping {
+            &GlyphMapping::HalfOffsets(ref offsets) => {
                 offsets.iter().map(|&offset| 2 * (offset as u64)).collect()
             },
-            &GlyphLocation::Offsets(ref offsets) => {
+            &GlyphMapping::Offsets(ref offsets) => {
                 offsets.iter().map(|&offset| offset as u64).collect()
             },
         };

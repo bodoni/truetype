@@ -84,17 +84,17 @@ fn font_header() {
     assert_eq!(format!("{:.3}", f32::from(table.revision)), "1.017");
     assert_eq!(table.units_per_em, 1000);
     assert_eq!(table.mac_style, 0);
-    assert_eq!(table.glyph_location_format, 0);
+    assert_eq!(table.glyph_mapping_format, 0);
 }
 
 #[test]
 fn glyph_data() {
-    use truetype::{FontHeader, GlyphData, GlyphLocation, MaximumProfile};
+    use truetype::{FontHeader, GlyphData, GlyphMapping, MaximumProfile};
     use truetype::glyph_data::Description;
 
     let parameter1 = ok!(FontHeader::read(&mut setup!(TTF, "head")));
     let parameter2 = ok!(MaximumProfile::read(&mut setup!(TTF, "maxp")));
-    let parameter = ok!(GlyphLocation::read(&mut setup!(TTF, "loca"), (&parameter1, &parameter2)));
+    let parameter = ok!(GlyphMapping::read(&mut setup!(TTF, "loca"), (&parameter1, &parameter2)));
     let table = ok!(GlyphData::read(&mut setup!(TTF, "glyf"), &parameter));
     let glyph = ok!(table[0].as_ref());
     assert_eq!((glyph.min_x, glyph.max_x), (193, 1034));
@@ -109,13 +109,13 @@ fn glyph_data() {
 }
 
 #[test]
-fn glyph_location() {
-    use truetype::{FontHeader, GlyphLocation, MaximumProfile};
+fn glyph_mapping() {
+    use truetype::{FontHeader, GlyphMapping, MaximumProfile};
 
     let parameter1 = ok!(FontHeader::read(&mut setup!(TTF, "head")));
     let parameter2 = ok!(MaximumProfile::read(&mut setup!(TTF, "maxp")));
-    match ok!(GlyphLocation::read(&mut setup!(TTF, "loca"), (&parameter1, &parameter2))) {
-        GlyphLocation::HalfOffsets(ref offsets) => {
+    match ok!(GlyphMapping::read(&mut setup!(TTF, "loca"), (&parameter1, &parameter2))) {
+        GlyphMapping::HalfOffsets(ref offsets) => {
             assert_eq!(&offsets[0..10], &[0, 27, 27, 27, 27, 73, 102, 189, 293, 403]);
         },
         _ => unreachable!(),
