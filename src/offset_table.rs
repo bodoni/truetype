@@ -68,15 +68,13 @@ impl Record {
 
 #[inline]
 fn is_known(version: q32) -> bool {
-    match version {
-        q32(0x00010000) => return true,
-        _ => {},
+    if let q32(0x00010000) = version {
+        return true;
     }
     match &Tag::from(version).into() {
-        b"true" | b"typ1" | b"OTTO" => return true,
-        _ => {},
+        b"true" | b"typ1" | b"OTTO" => true,
+        _ => false
     }
-    false
 }
 
 #[cfg(test)]
