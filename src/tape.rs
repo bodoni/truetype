@@ -4,6 +4,18 @@ use Result;
 
 /// A type that can read.
 pub trait Tape: Read + Seek + Sized {
+    /// Read a value.
+    #[inline(always)]
+    fn take<T: Value>(&mut self) -> Result<T> {
+        Value::read(self)
+    }
+
+    /// Read a value given a parameter.
+    #[inline(always)]
+    fn take_given<T: Walue<P>, P>(&mut self, parameter: P) -> Result<T> {
+        Walue::read(self, parameter)
+    }
+
     #[doc(hidden)]
     #[inline]
     fn jump(&mut self, position: u64) -> Result<u64> {
@@ -34,23 +46,11 @@ pub trait Tape: Read + Seek + Sized {
 
     #[doc(hidden)]
     #[inline(always)]
-    fn take<T: Value>(&mut self) -> Result<T> {
-        Value::read(self)
-    }
-
-    #[doc(hidden)]
-    #[inline(always)]
     fn take_bytes(&mut self, count: usize) -> Result<Vec<u8>> {
         let mut buffer = Vec::with_capacity(count);
         unsafe { buffer.set_len(count) };
         try!(self.read_exact(&mut buffer));
         Ok(buffer)
-    }
-
-    #[doc(hidden)]
-    #[inline(always)]
-    fn take_given<T: Walue<P>, P>(&mut self, parameter: P) -> Result<T> {
-        Walue::read(self, parameter)
     }
 }
 
@@ -60,7 +60,7 @@ pub trait Value: Sized {
     fn read<T: Tape>(&mut T) -> Result<Self>;
 }
 
-/// A type that can be read provided a parameter.
+/// A type that can be read given a parameter.
 pub trait Walue<P>: Sized {
     /// Read a value.
     fn read<T: Tape>(&mut T, P) -> Result<Self>;
