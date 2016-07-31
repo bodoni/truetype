@@ -4,7 +4,7 @@
 
 use std::collections::HashMap;
 
-use {Result, Tape, Value, Walue};
+use {GlyphID, Result, Tape, Value};
 
 /// A char-to-glyph mapping.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -61,25 +61,25 @@ table! {
         range_shift      (u16), // rangeShift
 
         end_codes (Vec<u16>) |tape, this| { // endCode
-            Walue::read(tape, this.segment_count())
+            tape.take_given(this.segment_count())
         },
 
         reserved_pad (u16), // reservedPad
 
         start_codes (Vec<u16>) |tape, this| { // startCode
-            Walue::read(tape, this.segment_count())
+            tape.take_given(this.segment_count())
         },
 
         id_deltas (Vec<i16>) |tape, this| { // idDelta
-            Walue::read(tape, this.segment_count())
+            tape.take_given(this.segment_count())
         },
 
         id_range_offsets (Vec<u16>) |tape, this| { // idRangeOffset
-            Walue::read(tape, this.segment_count())
+            tape.take_given(this.segment_count())
         },
 
-        glyph_indices (Vec<u16>) |tape, this| { // glyphIdArray
-            Walue::read(tape, try!(this.glyph_index_count()))
+        glyph_ids (Vec<GlyphID>) |tape, this| { // glyphIdArray
+            tape.take_given(try!(this.glyph_id_count()))
         },
     }
 }
@@ -93,8 +93,8 @@ table! {
         first_code  (u16), // firstCode
         entry_count (u16), // entryCount
 
-        glyph_indices (Vec<u16>) |tape, this| { // glyphIdArray
-            Walue::read(tape, this.entry_count as usize)
+        glyph_ids (Vec<GlyphID>) |tape, this| { // glyphIdArray
+            tape.take_given(this.entry_count as usize)
         },
     }
 }
@@ -143,19 +143,19 @@ impl Encoding4 {
             let id_delta = self.id_deltas[i];
             let id_range_offset = self.id_range_offsets[i];
             for j in start_code..(self.end_codes[i] + 1) {
-                let index = if id_range_offset > 0 {
+                let id = if id_range_offset > 0 {
                     let offset = (id_range_offset / 2 + (j - start_code)) - (count - i) as u16;
-                    self.glyph_indices[offset as usize]
+                    self.glyph_ids[offset as usize]
                 } else {
                     (id_delta + j as i16) as u16
                 };
-                map.insert(j, index);
+                map.insert(j, id);
             }
         }
         map
     }
 
-    fn glyph_index_count(&self) -> Result<usize> {
+    fn glyph_id_count(&self) -> Result<usize> {
         macro_rules! reject(() => (raise!("found a malformed char-to-glyph mapping")));
         let count = self.segment_count();
         if count == 0 {

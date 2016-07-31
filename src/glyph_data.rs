@@ -2,7 +2,7 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/glyf.htm
 
-use {GlyphMapping, Result, Tape, Value, Walue, q16};
+use {GlyphID, GlyphMapping, Result, Tape, Value, Walue, q16};
 
 /// Glyph data.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -18,7 +18,7 @@ table! {
         max_y         (i16), // yMax
 
         description (Description) |tape, this| {
-            Walue::read(tape, this.contour_count)
+            tape.take_given(this.contour_count)
         },
     }
 }
@@ -58,7 +58,7 @@ table! {
     #[doc = "A component of a compound glyph."]
     pub Component {
         flags     (ComponentFlags), // flags
-        index     (u16           ), // glyphIndex
+        glyph_id  (GlyphID       ), // glyphIndex
         arguments (Arguments     ), // argument1, argument2
         options   (Options       ),
     }
@@ -252,7 +252,7 @@ impl Value for Component {
         }
         Ok(Component {
             flags: flags,
-            index: try!(tape.take()),
+            glyph_id: try!(tape.take()),
             arguments: try!(tape.take_given(flags)),
             options: try!(tape.take_given(flags)),
         })

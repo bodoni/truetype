@@ -4,7 +4,7 @@
 
 use std::mem;
 
-use {Result, Tape, Value, Walue};
+use {Result, Tape, Value};
 
 /// A naming table.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -23,7 +23,7 @@ table! {
         offset (u16), // stringOffset
 
         records (Vec<Record>) |tape, this| { // nameRecord
-            Walue::read(tape, this.count as usize)
+            tape.take_given(this.count as usize)
         },
 
         data (Vec<u8>) |tape, this| {
@@ -40,13 +40,13 @@ table! {
         offset (u16), // stringOffset
 
         records (Vec<Record>) |tape, this| { // nameRecord
-            Walue::read(tape, this.count as usize)
+            tape.take_given(this.count as usize)
         },
 
         language_count (u16), // langTagCount
 
         languages (Vec<Language>) |tape, this| { // langTagRecord
-            Walue::read(tape, this.language_count as usize)
+            tape.take_given(this.language_count as usize)
         },
 
         data (Vec<u8>) |tape, this| {

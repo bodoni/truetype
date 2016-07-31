@@ -55,7 +55,7 @@ fn encoding_records() {
             assert_eq!(table.start_codes.len(), 103);
             assert_eq!(table.id_deltas.len(), 103);
             assert_eq!(table.id_range_offsets.len(), 103);
-            assert_eq!(table.glyph_indices.len(), 353);
+            assert_eq!(table.glyph_ids.len(), 353);
             assert_eq!(table.mapping(), fixture::mapping());
         },
         _ => unreachable!(),
@@ -64,7 +64,7 @@ fn encoding_records() {
         &Encoding::Format6(ref table) => {
             assert_eq!(table.first_code, 9);
             assert_eq!(table.entry_count, 247);
-            assert_eq!(table.glyph_indices.len(), 247);
+            assert_eq!(table.glyph_ids.len(), 247);
         },
         _ => unreachable!(),
     }

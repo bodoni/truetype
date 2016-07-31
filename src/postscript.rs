@@ -2,7 +2,7 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/post.htm
 
-use {Result, Tape, Value, Walue, q32};
+use {Result, Tape, Value, q32};
 
 /// PostScript information.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -47,7 +47,7 @@ table! {
         glyph_count (u16), // numberOfGlyphs
 
         glyph_name_indices (Vec<u16>) |tape, this| { // glyphNameIndex
-            Walue::read(tape, this.glyph_count as usize)
+            tape.take_given(this.glyph_count as usize)
         },
 
         glyph_names (Vec<String>) |tape, this| { // names

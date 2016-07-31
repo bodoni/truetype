@@ -37,5 +37,8 @@ pub use windows_metrics::WindowsMetrics;
 /// An error.
 pub type Error = std::io::Error;
 
+/// A glyph identifier.
+pub type GlyphID = u16;
+
 /// A result.
 pub type Result<T> = std::io::Result<T>;
