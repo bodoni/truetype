@@ -59,13 +59,11 @@ macro_rules! raise(
 );
 
 macro_rules! read_bytes(
-    ($tape:ident, $count:expr) => (unsafe {
+    ($tape:ident, $count:expr) => ({
         let count = $count as usize;
         let mut values = Vec::with_capacity(count);
-        values.set_len(count);
-        if try!(::std::io::Read::read($tape, &mut values)) != count {
-            return raise!("failed to read as much as needed");
-        }
+        unsafe { values.set_len(count) };
+        try!(::std::io::Read::read_exact($tape, &mut values));
         values
     });
 );

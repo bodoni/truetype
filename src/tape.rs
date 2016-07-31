@@ -52,14 +52,9 @@ pub trait Walue<P>: Sized {
 impl<T: Read + Seek> Tape for T {}
 
 macro_rules! read(
-    ($tape:ident, $count:expr, $buffer:ident) => (
-        if try!(::std::io::Read::read($tape, &mut $buffer)) != $count {
-            return raise!("failed to read as much as needed");
-        }
-    );
     ($tape:ident, $size:expr) => (unsafe {
         let mut buffer: [u8; $size] = ::std::mem::uninitialized();
-        read!($tape, $size, buffer);
+        try!(::std::io::Read::read($tape, &mut buffer));
         ::std::mem::transmute(buffer)
     });
 );
@@ -89,20 +84,16 @@ value!(i64, 8);
 macro_rules! value(
     ([i8; $count:expr]) => (impl Value for [i8; $count] {
         fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-            let mut array: [u8; $count] = unsafe { ::std::mem::uninitialized() };
-            if try!(::std::io::Read::read(tape, &mut array)) != $count {
-                raise!("failed to read as much as needed")
-            }
-            Ok(unsafe { ::std::mem::transmute(array) })
+            let mut buffer: [u8; $count] = unsafe { ::std::mem::uninitialized() };
+            try!(::std::io::Read::read_exact(tape, &mut buffer));
+            Ok(unsafe { ::std::mem::transmute(buffer) })
         }
     });
     ([u8; $count:expr]) => (impl Value for [u8; $count] {
         fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-            let mut array: [u8; $count] = unsafe { ::std::mem::uninitialized() };
-            if try!(::std::io::Read::read(tape, &mut array)) != $count {
-                raise!("failed to read as much as needed")
-            }
-            Ok(array)
+            let mut buffer: [u8; $count] = unsafe { ::std::mem::uninitialized() };
+            try!(::std::io::Read::read_exact(tape, &mut buffer));
+            Ok(buffer)
         }
     });
 );
