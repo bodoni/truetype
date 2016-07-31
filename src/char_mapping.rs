@@ -102,10 +102,10 @@ table! {
 impl Value for CharMapping {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         let position = try!(tape.position());
-        let header = match try!(tape.peek::<u16>()) {
-            0 => read_value!(tape, Header),
-            _ => raise!("the format of the char-to-glyph mapping header is not supported"),
-        };
+        let header = read_value!(tape, Header);
+        if header.version != 0 {
+            raise!("the format of the char-to-glyph mapping header is not supported");
+        }
         let mut records = vec![];
         for _ in 0..header.table_count {
             records.push(read_value!(tape, Record));
