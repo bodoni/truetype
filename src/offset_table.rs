@@ -71,7 +71,7 @@ fn is_known(version: q32) -> bool {
     if let q32(0x00010000) = version {
         return true;
     }
-    match &Tag::from(version).into() {
+    match &*Tag::from(version) {
         b"true" | b"typ1" | b"OTTO" => true,
         _ => false
     }

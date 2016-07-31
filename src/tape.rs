@@ -107,6 +107,7 @@ macro_rules! value {
 }
 
 value!([i8; 4]);
+value!([u8; 4]);
 value!([u8; 10]);
 
 impl<V> Walue<usize> for Vec<V> where V: Value {
