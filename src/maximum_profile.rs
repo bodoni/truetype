@@ -8,15 +8,15 @@ use {Result, Tape, Value, q32};
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum MaximumProfile {
     /// Version 0.5.
-    Version05(Version05),
+    Version05(MaximumProfile05),
     /// Version 1.0.
-    Version10(Version10),
+    Version10(MaximumProfile10),
 }
 
 table! {
     #[doc = "A maximum profile of version 0.5."]
     #[derive(Copy)]
-    pub Version05 {
+    pub MaximumProfile05 {
         version     (q32), // version
         glyph_count (u16), // numGlyphs
     }
@@ -25,7 +25,7 @@ table! {
 table! {
     #[doc = "A maximum profile of version 1.0."]
     #[derive(Copy)]
-    pub Version10 {
+    pub MaximumProfile10 {
         version                     (q32), // version
         glyph_count                 (u16), // numGlyphs
         max_points                  (u16), // maxPoints

@@ -18,9 +18,9 @@ pub struct CharMapping {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Encoding {
     /// Format 4.
-    Format4(Format4),
+    Format4(Encoding4),
     /// Format 6.
-    Format6(Format6),
+    Format6(Encoding6),
 }
 
 table! {
@@ -51,7 +51,7 @@ table! {
 
 table! {
     #[doc = "A char-to-glyph encoding in format 4."]
-    pub Format4 {
+    pub Encoding4 {
         format           (u16), // format
         length           (u16), // length
         language         (u16), // language
@@ -86,7 +86,7 @@ table! {
 
 table! {
     #[doc = "A char-to-glyph encoding in format 6."]
-    pub Format6 {
+    pub Encoding6 {
         format      (u16), // format
         length      (u16), // length
         language    (u16), // language
@@ -133,7 +133,7 @@ impl Encoding {
     }
 }
 
-impl Format4 {
+impl Encoding4 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         let count = self.segment_count();
@@ -186,7 +186,7 @@ impl Format4 {
     }
 }
 
-impl Format6 {
+impl Encoding6 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
         unimplemented!();

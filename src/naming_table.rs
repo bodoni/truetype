@@ -10,14 +10,14 @@ use {Result, Tape, Value, Walue};
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum NamingTable {
     /// Format 0.
-    Format0(Format0),
+    Format0(NamingTable0),
     /// Format 1.
-    Format1(Format1),
+    Format1(NamingTable1),
 }
 
 table! {
     #[doc = "A naming table in format 0."]
-    pub Format0 {
+    pub NamingTable0 {
         format (u16), // format
         count  (u16), // count
         offset (u16), // stringOffset
@@ -34,7 +34,7 @@ table! {
 
 table! {
     #[doc = "A naming table in format 1."]
-    pub Format1 {
+    pub NamingTable1 {
         format (u16), // format
         count  (u16), // count
         offset (u16), // stringOffset
@@ -89,7 +89,7 @@ impl Value for NamingTable {
     }
 }
 
-impl Format0 {
+impl NamingTable0 {
     #[inline]
     pub fn strings(&self) -> Result<Vec<String>> {
         strings(&self.records, &self.data)
@@ -103,7 +103,7 @@ impl Format0 {
     }
 }
 
-impl Format1 {
+impl NamingTable1 {
     #[inline]
     pub fn strings(&self) -> Result<Vec<String>> {
         strings(&self.records, &self.data)
