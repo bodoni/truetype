@@ -69,13 +69,6 @@ macro_rules! read_bytes(
     });
 );
 
-macro_rules! read_walue(
-    ($tape:expr, $parameter:expr) => (try!($crate::Walue::read($tape, $parameter)));
-    ($tape:expr, $parameter:expr, $kind:ty) => (
-        try!(<$kind as $crate::Walue<_>>::read($tape, $parameter))
-    );
-);
-
 macro_rules! table {
     ($(#[$attribute:meta])* pub $structure:ident {
         $($field:ident ($($kind:tt)+) $(|$($argument:ident),+| $body:block)*,)*

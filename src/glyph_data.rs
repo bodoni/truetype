@@ -160,7 +160,7 @@ impl<'l> Walue<&'l GlyphMapping> for GlyphData {
 impl Walue<i16> for Description {
     fn read<T: Tape>(tape: &mut T, contour_count: i16) -> Result<Self> {
         if contour_count >= 0 {
-            Ok(Description::Simple(read_walue!(tape, contour_count as usize)))
+            Ok(Description::Simple(try!(tape.take_with(contour_count as usize))))
         } else {
             let mut components = vec![];
             let mut component_count = 0;
@@ -187,7 +187,7 @@ impl Walue<usize> for Simple {
     fn read<T: Tape>(tape: &mut T, contour_count: usize) -> Result<Self> {
         macro_rules! reject(() => (raise!("found a malformed glyph description")));
 
-        let end_points = read_walue!(tape, contour_count, Vec<u16>);
+        let end_points = try!(tape.take_with::<Vec<u16>, _>(contour_count));
         for i in 1..contour_count {
             if end_points[i - 1] > end_points[i] {
                 reject!();
@@ -253,8 +253,8 @@ impl Value for Component {
         Ok(Component {
             flags: flags,
             index: try!(tape.take()),
-            arguments: read_walue!(tape, flags),
-            options: read_walue!(tape, flags),
+            arguments: try!(tape.take_with(flags)),
+            options: try!(tape.take_with(flags)),
         })
     }
 }

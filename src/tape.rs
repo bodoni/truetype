@@ -23,17 +23,25 @@ pub trait Tape: Read + Seek + Sized {
     }
 
     #[doc(hidden)]
+    fn stay<F, T>(&mut self, mut body: F) -> Result<T>
+        where F: FnMut(&mut Self) -> Result<T>
+    {
+        let position = try!(self.position());
+        let result = body(self);
+        try!(self.jump(position));
+        result
+    }
+
+    #[doc(hidden)]
     #[inline(always)]
     fn take<T: Value>(&mut self) -> Result<T> {
         Value::read(self)
     }
 
     #[doc(hidden)]
-    fn stay<F, T>(&mut self, mut body: F) -> Result<T> where F: FnMut(&mut Self) -> Result<T> {
-        let position = try!(self.position());
-        let result = body(self);
-        try!(self.jump(position));
-        result
+    #[inline(always)]
+    fn take_with<T: Walue<P>, P>(&mut self, parameter: P) -> Result<T> {
+        Walue::read(self, parameter)
     }
 }
 
