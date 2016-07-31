@@ -27,7 +27,7 @@ table! {
     #[doc = "A record of an offset table."]
     #[derive(Copy)]
     pub Record {
-        tag      (u32), // tag
+        tag      (Tag), // tag
         checksum (u32), // checkSum
         offset   (u32), // offset
         length   (u32), // length
@@ -36,10 +36,14 @@ table! {
 
 impl Value for OffsetTable {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        if !is_known(try!(tape.peek::<q32>())) {
-            raise!("the font format is not supported");
-        }
         let header = read_value!(tape, Header);
+        match header.version {
+            q32(0x00010000) => {},
+            version => match &*Tag::from(version) {
+                b"true" | b"typ1" | b"OTTO" => {},
+                _ => raise!("the font format is not supported"),
+            },
+        }
         let mut records = vec![];
         for _ in 0..header.table_count {
             records.push(read_value!(tape));
@@ -66,21 +70,11 @@ impl Record {
     }
 }
 
-#[inline]
-fn is_known(version: q32) -> bool {
-    if let q32(0x00010000) = version {
-        return true;
-    }
-    match &*Tag::from(version) {
-        b"true" | b"typ1" | b"OTTO" => true,
-        _ => false
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use std::io::Cursor;
 
+    use Tag;
     use super::Record;
 
     #[test]
@@ -89,12 +83,17 @@ mod tests {
             ($length:expr, $checksum:expr, $data:expr) => ({
                 let data: &[u8] = $data;
                 let mut reader = Cursor::new(data);
-                let table = Record { tag: 0, length: $length, offset: 0, checksum: $checksum };
+                let table = Record {
+                    tag: Tag(*b"true"),
+                    length: $length,
+                    offset: 0,
+                    checksum: $checksum,
+                };
                 table.checksum(&mut reader, |_, chunk| chunk).unwrap()
             })
         );
 
         assert!(!checksum!(3 * 4, 1 + 2 + 4, &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3]));
-        assert!( checksum!(3 * 4, 1 + 2 + 3, &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3]));
+        assert!(checksum!(3 * 4, 1 + 2 + 3, &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3]));
     }
 }
