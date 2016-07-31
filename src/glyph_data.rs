@@ -160,7 +160,7 @@ impl<'l> Walue<&'l GlyphMapping> for GlyphData {
 impl Walue<i16> for Description {
     fn read<T: Tape>(tape: &mut T, contour_count: i16) -> Result<Self> {
         if contour_count >= 0 {
-            Ok(Description::Simple(try!(tape.take_with(contour_count as usize))))
+            Ok(Description::Simple(try!(tape.take_given(contour_count as usize))))
         } else {
             let mut components = vec![];
             let mut component_count = 0;
@@ -173,7 +173,7 @@ impl Walue<i16> for Description {
                 component_count += 1;
             }
             let instruction_size = if has_instructions { try!(tape.take::<u16>()) } else { 0 };
-            let instructions = read_bytes!(tape, instruction_size);
+            let instructions = try!(tape.take_bytes(instruction_size as usize));
             Ok(Description::Compound(Compound {
                 components: components,
                 instruction_size: instruction_size,
@@ -187,7 +187,7 @@ impl Walue<usize> for Simple {
     fn read<T: Tape>(tape: &mut T, contour_count: usize) -> Result<Self> {
         macro_rules! reject(() => (raise!("found a malformed glyph description")));
 
-        let end_points = try!(tape.take_with::<Vec<u16>, _>(contour_count));
+        let end_points = try!(tape.take_given::<Vec<u16>, _>(contour_count));
         for i in 1..contour_count {
             if end_points[i - 1] > end_points[i] {
                 reject!();
@@ -196,7 +196,7 @@ impl Walue<usize> for Simple {
         let point_count = end_points.last().map(|&i| i as usize + 1).unwrap_or(0);
 
         let instruction_size = try!(tape.take());
-        let instructions = read_bytes!(tape, instruction_size);
+        let instructions = try!(tape.take_bytes(instruction_size as usize));
 
         let mut flags = Vec::with_capacity(point_count);
         let mut flag_count = 0;
@@ -253,8 +253,8 @@ impl Value for Component {
         Ok(Component {
             flags: flags,
             index: try!(tape.take()),
-            arguments: try!(tape.take_with(flags)),
-            options: try!(tape.take_with(flags)),
+            arguments: try!(tape.take_given(flags)),
+            options: try!(tape.take_given(flags)),
         })
     }
 }

@@ -40,7 +40,16 @@ pub trait Tape: Read + Seek + Sized {
 
     #[doc(hidden)]
     #[inline(always)]
-    fn take_with<T: Walue<P>, P>(&mut self, parameter: P) -> Result<T> {
+    fn take_bytes(&mut self, count: usize) -> Result<Vec<u8>> {
+        let mut buffer = Vec::with_capacity(count);
+        unsafe { buffer.set_len(count) };
+        try!(self.read_exact(&mut buffer));
+        Ok(buffer)
+    }
+
+    #[doc(hidden)]
+    #[inline(always)]
+    fn take_given<T: Walue<P>, P>(&mut self, parameter: P) -> Result<T> {
         Walue::read(self, parameter)
     }
 }

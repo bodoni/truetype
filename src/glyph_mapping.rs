@@ -19,8 +19,8 @@ impl<'l> Walue<(&'l FontHeader, &'l MaximumProfile)> for GlyphMapping {
 
         let glyph_count = profile.glyph_count();
         match header.glyph_mapping_format {
-            0 => Ok(GlyphMapping::HalfOffsets(try!(tape.take_with(glyph_count + 1)))),
-            1 => Ok(GlyphMapping::Offsets(try!(tape.take_with(glyph_count + 1)))),
+            0 => Ok(GlyphMapping::HalfOffsets(try!(tape.take_given(glyph_count + 1)))),
+            1 => Ok(GlyphMapping::Offsets(try!(tape.take_given(glyph_count + 1)))),
             _ => raise!("the glyph-to-location format is unknown"),
         }
     }

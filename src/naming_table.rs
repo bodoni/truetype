@@ -99,7 +99,7 @@ impl Format0 {
         let current = try!(tape.position());
         let above = 3 * 2 + self.records.len() * mem::size_of::<Record>();
         try!(tape.jump(current - above as u64 + self.offset as u64));
-        Ok(read_bytes!(tape, data_length(&self.records)))
+        tape.take_bytes(data_length(&self.records))
     }
 }
 
@@ -114,7 +114,7 @@ impl Format1 {
         let above = 4 * 2 + self.records.len() * mem::size_of::<Record>() +
                             self.languages.len() * mem::size_of::<Language>();
         try!(tape.jump(current - above as u64 + self.offset as u64));
-        Ok(read_bytes!(tape, data_length(&self.records)))
+        tape.take_bytes(data_length(&self.records))
     }
 }
 
