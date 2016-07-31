@@ -36,7 +36,7 @@ table! {
 
 impl Value for OffsetTable {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        let header = read_value!(tape, Header);
+        let header = try!(tape.take::<Header>());
         match header.version {
             q32(0x00010000) => {},
             version => match &*Tag::from(version) {
@@ -46,7 +46,7 @@ impl Value for OffsetTable {
         }
         let mut records = vec![];
         for _ in 0..header.table_count {
-            records.push(read_value!(tape));
+            records.push(try!(tape.take()));
         }
         Ok(OffsetTable { header: header, records: records })
     }
@@ -63,7 +63,7 @@ impl Record {
             try!(tape.jump(self.offset as u64));
             let mut checksum: u64 = 0;
             for i in 0..length {
-                checksum += process(i, read_value!(tape)) as u64;
+                checksum += process(i, try!(tape.take())) as u64;
             }
             Ok(self.checksum == checksum as u32)
         })

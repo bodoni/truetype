@@ -18,7 +18,7 @@ impl From<q32> for Tag {
 impl Value for Tag {
     #[inline(always)]
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        Ok(Tag(read_value!(tape)))
+        Ok(Tag(try!(tape.take())))
     }
 }
 

@@ -28,7 +28,7 @@ table! {
     #[derive(Copy)]
     pub Header {
         version (u16) |tape, this| { // version
-            let value = read_value!(tape);
+            let value = try!(tape.take());
             if value != 0 {
                 raise!("the version of the char-to-glyph mapping header is not supported");
             }
@@ -102,20 +102,20 @@ table! {
 impl Value for CharMapping {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         let position = try!(tape.position());
-        let header = read_value!(tape, Header);
+        let header = try!(tape.take::<Header>());
         if header.version != 0 {
             raise!("the format of the char-to-glyph mapping header is not supported");
         }
         let mut records = vec![];
         for _ in 0..header.table_count {
-            records.push(read_value!(tape, Record));
+            records.push(try!(tape.take::<Record>()));
         }
         let mut encodings = vec![];
         for encoding in records.iter() {
             try!(tape.jump(position + encoding.offset as u64));
             encodings.push(match try!(tape.peek::<u16>()) {
-                4 => Encoding::Format4(read_value!(tape)),
-                6 => Encoding::Format6(read_value!(tape)),
+                4 => Encoding::Format4(try!(tape.take())),
+                6 => Encoding::Format6(try!(tape.take())),
                 _ => unimplemented!(),
             });
         }

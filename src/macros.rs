@@ -41,7 +41,7 @@ macro_rules! flags {
         impl $crate::Value for $structure {
             #[inline(always)]
             fn read<T: $crate::Tape>(tape: &mut T) -> $crate::Result<Self> {
-                Ok($structure(read_value!(tape, $kind)))
+                Ok($structure(try!(tape.take::<$kind>())))
             }
         }
 
@@ -67,11 +67,6 @@ macro_rules! read_bytes(
         try!(::std::io::Read::read_exact($tape, &mut buffer));
         buffer
     });
-);
-
-macro_rules! read_value(
-    ($tape:expr) => (try!($crate::Value::read($tape)));
-    ($tape:expr, $kind:ty) => (try!(<$kind as $crate::Value>::read($tape)));
 );
 
 macro_rules! read_walue(
@@ -117,5 +112,5 @@ macro_rules! table {
         fn read<T: $crate::Tape>($band: &mut T, $chair: &$structure) -> $crate::Result<$kind> $body
         try!(read($tape, &$table))
     });
-    (@read $structure:ident, $tape:ident, $table:expr, [$kind:ty]) => (read_value!($tape));
+    (@read $structure:ident, $tape:ident, $table:expr, [$kind:ty]) => (try!($tape.take()));
 }

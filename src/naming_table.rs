@@ -82,8 +82,8 @@ table! {
 impl Value for NamingTable {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         Ok(match try!(tape.peek::<u16>()) {
-            0 => NamingTable::Format0(read_value!(tape)),
-            1 => NamingTable::Format1(read_value!(tape)),
+            0 => NamingTable::Format0(try!(tape.take())),
+            1 => NamingTable::Format1(try!(tape.take())),
             _ => raise!("the format of the naming table is not supported"),
         })
     }

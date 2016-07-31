@@ -9,7 +9,7 @@ table! {
     #[derive(Copy)]
     pub HorizontalHeader {
         version (q32) |tape, this| { // version
-            let value = read_value!(tape);
+            let value = try!(tape.take());
             if value != q32(0x00010000) {
                 raise!("the version of the horizontal header is not supported");
             }

@@ -57,8 +57,8 @@ impl MaximumProfile {
 impl Value for MaximumProfile {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         Ok(match try!(tape.peek::<q32>()) {
-            q32(0x00005000) => MaximumProfile::Version05(read_value!(tape)),
-            q32(0x00010000) => MaximumProfile::Version10(read_value!(tape)),
+            q32(0x00005000) => MaximumProfile::Version05(try!(tape.take())),
+            q32(0x00010000) => MaximumProfile::Version10(try!(tape.take())),
             _ => raise!("the format of the maximum profile is not supported"),
         })
     }

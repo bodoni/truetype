@@ -15,7 +15,7 @@ pub enum WindowsMetrics {
 
 macro_rules! read_flags(
     ($tape:ident, $kind:ty) => ({
-        let value = read_value!($tape, $kind);
+        let value = try!($tape.take::<$kind>());
         if value.is_invalid() {
             raise!("the OS/2 and Windows metrics table is corrupted");
         }
@@ -145,8 +145,8 @@ flags! {
 impl Value for WindowsMetrics {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         Ok(match try!(tape.peek::<u16>()) {
-            3 => WindowsMetrics::Version3(read_value!(tape)),
-            5 => WindowsMetrics::Version5(read_value!(tape)),
+            3 => WindowsMetrics::Version3(try!(tape.take())),
+            5 => WindowsMetrics::Version5(try!(tape.take())),
             _ => raise!("the format of the OS/2 and Windows metrics is not supported"),
         })
     }

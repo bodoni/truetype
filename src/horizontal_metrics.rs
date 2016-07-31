@@ -55,10 +55,10 @@ impl<'l> Walue<(&'l HorizontalHeader, &'l MaximumProfile)> for HorizontalMetrics
             left_side_bearings: Vec::with_capacity(bearing_count),
         };
         for _ in 0..metric_count {
-            table.records.push(read_value!(tape));
+            table.records.push(try!(tape.take()));
         }
         for _ in 0..bearing_count {
-            table.left_side_bearings.push(read_value!(tape));
+            table.left_side_bearings.push(try!(tape.take()));
         }
         Ok(table)
     }

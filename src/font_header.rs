@@ -13,7 +13,7 @@ table! {
     #[derive(Copy)]
     pub FontHeader {
         version (q32) |tape, this| { // version
-            let value = read_value!(tape);
+            let value = try!(tape.take());
             if value != q32(0x00010000) {
                 raise!("the version of the font header is not supported");
             }
@@ -24,7 +24,7 @@ table! {
         checksum_adjustment (u32), // checkSumAdjustment
 
         magic_number (u32) |tape, this| { // MagicNumber
-            let value = read_value!(tape);
+            let value = try!(tape.take());
             if value != MAGIC_NUMBER {
                 reject!();
             }
@@ -32,7 +32,7 @@ table! {
         },
 
         flags (Flags) |tape, this| { // flags
-            let value = read_value!(tape, Flags);
+            let value = try!(tape.take::<Flags>());
             if value.is_invalid() {
                 reject!();
             }
