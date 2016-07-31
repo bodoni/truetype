@@ -21,6 +21,8 @@ macro_rules! deref {
     });
 }
 
+#[doc(hidden)]
+#[macro_export]
 macro_rules! flags {
     ($(#[$attribute:meta])* pub $structure:ident($kind:ident) {
         $($mask:expr => $name:ident,)*
@@ -59,6 +61,8 @@ macro_rules! raise(
     ($($argument:tt)+) => (raise!(format!($($argument)+)));
 );
 
+#[doc(hidden)]
+#[macro_export]
 macro_rules! table {
     ($(#[$attribute:meta])* pub $structure:ident {
         $($field:ident ($($kind:tt)+) $(|$($argument:ident),+| $body:block)*,)*
