@@ -136,7 +136,7 @@ flags! {
 }
 
 flags! {
-    #[doc = "Font selection flags."]
+    #[doc = "Font-selection flags."]
     pub SelectionFlags(u16) {
         0b1111_1100_0000_0000 => is_invalid,
     }

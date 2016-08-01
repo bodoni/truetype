@@ -65,7 +65,7 @@ table! {
 }
 
 flags! {
-    #[doc = "Flags of a point."]
+    #[doc = "Point flags."]
     pub PointFlags(u8) {
         0b0000_0001 => is_on_curve,
         0b0000_0010 => is_x_short,
@@ -80,7 +80,7 @@ flags! {
 }
 
 flags! {
-    #[doc = "Flags of a component."]
+    #[doc = "Component flags."]
     pub ComponentFlags(u16) {
         0b0000_0000_0000_0001 => are_arguments_words,
         0b0000_0000_0000_0010 => are_arguments_xy,
