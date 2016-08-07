@@ -1,12 +1,21 @@
-use std::mem;
+use std::{fmt, mem, str};
 
 use {Result, Tape, Value, q32};
 
 /// A table tag.
-#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Eq, Hash, PartialEq)]
 pub struct Tag(pub [u8; 4]);
 
 deref! { Tag::0 => [u8; 4] }
+
+impl fmt::Debug for Tag {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        match str::from_utf8(&self.0[..]) {
+            Ok(name) => write!(formatter, "Tag({:?})", name),
+            _ => write!(formatter, "Tag({:?})", self.0),
+        }
+    }
+}
 
 impl From<q32> for Tag {
     #[inline(always)]
@@ -28,6 +37,11 @@ mod tests {
 
     use {Value, q32};
     use super::Tag;
+
+    #[test]
+    fn debug() {
+        assert_eq!(format!("{:?}", Tag(*b"true")), r#"Tag("true")"#);
+    }
 
     #[test]
     fn from() {
