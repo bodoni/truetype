@@ -17,7 +17,7 @@ macro_rules! read_flags(
     ($tape:ident, $kind:ty) => ({
         let value = try!($tape.take::<$kind>());
         if value.is_invalid() {
-            raise!("the OS/2 and Windows metrics table is corrupted");
+            raise!("found malformed OS/2 and Windows metrics");
         }
         Ok(value)
     });
@@ -147,7 +147,7 @@ impl Value for WindowsMetrics {
         Ok(match try!(tape.peek::<u16>()) {
             3 => WindowsMetrics::Version3(try!(tape.take())),
             5 => WindowsMetrics::Version5(try!(tape.take())),
-            _ => raise!("the format of the OS/2 and Windows metrics is not supported"),
+            _ => raise!("found an unknown format of the OS/2 and Windows metrics"),
         })
     }
 }

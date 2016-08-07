@@ -11,7 +11,7 @@ table! {
         version (q32) |tape, this| { // version
             let value = try!(tape.take());
             if value != q32(0x00010000) {
-                raise!("the version of the horizontal header is not supported");
+                raise!("found an unknown version of the horizontal header");
             }
             Ok(value)
         },

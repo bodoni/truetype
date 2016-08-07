@@ -84,7 +84,7 @@ impl Value for NamingTable {
         Ok(match try!(tape.peek::<u16>()) {
             0 => NamingTable::Format0(try!(tape.take())),
             1 => NamingTable::Format1(try!(tape.take())),
-            _ => raise!("the format of the naming table is not supported"),
+            _ => raise!("found an unknown format of the naming table"),
         })
     }
 }

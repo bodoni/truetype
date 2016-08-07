@@ -41,7 +41,7 @@ impl Value for OffsetTable {
             q32(0x00010000) => {},
             version => match &*Tag::from(version) {
                 b"true" | b"typ1" | b"OTTO" => {},
-                _ => raise!("the font format is not supported"),
+                _ => raise!("found an unknown font format"),
             },
         }
         let mut records = vec![];

@@ -6,7 +6,7 @@ use q32;
 
 const MAGIC_NUMBER: u32 = 0x5F0F3CF5;
 
-macro_rules! reject(() => (raise!("the font header is corrupted")));
+macro_rules! reject(() => (raise!("found a malformed font header")));
 
 table! {
     #[doc = "A font header."]
@@ -15,7 +15,7 @@ table! {
         version (q32) |tape, this| { // version
             let value = try!(tape.take());
             if value != q32(0x00010000) {
-                raise!("the version of the font header is not supported");
+                raise!("found an unknown version of the font header");
             }
             Ok(value)
         },

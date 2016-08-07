@@ -30,7 +30,7 @@ table! {
         version (u16) |tape, this| { // version
             let value = try!(tape.take());
             if value != 0 {
-                raise!("the version of the char-to-glyph mapping header is not supported");
+                raise!("found an unknown version of the char-to-glyph mapping");
             }
             Ok(value)
         },
@@ -103,9 +103,6 @@ impl Value for CharMapping {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         let position = try!(tape.position());
         let header = try!(tape.take::<Header>());
-        if header.version != 0 {
-            raise!("the format of the char-to-glyph mapping header is not supported");
-        }
         let mut records = vec![];
         for _ in 0..header.table_count {
             records.push(try!(tape.take::<Record>()));

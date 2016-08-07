@@ -58,7 +58,6 @@ macro_rules! flags {
 
 macro_rules! raise(
     ($message:expr) => (return Err(::Error::new(::std::io::ErrorKind::Other, $message)));
-    ($($argument:tt)+) => (raise!(format!($($argument)+)));
 );
 
 #[doc(hidden)]
