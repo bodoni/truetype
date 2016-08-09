@@ -22,11 +22,11 @@ table! {
         count  (u16), // count
         offset (u16), // stringOffset
 
-        records (Vec<Record>) |tape, this| { // nameRecord
+        records (Vec<Record>) |this, tape| { // nameRecord
             tape.take_given(this.count as usize)
         },
 
-        data (Vec<u8>) |tape, this| {
+        data (Vec<u8>) |this, tape| {
             this.read_data(tape)
         },
     }
@@ -39,17 +39,17 @@ table! {
         count  (u16), // count
         offset (u16), // stringOffset
 
-        records (Vec<Record>) |tape, this| { // nameRecord
+        records (Vec<Record>) |this, tape| { // nameRecord
             tape.take_given(this.count as usize)
         },
 
         language_count (u16), // langTagCount
 
-        languages (Vec<Language>) |tape, this| { // langTagRecord
+        languages (Vec<Language>) |this, tape| { // langTagRecord
             tape.take_given(this.language_count as usize)
         },
 
-        data (Vec<u8>) |tape, this| {
+        data (Vec<u8>) |this, tape| {
             this.read_data(tape)
         },
     }

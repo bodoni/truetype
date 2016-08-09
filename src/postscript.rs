@@ -46,11 +46,11 @@ table! {
 
         glyph_count (u16), // numberOfGlyphs
 
-        glyph_name_indices (Vec<u16>) |tape, this| { // glyphNameIndex
+        glyph_name_indices (Vec<u16>) |this, tape| { // glyphNameIndex
             tape.take_given(this.glyph_count as usize)
         },
 
-        glyph_names (Vec<String>) |tape, this| { // names
+        glyph_names (Vec<String>) |this, tape| { // names
             read_pascal_strings(tape, &this.glyph_name_indices)
         },
     }

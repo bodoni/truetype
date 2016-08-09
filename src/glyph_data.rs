@@ -17,7 +17,7 @@ table! {
         max_x         (i16), // xMax
         max_y         (i16), // yMax
 
-        description (Description) |tape, this| {
+        description (Description) |this, tape| {
             tape.take_given(this.contour_count)
         },
     }

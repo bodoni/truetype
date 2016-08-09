@@ -31,7 +31,7 @@ table! {
         weight_class          (u16), // usWeightClass
         width_class           (u16), // usWidthClass
 
-        type_flags (TypeFlags) |tape, this| { // fsType
+        type_flags (TypeFlags) |this, tape| { // fsType
             read_flags!(tape, TypeFlags)
         },
 
@@ -53,7 +53,7 @@ table! {
         unicode_range4        (u32     ), // ulUnicodeRange4
         vendor_id             ([i8; 4] ), // achVendID
 
-        selection_flags (SelectionFlags) |tape, this| { // fsSelection
+        selection_flags (SelectionFlags) |this, tape| { // fsSelection
             read_flags!(tape, SelectionFlags)
         },
 
@@ -82,7 +82,7 @@ table! {
         weight_class          (u16), // usWeightClass
         width_class           (u16), // usWidthClass
 
-        type_flags (TypeFlags) |tape, this| { // fsType
+        type_flags (TypeFlags) |this, tape| { // fsType
             read_flags!(tape, TypeFlags)
         },
 
@@ -104,7 +104,7 @@ table! {
         unicode_range4        (u32     ), // ulUnicodeRange4
         vendor_id             ([i8; 4] ), // achVendID
 
-        selection_flags (SelectionFlags) |tape, this| { // fsSelection
+        selection_flags (SelectionFlags) |this, tape| { // fsSelection
             read_flags!(tape, SelectionFlags)
         },
 

@@ -27,7 +27,7 @@ table! {
     #[doc = "The header of a char-to-glyph mapping."]
     #[derive(Copy)]
     pub Header {
-        version (u16) |tape, this| { // version
+        version (u16) |this, tape| { // version
             let value = try!(tape.take());
             if value != 0 {
                 raise!("found an unknown version of the char-to-glyph mapping");
@@ -60,25 +60,25 @@ table! {
         entry_selector   (u16), // entrySelector
         range_shift      (u16), // rangeShift
 
-        end_codes (Vec<u16>) |tape, this| { // endCode
+        end_codes (Vec<u16>) |this, tape| { // endCode
             tape.take_given(this.segment_count())
         },
 
         reserved_pad (u16), // reservedPad
 
-        start_codes (Vec<u16>) |tape, this| { // startCode
+        start_codes (Vec<u16>) |this, tape| { // startCode
             tape.take_given(this.segment_count())
         },
 
-        id_deltas (Vec<i16>) |tape, this| { // idDelta
+        id_deltas (Vec<i16>) |this, tape| { // idDelta
             tape.take_given(this.segment_count())
         },
 
-        id_range_offsets (Vec<u16>) |tape, this| { // idRangeOffset
+        id_range_offsets (Vec<u16>) |this, tape| { // idRangeOffset
             tape.take_given(this.segment_count())
         },
 
-        glyph_ids (Vec<GlyphID>) |tape, this| { // glyphIdArray
+        glyph_ids (Vec<GlyphID>) |this, tape| { // glyphIdArray
             tape.take_given(try!(this.glyph_id_count()))
         },
     }
@@ -93,7 +93,7 @@ table! {
         first_code  (u16), // firstCode
         entry_count (u16), // entryCount
 
-        glyph_ids (Vec<GlyphID>) |tape, this| { // glyphIdArray
+        glyph_ids (Vec<GlyphID>) |this, tape| { // glyphIdArray
             tape.take_given(this.entry_count as usize)
         },
     }
