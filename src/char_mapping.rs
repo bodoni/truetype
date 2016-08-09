@@ -27,7 +27,7 @@ table! {
     #[doc = "The header of a char-to-glyph mapping."]
     #[derive(Copy)]
     pub Header {
-        version (u16) |__, tape| { // version
+        version (u16) |_, tape| { // version
             let value = try!(tape.take());
             if value != 0 {
                 raise!("found an unknown version of the char-to-glyph mapping");

@@ -12,7 +12,7 @@ table! {
     #[doc = "A font header."]
     #[derive(Copy)]
     pub FontHeader {
-        version (q32) |__, tape| { // version
+        version (q32) |_, tape| { // version
             let value = try!(tape.take());
             if value != q32(0x00010000) {
                 raise!("found an unknown version of the font header");
@@ -23,7 +23,7 @@ table! {
         revision            (q32), // fontRevision
         checksum_adjustment (u32), // checkSumAdjustment
 
-        magic_number (u32) |__, tape| { // MagicNumber
+        magic_number (u32) |_, tape| { // MagicNumber
             let value = try!(tape.take());
             if value != MAGIC_NUMBER {
                 reject!();
@@ -31,7 +31,7 @@ table! {
             Ok(value)
         },
 
-        flags (Flags) |__, tape| { // flags
+        flags (Flags) |_, tape| { // flags
             let value = try!(tape.take::<Flags>());
             if value.is_invalid() {
                 reject!();

@@ -62,7 +62,7 @@ macro_rules! raise(
 
 macro_rules! table {
     ($(#[$attribute:meta])* pub $structure:ident {
-        $($field:ident ($($kind:tt)+) $(|$($argument:ident),+| $body:block)*,)*
+        $($field:ident ($($kind:tt)+) $(|$($argument:tt),+| $body:block)*,)*
     }) => (
         table! { @define $(#[$attribute])* pub $structure { $($field ($($kind)+),)* } }
         table! { @implement pub $structure { $($field ($($kind)+) $(|$($argument),+| $body)*,)* } }
@@ -75,7 +75,7 @@ macro_rules! table {
         pub struct $structure { $(pub $field: $kind,)* }
     );
     (@implement pub $structure:ident {
-        $($field:ident ($($kind:tt)+) $(|$($argument:ident),+| $body:block)*,)*
+        $($field:ident ($($kind:tt)+) $(|$($argument:tt),+| $body:block)*,)*
     }) => (
         impl $crate::Value for $structure {
             fn read<T: $crate::Tape>(tape: &mut T) -> $crate::Result<Self> {
@@ -90,7 +90,7 @@ macro_rules! table {
         }
     );
     (@read $structure:ident, $tape:ident, $table:ident, [$kind:ty]
-     |$chair:ident, $band:ident| $body:block) => ({
+     |$chair:tt, $band:tt| $body:block) => ({
         #[inline(always)]
         fn read<T: $crate::Tape>($chair: &$structure, $band: &mut T) -> $crate::Result<$kind> $body
         try!(read(&$table, $tape))

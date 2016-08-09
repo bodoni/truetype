@@ -8,7 +8,7 @@ table! {
     #[doc = "A horizontal header."]
     #[derive(Copy)]
     pub HorizontalHeader {
-        version (q32) |__, tape| { // version
+        version (q32) |_, tape| { // version
             let value = try!(tape.take());
             if value != q32(0x00010000) {
                 raise!("found an unknown version of the horizontal header");
