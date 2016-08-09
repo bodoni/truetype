@@ -91,7 +91,6 @@ macro_rules! table {
     );
     (@read $structure:ident, $tape:ident, $table:ident, [$kind:ty]
      |$chair:ident, $band:ident| $body:block) => ({
-        #[allow(unused_variables)]
         #[inline(always)]
         fn read<T: $crate::Tape>($chair: &$structure, $band: &mut T) -> $crate::Result<$kind> $body
         try!(read(&$table, $tape))
