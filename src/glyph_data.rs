@@ -27,15 +27,15 @@ table! {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Description {
     /// A simple-glyph description.
-    Simple(Simple),
+    Simple(SimpleDescription),
     /// A compound-glyph description.
-    Compound(Compound),
+    Compound(CompoundDescription),
 }
 
 table! {
     @define
     #[doc = "A simple-glyph description."]
-    pub Simple {
+    pub SimpleDescription {
         end_points       (Vec<u16>       ), // endPtsOfContours
         instruction_size (u16            ), // instructionLength
         instructions     (Vec<u8>        ), // instructions
@@ -47,7 +47,7 @@ table! {
 
 /// A compound-glyph description.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Compound {
+pub struct CompoundDescription {
     pub components: Vec<Component>,
     pub instruction_size: u16,
     pub instructions: Vec<u8>,
@@ -179,7 +179,7 @@ impl Walue<i16> for Description {
             }
             let instruction_size = if has_instructions { try!(tape.take::<u16>()) } else { 0 };
             let instructions = try!(tape.take_bytes(instruction_size as usize));
-            Ok(Description::Compound(Compound {
+            Ok(Description::Compound(CompoundDescription {
                 components: components,
                 instruction_size: instruction_size,
                 instructions: instructions,
@@ -188,7 +188,7 @@ impl Walue<i16> for Description {
     }
 }
 
-impl Walue<usize> for Simple {
+impl Walue<usize> for SimpleDescription {
     fn read<T: Tape>(tape: &mut T, contour_count: usize) -> Result<Self> {
         macro_rules! reject(() => (raise!("found a malformed glyph description")));
 
@@ -238,7 +238,7 @@ impl Walue<usize> for Simple {
         let x = read_coordinates!(is_x_short, is_x_positive, is_x_same);
         let y = read_coordinates!(is_y_short, is_y_positive, is_y_same);
 
-        Ok(Simple {
+        Ok(SimpleDescription {
             end_points: end_points,
             instruction_size: instruction_size,
             instructions: instructions,

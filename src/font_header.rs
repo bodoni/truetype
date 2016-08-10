@@ -4,15 +4,6 @@
 
 use q32;
 
-flags! {
-    #[doc = "Font-header flags."]
-    pub FontFlags(u16) {
-        0b0000_0000_0000_0001 => is_baseline_at_0,
-        0b0000_0000_0000_0010 => is_left_side_bearing_at_0,
-        0b1000_0000_0000_0000 => is_invalid,
-    }
-}
-
 table! {
     #[doc = "A font header."]
     #[derive(Copy)]
@@ -34,5 +25,14 @@ table! {
         direction_hint       (i16      ), // fontDirectionHint
         glyph_mapping_format (i16      ), // indexToLocFormat
         glyph_data_format    (i16      ), // glyphDataFormat
+    }
+}
+
+flags! {
+    #[doc = "Font-header flags."]
+    pub FontFlags(u16) {
+        0b0000_0000_0000_0001 => is_baseline_at_0,
+        0b0000_0000_0000_0010 => is_left_side_bearing_at_0,
+        0b1000_0000_0000_0000 => is_invalid,
     }
 }
