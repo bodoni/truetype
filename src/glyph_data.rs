@@ -2,7 +2,7 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/glyf.htm
 
-use {GlyphID, GlyphMapping, Result, Tape, Value, Walue, q16};
+use {GlyphID, GlyphMapping, Result, Tape, Walue, q16};
 
 /// Glyph data.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -54,13 +54,18 @@ pub struct Compound {
 }
 
 table! {
-    @define
     #[doc = "A component of a compound glyph."]
     pub Component {
         flags     (ComponentFlags), // flags
         glyph_id  (GlyphID       ), // glyphIndex
-        arguments (Arguments     ), // argument1, argument2
-        options   (Options       ),
+
+        arguments (Arguments) |this, tape| { // argument1, argument2
+            tape.take_given(this.flags)
+        },
+
+        options (Options) |this, tape| {
+            tape.take_given(this.flags)
+        },
     }
 }
 
@@ -240,21 +245,6 @@ impl Walue<usize> for Simple {
             flags: flags,
             x: x,
             y: y,
-        })
-    }
-}
-
-impl Value for Component {
-    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        let flags = try!(tape.take::<ComponentFlags>());
-        if flags.is_invalid() {
-            raise!("found a malformed component");
-        }
-        Ok(Component {
-            flags: flags,
-            glyph_id: try!(tape.take()),
-            arguments: try!(tape.take_given(flags)),
-            options: try!(tape.take_given(flags)),
         })
     }
 }
