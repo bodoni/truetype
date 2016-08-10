@@ -6,8 +6,6 @@ use q32;
 
 const MAGIC_NUMBER: u32 = 0x5F0F3CF5;
 
-macro_rules! reject(() => (raise!("found a malformed font header")));
-
 table! {
     #[doc = "A font header."]
     #[derive(Copy)]
@@ -26,7 +24,7 @@ table! {
         magic_number (u32) |_, tape| { // MagicNumber
             let value = try!(tape.take());
             if value != MAGIC_NUMBER {
-                reject!();
+                raise!("found a malformed font header");
             }
             Ok(value)
         },
