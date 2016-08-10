@@ -4,31 +4,14 @@
 
 use q32;
 
-const MAGIC_NUMBER: u32 = 0x5F0F3CF5;
-
 table! {
     #[doc = "A font header."]
     #[derive(Copy)]
     pub FontHeader {
-        version (q32) |_, tape| { // version
-            let value = try!(tape.take());
-            if value != q32(0x00010000) {
-                raise!("found an unknown version of the font header");
-            }
-            Ok(value)
-        },
-
-        revision            (q32), // fontRevision
-        checksum_adjustment (u32), // checkSumAdjustment
-
-        magic_number (u32) |_, tape| { // MagicNumber
-            let value = try!(tape.take());
-            if value != MAGIC_NUMBER {
-                raise!("found a malformed font header");
-            }
-            Ok(value)
-        },
-
+        version              (q32  ) = { q32(0x00010000) }, // version
+        revision             (q32  ), // fontRevision
+        checksum_adjustment  (u32  ), // checkSumAdjustment
+        magic_number         (u32  ) = { 0x5F0F3CF5 }, // MagicNumber
         flags                (Flags), // flags
         units_per_em         (u16  ), // unitsPerEm
         created              (i64  ), // created
