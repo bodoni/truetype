@@ -43,11 +43,11 @@ macro_rules! flags {
         impl $crate::Value for $structure {
             #[inline(always)]
             fn read<T: $crate::Tape>(tape: &mut T) -> $crate::Result<Self> {
-                let flags = $structure(try!(tape.take::<$kind>()));
-                if flags.is_invalid() {
+                let value = $structure(try!(tape.take::<$kind>()));
+                if value.is_invalid() {
                     raise!("found malformed flags");
                 }
-                Ok(flags)
+                Ok(value)
             }
         }
 
