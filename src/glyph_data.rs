@@ -56,8 +56,8 @@ pub struct CompoundDescription {
 table! {
     #[doc = "A component of a compound glyph."]
     pub Component {
-        flags     (ComponentFlags), // flags
-        glyph_id  (GlyphID       ), // glyphIndex
+        flags    (ComponentFlags), // flags
+        glyph_id (GlyphID       ), // glyphIndex
 
         arguments (Arguments) |this, tape| { // argument1, argument2
             tape.take_given(this.flags)
