@@ -5,7 +5,7 @@
 use {Result, Tape, Value, q32};
 
 /// A maximum profile.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub enum MaximumProfile {
     /// Version 0.5.
     Version05(MaximumProfile05),

@@ -7,7 +7,7 @@ use std::mem;
 use {Result, Tape, Value};
 
 /// A naming table.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub enum NamingTable {
     /// Format 0.
     Format0(NamingTable0),

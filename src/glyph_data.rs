@@ -5,7 +5,7 @@
 use {GlyphID, GlyphMapping, Result, Tape, Walue, q16};
 
 /// Glyph data.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct GlyphData(pub Vec<Option<Glyph>>);
 
 table! {
@@ -24,7 +24,7 @@ table! {
 }
 
 /// A description.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub enum Description {
     /// A simple-glyph description.
     Simple(SimpleDescription),
@@ -46,7 +46,7 @@ table! {
 }
 
 /// A compound-glyph description.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct CompoundDescription {
     pub components: Vec<Component>,
     pub instruction_size: u16,
@@ -104,7 +104,7 @@ flags! {
 }
 
 /// Arguments of a component.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug)]
 pub enum Arguments {
     /// Offsets relative to the current point.
     Offsets(i16, i16),
@@ -113,7 +113,7 @@ pub enum Arguments {
 }
 
 /// Options of a component.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug)]
 pub enum Options {
     /// No options.
     None,

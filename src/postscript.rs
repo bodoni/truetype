@@ -5,7 +5,7 @@
 use {Result, Tape, Value, q32};
 
 /// PostScript information.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub enum PostScript {
     /// Version 1.0.
     Version10(PostScript10),

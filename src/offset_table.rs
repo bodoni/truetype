@@ -5,7 +5,7 @@
 use {Result, Tag, Tape, Value, q32};
 
 /// An offset table.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct OffsetTable {
     pub header: Header,
     pub records: Vec<Record>,

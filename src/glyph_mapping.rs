@@ -5,7 +5,7 @@
 use {FontHeader, MaximumProfile, Result, Tape, Walue};
 
 /// A glyph-to-location mapping.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub enum GlyphMapping {
     /// Offsets devided by two.
     HalfOffsets(Vec<u16>),

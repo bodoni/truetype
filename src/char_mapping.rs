@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use {GlyphID, Result, Tape, Value};
 
 /// A char-to-glyph mapping.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct CharMapping {
     pub header: Header,
     pub records: Vec<Record>,
@@ -15,7 +15,7 @@ pub struct CharMapping {
 }
 
 /// An encoding of a char-to-glyph mapping.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub enum Encoding {
     /// Format 4.
     Format4(Encoding4),

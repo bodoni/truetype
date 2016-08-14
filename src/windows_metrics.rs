@@ -5,7 +5,7 @@
 use {Result, Tape, Value};
 
 /// OS/2 and Windows metrics.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug)]
 pub enum WindowsMetrics {
     /// Version 3.
     Version3(WindowsMetrics3),
