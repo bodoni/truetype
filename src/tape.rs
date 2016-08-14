@@ -80,9 +80,7 @@ macro_rules! value {
     ([$kind:ident; $count:expr], 1) => (
         impl Value for [$kind; $count] {
             fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-                let mut buffer: [u8; $count] = unsafe { ::std::mem::uninitialized() };
-                try!(::std::io::Read::read_exact(tape, &mut buffer));
-                Ok(unsafe { ::std::mem::transmute(buffer) })
+                Ok(read!(tape, $count))
             }
         }
     );
