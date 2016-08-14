@@ -77,6 +77,15 @@ macro_rules! read(
 );
 
 macro_rules! value {
+    ([$kind:ident; $count:expr], 1) => (
+        impl Value for [$kind; $count] {
+            fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+                let mut buffer: [u8; $count] = unsafe { ::std::mem::uninitialized() };
+                try!(::std::io::Read::read_exact(tape, &mut buffer));
+                Ok(unsafe { ::std::mem::transmute(buffer) })
+            }
+        }
+    );
     ($kind:ident, 1) => (
         impl Value for $kind {
             #[inline]
@@ -101,31 +110,9 @@ value!(i16, 2);
 value!(u16, 2);
 value!(u32, 4);
 value!(i64, 8);
-
-macro_rules! value {
-    ([i8; $count:expr]) => (
-        impl Value for [i8; $count] {
-            fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-                let mut buffer: [u8; $count] = unsafe { ::std::mem::uninitialized() };
-                try!(::std::io::Read::read_exact(tape, &mut buffer));
-                Ok(unsafe { ::std::mem::transmute(buffer) })
-            }
-        }
-    );
-    ([u8; $count:expr]) => (
-        impl Value for [u8; $count] {
-            fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-                let mut buffer: [u8; $count] = unsafe { ::std::mem::uninitialized() };
-                try!(::std::io::Read::read_exact(tape, &mut buffer));
-                Ok(buffer)
-            }
-        }
-    );
-}
-
-value!([i8; 4]);
-value!([u8; 4]);
-value!([u8; 10]);
+value!([i8; 4], 1);
+value!([u8; 4], 1);
+value!([u8; 10], 1);
 
 impl<V> Walue<usize> for Vec<V> where V: Value {
     fn read<T: Tape>(tape: &mut T, count: usize) -> Result<Self> {
