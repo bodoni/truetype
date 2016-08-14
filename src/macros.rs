@@ -84,7 +84,7 @@ macro_rules! table {
     }) => (
         impl $crate::Value for $name {
             fn read<T: $crate::Tape>(tape: &mut T) -> $crate::Result<Self> {
-                let mut table: $name = unsafe { ::std::mem::uninitialized() };
+                let mut table: $name = unsafe { ::std::mem::zeroed() };
                 $({
                     let value = table!(@read $name, table, tape [$($kind)+] [$($value)*]
                                        $(|$($argument),+| $body)*);
