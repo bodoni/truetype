@@ -13,10 +13,10 @@ pub enum GlyphMapping {
     Offsets(Vec<u32>),
 }
 
-impl<'l> Walue<(&'l FontHeader, &'l MaximumProfile)> for GlyphMapping {
-    fn read<T: Tape>(tape: &mut T, (header, profile): (&FontHeader, &MaximumProfile))
-                     -> Result<Self> {
+impl<'l> Walue<'l> for GlyphMapping {
+    type Parameter = (&'l FontHeader, &'l MaximumProfile);
 
+    fn read<T: Tape>(tape: &mut T, (header, profile): Self::Parameter) -> Result<Self> {
         let glyph_count = profile.glyph_count();
         match header.glyph_mapping_format {
             0 => Ok(GlyphMapping::HalfOffsets(try!(tape.take_given(glyph_count + 1)))),

@@ -127,7 +127,9 @@ pub enum Options {
 
 deref! { GlyphData::0 => [Option<Glyph>] }
 
-impl<'l> Walue<&'l GlyphMapping> for GlyphData {
+impl<'l> Walue<'l> for GlyphData {
+    type Parameter = &'l GlyphMapping;
+
     fn read<T: Tape>(tape: &mut T, mapping: &GlyphMapping) -> Result<Self> {
         macro_rules! reject(() => (raise!("found a malformed glyph-to-location mapping")));
         let offsets: Vec<_> =  match mapping {
@@ -162,7 +164,9 @@ impl<'l> Walue<&'l GlyphMapping> for GlyphData {
     }
 }
 
-impl Walue<i16> for Description {
+impl Walue<'static> for Description {
+    type Parameter = i16;
+
     fn read<T: Tape>(tape: &mut T, contour_count: i16) -> Result<Self> {
         if contour_count >= 0 {
             Ok(Description::Simple(try!(tape.take_given(contour_count as usize))))
@@ -188,11 +192,13 @@ impl Walue<i16> for Description {
     }
 }
 
-impl Walue<usize> for SimpleDescription {
+impl Walue<'static> for SimpleDescription {
+    type Parameter = usize;
+
     fn read<T: Tape>(tape: &mut T, contour_count: usize) -> Result<Self> {
         macro_rules! reject(() => (raise!("found a malformed glyph description")));
 
-        let end_points = try!(tape.take_given::<Vec<u16>, _>(contour_count));
+        let end_points = try!(tape.take_given::<Vec<u16>>(contour_count));
         for i in 1..contour_count {
             if end_points[i - 1] > end_points[i] {
                 reject!();
@@ -249,7 +255,9 @@ impl Walue<usize> for SimpleDescription {
     }
 }
 
-impl Walue<ComponentFlags> for Arguments {
+impl Walue<'static> for Arguments {
+    type Parameter = ComponentFlags;
+
     fn read<T: Tape>(tape: &mut T, flags: ComponentFlags) -> Result<Self> {
         match (flags.are_arguments_words(), flags.are_arguments_xy()) {
             (true, true) => {
@@ -276,7 +284,9 @@ impl Walue<ComponentFlags> for Arguments {
     }
 }
 
-impl Walue<ComponentFlags> for Options {
+impl Walue<'static> for Options {
+    type Parameter = ComponentFlags;
+
     fn read<T: Tape>(tape: &mut T, flags: ComponentFlags) -> Result<Self> {
         if flags.has_scalar_scale() {
             Ok(Options::Scalar(try!(tape.take())))

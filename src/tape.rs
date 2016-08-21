@@ -12,7 +12,7 @@ pub trait Tape: Read + Seek + Sized {
 
     /// Read a value given a parameter.
     #[inline(always)]
-    fn take_given<T: Walue<P>, P>(&mut self, parameter: P) -> Result<T> {
+    fn take_given<'l, T: Walue<'l>>(&mut self, parameter: T::Parameter) -> Result<T> {
         Walue::read(self, parameter)
     }
 
@@ -61,9 +61,12 @@ pub trait Value: Sized {
 }
 
 /// A type that can be read given a parameter.
-pub trait Walue<P>: Sized {
+pub trait Walue<'l>: Sized {
+    /// The parameter type.
+    type Parameter;
+
     /// Read a value.
-    fn read<T: Tape>(&mut T, P) -> Result<Self>;
+    fn read<T: Tape>(&mut T, Self::Parameter) -> Result<Self>;
 }
 
 impl<T: Read + Seek> Tape for T {}
@@ -112,7 +115,9 @@ value!([i8; 4], 1);
 value!([u8; 4], 1);
 value!([u8; 10], 1);
 
-impl<V> Walue<usize> for Vec<V> where V: Value {
+impl<V> Walue<'static> for Vec<V> where V: Value {
+    type Parameter = usize;
+
     fn read<T: Tape>(tape: &mut T, count: usize) -> Result<Self> {
         let mut values = Vec::with_capacity(count);
         for _ in 0..count {

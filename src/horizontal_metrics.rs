@@ -40,10 +40,10 @@ impl HorizontalMetrics {
     }
 }
 
-impl<'l> Walue<(&'l HorizontalHeader, &'l MaximumProfile)> for HorizontalMetrics {
-    fn read<T: Tape>(tape: &mut T, (header, profile): (&HorizontalHeader, &MaximumProfile))
-                     -> Result<Self> {
+impl<'l> Walue<'l> for HorizontalMetrics {
+    type Parameter = (&'l HorizontalHeader, &'l MaximumProfile);
 
+    fn read<T: Tape>(tape: &mut T, (header, profile): Self::Parameter) -> Result<Self> {
         let metric_count = header.horizontal_metric_count as usize;
         let glyph_count = profile.glyph_count();
         if metric_count == 0 || metric_count > glyph_count {
