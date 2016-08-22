@@ -4,7 +4,7 @@
 
 use std::ops::Deref;
 
-use {GlyphID, GlyphMapping, Result, Tape, Walue, q16};
+use {GlyphMapping, Result, Tape, Walue, q16};
 
 /// Glyph data.
 #[derive(Clone, Debug)]
@@ -30,8 +30,8 @@ table! {
 pub enum Description {
     /// A simple-glyph description.
     Simple(SimpleDescription),
-    /// A compound-glyph description.
-    Compound(CompoundDescription),
+    /// A composite-glyph description.
+    Composite(CompositeDescription),
 }
 
 table! {
@@ -47,19 +47,19 @@ table! {
     }
 }
 
-/// A compound-glyph description.
+/// A composite-glyph description.
 #[derive(Clone, Debug)]
-pub struct CompoundDescription {
+pub struct CompositeDescription {
     pub components: Vec<Component>,
     pub instruction_size: u16,
     pub instructions: Vec<u8>,
 }
 
 table! {
-    #[doc = "A component of a compound glyph."]
+    #[doc = "A component of a composite glyph."]
     pub Component {
-        flags    (ComponentFlags), // flags
-        glyph_id (GlyphID       ), // glyphIndex
+        flags       (ComponentFlags), // flags
+        glyph_index (u16           ), // glyphIndex
 
         arguments (Arguments) |this, tape| { // argument1, argument2
             tape.take_given(this.flags)
@@ -192,7 +192,7 @@ impl Walue<'static> for Description {
             }
             let instruction_size = if has_instructions { try!(tape.take::<u16>()) } else { 0 };
             let instructions = try!(tape.take_bytes(instruction_size as usize));
-            Ok(Description::Compound(CompoundDescription {
+            Ok(Description::Composite(CompositeDescription {
                 components: components,
                 instruction_size: instruction_size,
                 instructions: instructions,
