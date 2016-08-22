@@ -235,6 +235,7 @@ fn setup(fixture: Fixture, table: Option<&str>) -> File {
 
 fn stringify<T>(data: &[T]) -> &str {
     use std::{mem, slice, str};
+
     unsafe {
         let length = data.len() * mem::size_of::<T>();
         let bytes = slice::from_raw_parts(data as *const _ as *const _, length);

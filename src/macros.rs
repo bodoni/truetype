@@ -1,26 +1,3 @@
-macro_rules! deref {
-    (@itemize $($one:item)*) => ($($one)*);
-    ($name:ident::$field:tt => $target:ty) => (deref! {
-        @itemize
-
-        impl ::std::ops::Deref for $name {
-            type Target = $target;
-
-            #[inline]
-            fn deref(&self) -> &Self::Target {
-                &self.$field
-            }
-        }
-
-        impl ::std::ops::DerefMut for $name {
-            #[inline]
-            fn deref_mut(&mut self) -> &mut Self::Target {
-                &mut self.$field
-            }
-        }
-    });
-}
-
 #[doc(hidden)]
 #[macro_export]
 macro_rules! flags {
@@ -82,8 +59,8 @@ macro_rules! table {
     (@implement pub $name:ident {
         $($field:ident ($($kind:tt)+) [$($value:block)*] $(|$($argument:tt),+| $body:block)*,)*
     }) => (
-        impl $crate::Value for $name {
-            fn read<T: $crate::Tape>(tape: &mut T) -> $crate::Result<Self> {
+        impl ::Value for $name {
+            fn read<T: ::Tape>(tape: &mut T) -> ::Result<Self> {
                 let mut table: $name = unsafe { ::std::mem::zeroed() };
                 $({
                     let value = table!(@read $name, table, tape [$($kind)+] [$($value)*]
@@ -105,7 +82,7 @@ macro_rules! table {
     (@read $name:ident, $this:ident, $tape:ident [$kind:ty] []
      |$this_:pat, $tape_:pat| $body:block) => ({
         #[inline(always)]
-        fn read<T: $crate::Tape>($this_: &$name, $tape_: &mut T) -> $crate::Result<$kind> $body
+        fn read<T: ::Tape>($this_: &$name, $tape_: &mut T) -> ::Result<$kind> $body
         try!(read(&$this, $tape))
     });
 }

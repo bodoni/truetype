@@ -1,15 +1,25 @@
-use std::{fmt, mem, str};
+use std::fmt;
+use std::ops::Deref;
 
 use {Result, Tape, Value, q32};
 
-/// A table tag.
+/// A tag.
 #[derive(Clone, Copy, Eq, Hash, PartialEq)]
 pub struct Tag(pub [u8; 4]);
 
-deref! { Tag::0 => [u8; 4] }
+impl Deref for Tag {
+    type Target = [u8; 4];
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
 
 impl fmt::Debug for Tag {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        use std::str;
+
         match str::from_utf8(&self.0[..]) {
             Ok(name) => write!(formatter, "Tag({:?})", name),
             _ => write!(formatter, "Tag({:?})", self.0),
@@ -20,6 +30,8 @@ impl fmt::Debug for Tag {
 impl From<q32> for Tag {
     #[inline(always)]
     fn from(q32(number): q32) -> Self {
+        use std::mem;
+
         Tag(unsafe { mem::transmute(u32::from_be(number)) })
     }
 }

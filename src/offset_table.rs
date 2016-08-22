@@ -92,7 +92,6 @@ mod tests {
                 table.checksum(&mut reader, |_, chunk| chunk).unwrap()
             })
         );
-
         assert!(!checksum!(3 * 4, 1 + 2 + 4, &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3]));
         assert!(checksum!(3 * 4, 1 + 2 + 3, &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3]));
     }
