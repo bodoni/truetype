@@ -25,7 +25,7 @@ table! {
     }
 }
 
-/// A description.
+/// A glyph description.
 #[derive(Clone, Debug)]
 pub enum Description {
     /// A simple-glyph description.
