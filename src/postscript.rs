@@ -8,17 +8,17 @@ use {Result, Tape, Value, q32};
 #[derive(Clone, Debug)]
 pub enum PostScript {
     /// Version 1.0.
-    Version10(PostScript10),
+    Version1(PostScript1),
     /// Version 2.0.
-    Version20(PostScript20),
+    Version2(PostScript2),
     /// Version 3.0.
-    Version30(PostScript30),
+    Version3(PostScript3),
 }
 
 table! {
     #[doc = "PostScript information of version 1.0."]
     #[derive(Copy)]
-    pub PostScript10 {
+    pub PostScript1 {
         version             (q32), // version
         italic_angle        (q32), // italicAngle
         underline_position  (i16), // underlinePosition
@@ -33,7 +33,7 @@ table! {
 
 table! {
     #[doc = "PostScript information of version 2.0."]
-    pub PostScript20 {
+    pub PostScript2 {
         version             (q32), // version
         italic_angle        (q32), // italicAngle
         underline_position  (i16), // underlinePosition
@@ -57,14 +57,14 @@ table! {
 }
 
 /// PostScript information of version 3.0.
-pub type PostScript30 = PostScript10;
+pub type PostScript3 = PostScript1;
 
 impl Value for PostScript {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         Ok(match try!(tape.peek::<q32>()) {
-            q32(0x00010000) => PostScript::Version10(try!(tape.take())),
-            q32(0x00020000) => PostScript::Version20(try!(tape.take())),
-            q32(0x00030000) => PostScript::Version30(try!(tape.take())),
+            q32(0x00010000) => PostScript::Version1(try!(tape.take())),
+            q32(0x00020000) => PostScript::Version2(try!(tape.take())),
+            q32(0x00030000) => PostScript::Version3(try!(tape.take())),
             _ => raise!("found an unknown format of the PostScript information"),
         })
     }

@@ -194,7 +194,7 @@ fn postscript() {
     use truetype::PostScript;
 
     match ok!(PostScript::read(&mut setup!(TTF, "post"))) {
-        PostScript::Version20(ref table) => {
+        PostScript::Version2(ref table) => {
             assert_eq!(table.glyph_count, 938);
             assert_eq!(table.glyph_names.len(), 938);
             assert_eq!(&table.glyph_names[0], ".notdef");
@@ -203,7 +203,7 @@ fn postscript() {
         _ => unreachable!(),
     }
     match ok!(PostScript::read(&mut setup!("post"))) {
-        PostScript::Version30(ref table) => {
+        PostScript::Version3(ref table) => {
             assert_eq!(f32::from(table.version), 3.0);
             assert_eq!(table.underline_position, -75);
         },

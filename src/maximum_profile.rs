@@ -10,7 +10,7 @@ pub enum MaximumProfile {
     /// Version 0.5.
     Version05(MaximumProfile05),
     /// Version 1.0.
-    Version10(MaximumProfile10),
+    Version1(MaximumProfile1),
 }
 
 table! {
@@ -25,7 +25,7 @@ table! {
 table! {
     #[doc = "A maximum profile of version 1.0."]
     #[derive(Copy)]
-    pub MaximumProfile10 {
+    pub MaximumProfile1 {
         version                     (q32), // version
         glyph_count                 (u16), // numGlyphs
         max_points                  (u16), // maxPoints
@@ -49,7 +49,7 @@ impl MaximumProfile {
     pub fn glyph_count(&self) -> usize {
         match self {
             &MaximumProfile::Version05(ref profile) => profile.glyph_count as usize,
-            &MaximumProfile::Version10(ref profile) => profile.glyph_count as usize,
+            &MaximumProfile::Version1(ref profile) => profile.glyph_count as usize,
         }
     }
 }
@@ -58,7 +58,7 @@ impl Value for MaximumProfile {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         Ok(match try!(tape.peek::<q32>()) {
             q32(0x00005000) => MaximumProfile::Version05(try!(tape.take())),
-            q32(0x00010000) => MaximumProfile::Version10(try!(tape.take())),
+            q32(0x00010000) => MaximumProfile::Version1(try!(tape.take())),
             _ => raise!("found an unknown version of the maximum profile"),
         })
     }
