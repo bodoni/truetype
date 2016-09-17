@@ -8,7 +8,8 @@ table! {
     #[doc = "A font header."]
     #[derive(Copy)]
     pub FontHeader {
-        version              (q32  ) = { q32(0x00010000) }, // version
+        major_version        (u16  ) = { 1 }, // majorVersion
+        minor_version        (u16  ) = { 0 }, // minorVersion
         revision             (q32  ), // fontRevision
         checksum_adjustment  (u32  ), // checkSumAdjustment
         magic_number         (u32  ) = { 0x5F0F3CF5 }, // MagicNumber
