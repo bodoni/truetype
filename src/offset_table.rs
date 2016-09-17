@@ -2,7 +2,7 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/otff.htm
 
-use {Result, Tag, Tape, Value, q32};
+use {Result, Tag, Tape, Value};
 
 /// An offset table.
 #[derive(Clone, Debug)]
@@ -15,7 +15,7 @@ table! {
     #[doc = "The header of an offset table."]
     #[derive(Copy)]
     pub Header {
-        version        (q32), // version
+        version        (u32), // version
         table_count    (u16), // numTables
         search_range   (u16), // searchRange
         entry_selector (u16), // entrySelector
@@ -38,9 +38,9 @@ impl Value for OffsetTable {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         let header = try!(tape.take::<Header>());
         match header.version {
-            q32(0x00010000) => {},
+            0x00010000 => {},
             version => match &*Tag::from(version) {
-                b"true" | b"typ1" | b"OTTO" => {},
+                b"OTTO" | b"true" | b"typ1" => {},
                 _ => raise!("found an unknown font format"),
             },
         }
