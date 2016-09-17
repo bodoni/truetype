@@ -2,20 +2,35 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/otff.htm
 
-use {Result, Tag, Tape, Value};
+use {Result, Tag, Tape};
 
-/// An offset table.
-#[derive(Clone, Debug)]
-pub struct OffsetTable {
-    pub header: Header,
-    pub records: Vec<Record>,
+table! {
+    #[doc = "An offset table."]
+    pub OffsetTable {
+        header (Header),
+
+        records (Vec<Record>) |this, tape| {
+            tape.take_given(this.header.table_count as usize)
+        },
+    }
 }
 
 table! {
     #[doc = "The header of an offset table."]
     #[derive(Copy)]
     pub Header {
-        version        (u32), // version
+        version (u32) |_, tape| { // version
+            let value = try!(tape.take());
+            match value {
+                0x00010000 => {},
+                value => match &*Tag::from(value) {
+                    b"OTTO" | b"true" | b"typ1" => {},
+                    _ => raise!("found an unknown font format"),
+                },
+            }
+            Ok(value)
+        },
+
         table_count    (u16), // numTables
         search_range   (u16), // searchRange
         entry_selector (u16), // entrySelector
@@ -31,24 +46,6 @@ table! {
         checksum (u32), // checkSum
         offset   (u32), // offset
         length   (u32), // length
-    }
-}
-
-impl Value for OffsetTable {
-    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        let header = try!(tape.take::<Header>());
-        match header.version {
-            0x00010000 => {},
-            version => match &*Tag::from(version) {
-                b"OTTO" | b"true" | b"typ1" => {},
-                _ => raise!("found an unknown font format"),
-            },
-        }
-        let mut records = vec![];
-        for _ in 0..header.table_count {
-            records.push(try!(tape.take()));
-        }
-        Ok(OffsetTable { header: header, records: records })
     }
 }
 
