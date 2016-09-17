@@ -43,8 +43,7 @@ table! {
         max_memory_type42   (u32), // maxMemType42
         min_memory_type1    (u32), // minMemType1
         max_memory_type1    (u32), // maxMemType1
-
-        glyph_count (u16), // numberOfGlyphs
+        glyph_count         (u16), // numberOfGlyphs
 
         glyph_name_indices (Vec<u16>) |this, tape| { // glyphNameIndex
             tape.take_given(this.glyph_count as usize)
