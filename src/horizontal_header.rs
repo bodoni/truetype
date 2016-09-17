@@ -2,13 +2,12 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/hhea.htm
 
-use q32;
-
 table! {
     #[doc = "A horizontal header."]
     #[derive(Copy)]
     pub HorizontalHeader {
-        version                 (q32) = { q32(0x00010000) }, // version
+        major_version           (u16) = { 1 }, // majorVersion
+        minor_version           (u16) = { 0 }, // minorVersion
         ascender                (i16), // Ascender
         descender               (i16), // Descender
         line_gap                (i16), // LineGap

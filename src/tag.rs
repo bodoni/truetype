@@ -1,7 +1,7 @@
 use std::fmt;
 use std::ops::Deref;
 
-use {Result, Tape, Value, q32};
+use {Result, Tape, Value};
 
 /// A tag.
 #[derive(Clone, Copy, Eq, Hash, PartialEq)]
@@ -27,9 +27,9 @@ impl fmt::Debug for Tag {
     }
 }
 
-impl From<q32> for Tag {
+impl From<u32> for Tag {
     #[inline(always)]
-    fn from(q32(number): q32) -> Self {
+    fn from(number: u32) -> Self {
         use std::mem;
 
         Tag(unsafe { mem::transmute(u32::from_be(number)) })
@@ -47,7 +47,7 @@ impl Value for Tag {
 mod tests {
     use std::io::Cursor;
 
-    use {Value, q32};
+    use Value;
     use super::Tag;
 
     #[test]
@@ -57,7 +57,7 @@ mod tests {
 
     #[test]
     fn from() {
-        assert_eq!(Tag(*b"true"), Tag::from(q32(0x74727565)));
+        assert_eq!(Tag(*b"true"), Tag::from(0x74727565));
     }
 
     #[test]
