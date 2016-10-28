@@ -4,7 +4,7 @@ The package provides a parser for TrueType fonts. It is recommended to use a
 higher-level parser called [`opentype`][opentype], which internally relies on
 this package.
 
-## [Documentation][doc]
+## [Documentation][documentation]
 
 ## Contribution
 
@@ -14,7 +14,7 @@ will be licensed according to the terms given in [LICENSE.md](LICENSE.md).
 
 [opentype]: https://github.com/bodoni/opentype
 
-[doc]: https://bodoni.github.io/truetype
+[documentation]: https://docs.rs/truetype
 [status-img]: https://travis-ci.org/bodoni/truetype.svg?branch=master
 [status-url]: https://travis-ci.org/bodoni/truetype
 [version-img]: https://img.shields.io/crates/v/truetype.svg

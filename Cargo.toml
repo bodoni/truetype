@@ -1,10 +1,10 @@
 [package]
 name = "truetype"
-version = "0.23.0"
+version = "0.23.1"
 license = "Apache-2.0/MIT"
 authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
 description = "The package provides a parser for TrueType fonts."
-documentation = "https://bodoni.github.io/truetype"
+documentation = "https://docs.rs/truetype"
 homepage = "https://github.com/bodoni/truetype"
 repository = "https://github.com/bodoni/truetype"
 exclude = ["tests/fixtures/*"]
