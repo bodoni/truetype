@@ -7,16 +7,16 @@ use {Result, Tape, Value, q32};
 /// PostScript information.
 #[derive(Clone, Debug)]
 pub enum PostScript {
-    /// Version 1.0.
+    /// Version 1.
     Version1(PostScript1),
-    /// Version 2.0.
+    /// Version 2.
     Version2(PostScript2),
-    /// Version 3.0.
+    /// Version 3.
     Version3(PostScript3),
 }
 
 table! {
-    #[doc = "PostScript information of version 1.0."]
+    #[doc = "PostScript information of version 1."]
     #[derive(Copy)]
     pub PostScript1 {
         version             (q32), // version
@@ -32,7 +32,7 @@ table! {
 }
 
 table! {
-    #[doc = "PostScript information of version 2.0."]
+    #[doc = "PostScript information of version 2."]
     pub PostScript2 {
         version             (q32), // version
         italic_angle        (q32), // italicAngle
@@ -55,7 +55,7 @@ table! {
     }
 }
 
-/// PostScript information of version 3.0.
+/// PostScript information of version 3.
 pub type PostScript3 = PostScript1;
 
 impl Value for PostScript {

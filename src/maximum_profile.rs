@@ -9,7 +9,7 @@ use {Result, Tape, Value, q32};
 pub enum MaximumProfile {
     /// Version 0.5.
     Version05(MaximumProfile05),
-    /// Version 1.0.
+    /// Version 1.
     Version1(MaximumProfile1),
 }
 
@@ -23,7 +23,7 @@ table! {
 }
 
 table! {
-    #[doc = "A maximum profile of version 1.0."]
+    #[doc = "A maximum profile of version 1."]
     #[derive(Copy)]
     pub MaximumProfile1 {
         version                     (q32), // version

@@ -7,11 +7,17 @@ use {Result, Tape, Value};
 /// OS/2 and Windows metrics.
 #[derive(Clone, Debug)]
 pub enum WindowsMetrics {
+    /// Version 0.
     Version0(WindowsMetrics0),
+    /// Version 1.
     Version1(WindowsMetrics1),
+    /// Version 2.
     Version2(WindowsMetrics2),
+    /// Version 3.
     Version3(WindowsMetrics2),
+    /// Version 4.
     Version4(WindowsMetrics2),
+    /// Version 5.
     Version5(WindowsMetrics5),
 }
 
