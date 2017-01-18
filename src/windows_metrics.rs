@@ -14,9 +14,9 @@ pub enum WindowsMetrics {
     /// Version 2.
     Version2(WindowsMetrics2),
     /// Version 3.
-    Version3(WindowsMetrics2),
+    Version3(WindowsMetrics3),
     /// Version 4.
-    Version4(WindowsMetrics2),
+    Version4(WindowsMetrics4),
     /// Version 5.
     Version5(WindowsMetrics5),
 }
@@ -96,7 +96,7 @@ table! {
 }
 
 table! {
-    #[doc = "OS/2 and Windows metrics of version 2, 3, and 4."]
+    #[doc = "OS/2 and Windows metrics of version 2."]
     pub WindowsMetrics2 {
         version               (u16           ), // version
         average_char_width    (i16           ), // xAvgCharWidth
@@ -137,6 +137,12 @@ table! {
         max_context           (u16           ), // usMaxContext
     }
 }
+
+/// OS/2 and Windows metrics of version 3.
+pub type WindowsMetrics3 = WindowsMetrics2;
+
+/// OS/2 and Windows metrics of version 4.
+pub type WindowsMetrics4 = WindowsMetrics2;
 
 table! {
     #[doc = "OS/2 and Windows metrics of version 5."]
