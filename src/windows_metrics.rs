@@ -4,9 +4,7 @@
 
 use {Result, Tape, Value};
 
-/// OS/2 and Windows metrics.  The version identifies the layout
-/// of the table, with the same layout being shared by multiple
-/// versions in some cases.
+/// OS/2 and Windows metrics.
 #[derive(Clone, Debug)]
 pub enum WindowsMetrics {
     Version0(WindowsMetrics0),
@@ -92,7 +90,7 @@ table! {
 }
 
 table! {
-    #[doc = "OS/2 and Windows metrics of version 2/3/4."]
+    #[doc = "OS/2 and Windows metrics of version 2, 3, and 4."]
     pub WindowsMetrics2 {
         version               (u16           ), // version
         average_char_width    (i16           ), // xAvgCharWidth
