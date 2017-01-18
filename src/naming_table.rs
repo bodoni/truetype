@@ -121,7 +121,7 @@ impl NamingTable1 {
 fn data_length(records: &[Record]) -> usize {
     let mut length = 0;
     for record in records {
-        let end = record.offset + record.length + 1;
+        let end = record.offset + record.length;
         if end > length {
             length = end;
         }
