@@ -2,7 +2,10 @@
 name = "truetype"
 version = "0.24.0"
 license = "Apache-2.0/MIT"
-authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
+authors = [
+    "Ivan Ukhov <ivan.ukhov@gmail.com>",
+    "Vladimir Vukicevic <vladimir@pobox.com>",
+]
 description = "The package provides a parser for TrueType fonts."
 documentation = "https://docs.rs/truetype"
 homepage = "https://github.com/bodoni/truetype"
