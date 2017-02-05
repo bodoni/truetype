@@ -5,7 +5,7 @@
 use {Result, Tape, Value};
 
 /// OS/2 and Windows metrics.
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub enum WindowsMetrics {
     /// Version 0.
     Version0(WindowsMetrics0),
@@ -23,6 +23,7 @@ pub enum WindowsMetrics {
 
 table! {
     #[doc = "OS/2 and Windows metrics of version 0."]
+    #[derive(Copy)]
     pub WindowsMetrics0 {
         version               (u16           ), // version
         average_char_width    (i16           ), // xAvgCharWidth
@@ -59,6 +60,7 @@ table! {
 
 table! {
     #[doc = "OS/2 and Windows metrics of version 1."]
+    #[derive(Copy)]
     pub WindowsMetrics1 {
         version               (u16           ), // version
         average_char_width    (i16           ), // xAvgCharWidth
@@ -97,6 +99,7 @@ table! {
 
 table! {
     #[doc = "OS/2 and Windows metrics of version 2."]
+    #[derive(Copy)]
     pub WindowsMetrics2 {
         version               (u16           ), // version
         average_char_width    (i16           ), // xAvgCharWidth
@@ -146,6 +149,7 @@ pub type WindowsMetrics4 = WindowsMetrics2;
 
 table! {
     #[doc = "OS/2 and Windows metrics of version 5."]
+    #[derive(Copy)]
     pub WindowsMetrics5 {
         version                  (u16           ), // version
         average_char_width       (i16           ), // xAvgCharWidth
