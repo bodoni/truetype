@@ -148,7 +148,7 @@ fn maximum_profile() {
     use truetype::MaximumProfile;
 
     match ok!(MaximumProfile::read(&mut setup!(CFF, "maxp"))) {
-        MaximumProfile::Version05(ref table) => {
+        MaximumProfile::Version0(ref table) => {
             assert_eq!(table.glyph_count, 547);
         },
         _ => unreachable!(),
