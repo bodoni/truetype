@@ -57,6 +57,7 @@ pub struct CompositeDescription {
 
 table! {
     #[doc = "A component of a composite glyph."]
+    #[derive(Copy)]
     pub Component {
         flags       (ComponentFlags), // flags
         glyph_index (u16           ), // glyphIndex
