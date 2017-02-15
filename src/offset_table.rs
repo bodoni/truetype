@@ -20,7 +20,7 @@ table! {
     #[derive(Copy)]
     pub Header {
         version (u32) |_, tape| { // version
-            let value = try!(tape.take());
+            let value = tape.take()?;
             match value {
                 0x00010000 => {},
                 value => match &*Tag::from(value) {
@@ -57,10 +57,10 @@ impl Record {
     {
         let length = ((self.length as usize + 4 - 1) & !(4 - 1)) / 4;
         tape.stay(|tape| {
-            try!(tape.jump(self.offset as u64));
+            tape.jump(self.offset as u64)?;
             let mut checksum: u64 = 0;
             for i in 0..length {
-                checksum += process(i, try!(tape.take())) as u64;
+                checksum += process(i, tape.take()?) as u64;
             }
             Ok(self.checksum == checksum as u32)
         })

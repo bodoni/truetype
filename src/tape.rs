@@ -38,9 +38,9 @@ pub trait Tape: Read + Seek + Sized {
     fn stay<F, T>(&mut self, mut body: F) -> Result<T>
         where F: FnMut(&mut Self) -> Result<T>
     {
-        let position = try!(self.position());
+        let position = self.position()?;
         let result = body(self);
-        try!(self.jump(position));
+        self.jump(position)?;
         result
     }
 
@@ -49,7 +49,7 @@ pub trait Tape: Read + Seek + Sized {
     fn take_bytes(&mut self, count: usize) -> Result<Vec<u8>> {
         let mut buffer = Vec::with_capacity(count);
         unsafe { buffer.set_len(count) };
-        try!(self.read_exact(&mut buffer));
+        self.read_exact(&mut buffer)?;
         Ok(buffer)
     }
 }
@@ -74,7 +74,7 @@ impl<T: Read + Seek> Tape for T {}
 macro_rules! read(
     ($tape:ident, $size:expr) => (unsafe {
         let mut buffer: [u8; $size] = ::std::mem::uninitialized();
-        try!(::std::io::Read::read_exact($tape, &mut buffer));
+        ::std::io::Read::read_exact($tape, &mut buffer)?;
         ::std::mem::transmute(buffer)
     });
 );
@@ -121,7 +121,7 @@ impl<V> Walue<'static> for Vec<V> where V: Value {
     fn read<T: Tape>(tape: &mut T, count: usize) -> Result<Self> {
         let mut values = Vec::with_capacity(count);
         for _ in 0..count {
-            values.push(try!(Value::read(tape)));
+            values.push(Value::read(tape)?);
         }
         Ok(values)
     }

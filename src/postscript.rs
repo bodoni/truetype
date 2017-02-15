@@ -60,10 +60,10 @@ pub type PostScript3 = PostScript1;
 
 impl Value for PostScript {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        Ok(match try!(tape.peek::<q32>()) {
-            q32(0x00010000) => PostScript::Version1(try!(tape.take())),
-            q32(0x00020000) => PostScript::Version2(try!(tape.take())),
-            q32(0x00030000) => PostScript::Version3(try!(tape.take())),
+        Ok(match tape.peek::<q32>()? {
+            q32(0x00010000) => PostScript::Version1(tape.take()?),
+            q32(0x00020000) => PostScript::Version2(tape.take()?),
+            q32(0x00030000) => PostScript::Version3(tape.take()?),
             _ => raise!("found an unknown format of the PostScript information"),
         })
     }
@@ -73,8 +73,8 @@ fn read_pascal_strings<T: Tape>(tape: &mut T, indices: &[u16]) -> Result<Vec<Str
     let count = indices.iter().fold(0, |n, &i| if 258 <= i && i <= 32767 { n + 1 } else { n });
     let mut names = Vec::with_capacity(count);
     for _ in 0..count {
-        let length = try!(tape.take::<u8>()) as usize;
-        match String::from_utf8(try!(tape.take_bytes(length))) {
+        let length = tape.take::<u8>()? as usize;
+        match String::from_utf8(tape.take_bytes(length)?) {
             Ok(name) => names.push(name),
             _ => names.push("<malformed>".into()),
         }

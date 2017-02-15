@@ -55,10 +55,10 @@ impl<'l> Walue<'l> for HorizontalMetrics {
             left_side_bearings: Vec::with_capacity(bearing_count),
         };
         for _ in 0..metric_count {
-            table.records.push(try!(tape.take()));
+            table.records.push(tape.take()?);
         }
         for _ in 0..bearing_count {
-            table.left_side_bearings.push(try!(tape.take()));
+            table.left_side_bearings.push(tape.take()?);
         }
         Ok(table)
     }

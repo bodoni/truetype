@@ -72,7 +72,7 @@ table! {
         },
 
         glyph_ids (Vec<GlyphID>) |this, tape| { // glyphIdArray
-            tape.take_given(try!(this.glyph_id_count()))
+            tape.take_given(this.glyph_id_count()?)
         },
     }
 }
@@ -94,18 +94,18 @@ table! {
 
 impl Value for CharMapping {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        let position = try!(tape.position());
-        let header = try!(tape.take::<Header>());
+        let position = tape.position()?;
+        let header = tape.take::<Header>()?;
         let mut records = vec![];
         for _ in 0..header.table_count {
-            records.push(try!(tape.take::<Record>()));
+            records.push(tape.take::<Record>()?);
         }
         let mut encodings = vec![];
         for encoding in records.iter() {
-            try!(tape.jump(position + encoding.offset as u64));
-            encodings.push(match try!(tape.peek::<u16>()) {
-                4 => Encoding::Format4(try!(tape.take())),
-                6 => Encoding::Format6(try!(tape.take())),
+            tape.jump(position + encoding.offset as u64)?;
+            encodings.push(match tape.peek::<u16>()? {
+                4 => Encoding::Format4(tape.take()?),
+                6 => Encoding::Format6(tape.take()?),
                 _ => unimplemented!(),
             });
         }

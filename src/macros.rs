@@ -20,7 +20,7 @@ macro_rules! flags {
         impl $crate::Value for $name {
             #[inline(always)]
             fn read<T: $crate::Tape>(tape: &mut T) -> $crate::Result<Self> {
-                let value = $name(try!(tape.take::<$kind>()));
+                let value = $name(tape.take::<$kind>()?);
                 if value.is_invalid() {
                     raise!("found malformed flags");
                 }
@@ -71,9 +71,9 @@ macro_rules! table {
             }
         }
     );
-    (@read $name:ident, $this:ident, $tape:ident [$kind:ty] []) => (try!($tape.take()));
+    (@read $name:ident, $this:ident, $tape:ident [$kind:ty] []) => ($tape.take()?);
     (@read $name:ident, $this:ident, $tape:ident [$kind:ty] [$value:block]) => ({
-        let value = try!($tape.take());
+        let value = $tape.take()?;
         if value != $value {
             raise!("found a malformed or unsupported table");
         }
@@ -83,6 +83,6 @@ macro_rules! table {
      |$this_:pat, $tape_:pat| $body:block) => ({
         #[inline(always)]
         fn read<T: ::Tape>($this_: &$name, $tape_: &mut T) -> ::Result<$kind> $body
-        try!(read(&$this, $tape))
+        read(&$this, $tape)?
     });
 }

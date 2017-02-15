@@ -209,13 +209,13 @@ flags! {
 
 impl Value for WindowsMetrics {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        Ok(match try!(tape.peek::<u16>()) {
-            0 => WindowsMetrics::Version0(try!(tape.take())),
-            1 => WindowsMetrics::Version1(try!(tape.take())),
-            2 => WindowsMetrics::Version2(try!(tape.take())),
-            3 => WindowsMetrics::Version3(try!(tape.take())),
-            4 => WindowsMetrics::Version4(try!(tape.take())),
-            5 => WindowsMetrics::Version5(try!(tape.take())),
+        Ok(match tape.peek::<u16>()? {
+            0 => WindowsMetrics::Version0(tape.take()?),
+            1 => WindowsMetrics::Version1(tape.take()?),
+            2 => WindowsMetrics::Version2(tape.take()?),
+            3 => WindowsMetrics::Version3(tape.take()?),
+            4 => WindowsMetrics::Version4(tape.take()?),
+            5 => WindowsMetrics::Version5(tape.take()?),
             _ => raise!("found an unknown format of the OS/2 and Windows metrics"),
         })
     }

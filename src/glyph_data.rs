@@ -155,7 +155,7 @@ impl<'l> Walue<'l> for GlyphData {
         }
         let glyph_count = offsets.len() - 1;
         let mut glyphs = Vec::with_capacity(glyph_count);
-        let position = try!(tape.position());
+        let position = tape.position()?;
         for i in 0..glyph_count {
             if offsets[i] > offsets[i + 1] {
                 reject!();
@@ -164,9 +164,9 @@ impl<'l> Walue<'l> for GlyphData {
                 glyphs.push(None);
                 continue;
             }
-            try!(tape.jump(position + offsets[i]));
-            glyphs.push(Some(try!(tape.take())));
-            if try!(tape.position()) > position + offsets[i + 1] {
+            tape.jump(position + offsets[i])?;
+            glyphs.push(Some(tape.take()?));
+            if tape.position()? > position + offsets[i + 1] {
                 reject!();
             }
         }
@@ -179,20 +179,20 @@ impl Walue<'static> for Description {
 
     fn read<T: Tape>(tape: &mut T, contour_count: i16) -> Result<Self> {
         if contour_count >= 0 {
-            Ok(Description::Simple(try!(tape.take_given(contour_count as usize))))
+            Ok(Description::Simple(tape.take_given(contour_count as usize)?))
         } else {
             let mut components = vec![];
             let mut component_count = 0;
             let mut has_more_components = true;
             let mut has_instructions = false;
             while has_more_components {
-                components.push(try!(tape.take::<Component>()));
+                components.push(tape.take::<Component>()?);
                 has_instructions |= components[component_count].flags.has_instructions();
                 has_more_components = components[component_count].flags.has_more_components();
                 component_count += 1;
             }
-            let instruction_size = if has_instructions { try!(tape.take::<u16>()) } else { 0 };
-            let instructions = try!(tape.take_bytes(instruction_size as usize));
+            let instruction_size = if has_instructions { tape.take::<u16>()? } else { 0 };
+            let instructions = tape.take_bytes(instruction_size as usize)?;
             Ok(Description::Composite(CompositeDescription {
                 components: components,
                 instruction_size: instruction_size,
@@ -208,7 +208,7 @@ impl Walue<'static> for SimpleDescription {
     fn read<T: Tape>(tape: &mut T, contour_count: usize) -> Result<Self> {
         macro_rules! reject(() => (raise!("found a malformed glyph description")));
 
-        let end_points = try!(tape.take_given::<Vec<u16>>(contour_count));
+        let end_points = tape.take_given::<Vec<u16>>(contour_count)?;
         for i in 1..contour_count {
             if end_points[i - 1] > end_points[i] {
                 reject!();
@@ -216,17 +216,17 @@ impl Walue<'static> for SimpleDescription {
         }
         let point_count = end_points.last().map(|&i| i as usize + 1).unwrap_or(0);
 
-        let instruction_size = try!(tape.take());
-        let instructions = try!(tape.take_bytes(instruction_size as usize));
+        let instruction_size = tape.take()?;
+        let instructions = tape.take_bytes(instruction_size as usize)?;
 
         let mut flags = Vec::with_capacity(point_count);
         let mut flag_count = 0;
         while flag_count < point_count {
-            let flag = try!(tape.take::<PointFlags>());
+            let flag = tape.take::<PointFlags>()?;
             if flag.is_invalid() {
                 reject!();
             }
-            let count = 1 + if flag.is_repeated() { try!(tape.take::<u8>()) as usize } else { 0 };
+            let count = 1 + if flag.is_repeated() { tape.take::<u8>()? as usize } else { 0 };
             if flag_count + count > point_count {
                 reject!();
             }
@@ -241,10 +241,10 @@ impl Walue<'static> for SimpleDescription {
                 let mut values = Vec::with_capacity(point_count);
                 for i in 0..point_count {
                     let value = if flags[i].$is_short() {
-                        let value = try!(tape.take::<u8>()) as i16;
+                        let value = tape.take::<u8>()? as i16;
                         if flags[i].$is_positive() { value } else { -value }
                     } else {
-                        if flags[i].$is_same() { 0 } else { try!(tape.take::<i16>()) }
+                        if flags[i].$is_same() { 0 } else { tape.take::<i16>()? }
                     };
                     values.push(value);
                 }
@@ -271,23 +271,23 @@ impl Walue<'static> for Arguments {
     fn read<T: Tape>(tape: &mut T, flags: ComponentFlags) -> Result<Self> {
         match (flags.are_arguments_words(), flags.are_arguments_xy()) {
             (true, true) => {
-                let x = try!(tape.take::<i16>());
-                let y = try!(tape.take::<i16>());
+                let x = tape.take::<i16>()?;
+                let y = tape.take::<i16>()?;
                 Ok(Arguments::Offsets(x, y))
             },
             (false, true) => {
-                let x = try!(tape.take::<i8>()) as i16;
-                let y = try!(tape.take::<i8>()) as i16;
+                let x = tape.take::<i8>()? as i16;
+                let y = tape.take::<i8>()? as i16;
                 Ok(Arguments::Offsets(x, y))
             },
             (true, false) => {
-                let i = try!(tape.take::<u16>());
-                let j = try!(tape.take::<u16>());
+                let i = tape.take::<u16>()?;
+                let j = tape.take::<u16>()?;
                 Ok(Arguments::Indices(i, j))
             },
             (false, false) => {
-                let i = try!(tape.take::<u8>()) as u16;
-                let j = try!(tape.take::<u8>()) as u16;
+                let i = tape.take::<u8>()? as u16;
+                let j = tape.take::<u8>()? as u16;
                 Ok(Arguments::Indices(i, j))
             },
         }
@@ -299,12 +299,11 @@ impl Walue<'static> for Options {
 
     fn read<T: Tape>(tape: &mut T, flags: ComponentFlags) -> Result<Self> {
         if flags.has_scalar_scale() {
-            Ok(Options::Scalar(try!(tape.take())))
+            Ok(Options::Scalar(tape.take()?))
         } else if flags.has_vector_scale() {
-            Ok(Options::Vector(try!(tape.take()), try!(tape.take())))
+            Ok(Options::Vector(tape.take()?, tape.take()?))
         } else if flags.has_matrix_scale() {
-            Ok(Options::Matrix(try!(tape.take()), try!(tape.take()),
-                               try!(tape.take()), try!(tape.take())))
+            Ok(Options::Matrix(tape.take()?, tape.take()?, tape.take()?, tape.take()?))
         } else {
             Ok(Options::None)
         }

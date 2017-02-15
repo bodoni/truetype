@@ -81,9 +81,9 @@ table! {
 
 impl Value for NamingTable {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        Ok(match try!(tape.peek::<u16>()) {
-            0 => NamingTable::Format0(try!(tape.take())),
-            1 => NamingTable::Format1(try!(tape.take())),
+        Ok(match tape.peek::<u16>()? {
+            0 => NamingTable::Format0(tape.take()?),
+            1 => NamingTable::Format1(tape.take()?),
             _ => raise!("found an unknown format of the naming table"),
         })
     }
@@ -96,9 +96,9 @@ impl NamingTable0 {
     }
 
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
-        let current = try!(tape.position());
+        let current = tape.position()?;
         let above = 3 * 2 + self.records.len() * mem::size_of::<Record>();
-        try!(tape.jump(current - above as u64 + self.offset as u64));
+        tape.jump(current - above as u64 + self.offset as u64)?;
         tape.take_bytes(data_length(&self.records))
     }
 }
@@ -110,10 +110,10 @@ impl NamingTable1 {
     }
 
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
-        let current = try!(tape.position());
+        let current = tape.position()?;
         let above = 4 * 2 + self.records.len() * mem::size_of::<Record>() +
                             self.languages.len() * mem::size_of::<Language>();
-        try!(tape.jump(current - above as u64 + self.offset as u64));
+        tape.jump(current - above as u64 + self.offset as u64)?;
         tape.take_bytes(data_length(&self.records))
     }
 }

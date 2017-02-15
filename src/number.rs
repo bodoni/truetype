@@ -17,7 +17,7 @@ macro_rules! number(
         impl Value for $name {
             #[inline(always)]
             fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-                Ok($name(try!(tape.take())))
+                Ok($name(tape.take()?))
             }
         }
     }

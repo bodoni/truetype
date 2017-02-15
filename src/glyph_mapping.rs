@@ -19,8 +19,8 @@ impl<'l> Walue<'l> for GlyphMapping {
     fn read<T: Tape>(tape: &mut T, (header, profile): Self::Parameter) -> Result<Self> {
         let glyph_count = profile.glyph_count();
         match header.glyph_mapping_format {
-            0 => Ok(GlyphMapping::HalfOffsets(try!(tape.take_given(glyph_count + 1)))),
-            1 => Ok(GlyphMapping::Offsets(try!(tape.take_given(glyph_count + 1)))),
+            0 => Ok(GlyphMapping::HalfOffsets(tape.take_given(glyph_count + 1)?)),
+            1 => Ok(GlyphMapping::Offsets(tape.take_given(glyph_count + 1)?)),
             _ => raise!("found an unknown format of the glyph-to-location mapping"),
         }
     }
