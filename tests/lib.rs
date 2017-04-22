@@ -169,6 +169,19 @@ fn naming_table() {
 }
 
 #[test]
+fn naming_table_raw() {
+    use truetype::NamingTable;
+
+    match ok!(NamingTable::read(&mut setup!(CFF, "name"))) {
+        NamingTable::Format0(ref table) => {
+            assert_eq!(table.count, 26);
+            assert_eq!(ok!(table.record_values())[9], b"Frank Grie\xa7hammer");
+        },
+        _ => unreachable!(),
+    }
+}
+
+#[test]
 fn offset_table() {
     use truetype::OffsetTable;
 

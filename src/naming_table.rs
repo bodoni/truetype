@@ -95,6 +95,10 @@ impl NamingTable0 {
         strings(&self.records, &self.data)
     }
 
+    pub fn record_values(&self) -> Result<Vec<Vec<u8>>> {
+        record_values(&self.records, &self.data)
+    }
+
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = tape.position()?;
         let above = 3 * 2 + self.records.len() * mem::size_of::<Record>();
@@ -107,6 +111,10 @@ impl NamingTable1 {
     #[inline]
     pub fn strings(&self) -> Result<Vec<String>> {
         strings(&self.records, &self.data)
+    }
+
+    pub fn record_values(&self) -> Result<Vec<Vec<u8>>> {
+        record_values(&self.records, &self.data)
     }
 
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
@@ -147,6 +155,16 @@ fn strings(records: &[Record], data: &[u8]) -> Result<Vec<String>> {
         strings.push("<unsupported>".to_string());
     }
     Ok(strings)
+}
+
+fn record_values(records: &[Record], data: &[u8]) -> Result<Vec<Vec<u8>>> {
+    let mut values = vec![];
+    for record in records {
+        let (offset, length) = (record.offset as usize, record.length as usize);
+        let bytes = &data[offset..(offset + length)];
+        values.push(bytes.to_vec());
+    }
+    Ok(values)
 }
 
 // The implementation is based on
