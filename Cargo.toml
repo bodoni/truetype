@@ -10,4 +10,6 @@ description = "The package provides a parser for TrueType fonts."
 documentation = "https://docs.rs/truetype"
 homepage = "https://github.com/bodoni/truetype"
 repository = "https://github.com/bodoni/truetype"
+categories = ["parsing"]
+keywords = ["font", "truetype", "typeface", "typography"]
 exclude = ["tests/fixtures/*"]
