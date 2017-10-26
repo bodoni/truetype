@@ -1,6 +1,6 @@
 use {Result, Tape, Value};
 
-macro_rules! number(
+macro_rules! number {
     ($(#[$attribute:meta])* pub $name:ident($kind:ty | $fraction:expr)) => {
         $(#[$attribute])*
         #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -21,7 +21,7 @@ macro_rules! number(
             }
         }
     }
-);
+}
 
 number! {
     #[doc = "A fixed-point number in format Q2.14."]
