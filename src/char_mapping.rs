@@ -126,6 +126,8 @@ impl Encoding {
 impl Encoding4 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, u16> {
+        use std::num::Wrapping;
+
         let count = self.segment_count();
         let mut map = HashMap::new();
         for i in 0..(count - 1) {
@@ -137,7 +139,7 @@ impl Encoding4 {
                     let offset = (id_range_offset / 2 + (j - start_code)) - (count - i) as u16;
                     self.glyph_ids[offset as usize]
                 } else {
-                    (id_delta + j as i16) as u16
+                    (Wrapping(id_delta) + Wrapping(j as i16)).0 as u16
                 };
                 map.insert(j, id);
             }
