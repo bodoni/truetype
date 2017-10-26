@@ -1,10 +1,8 @@
-# TrueType [![Version][version-img]][version-url] [![Status][status-img]][status-url]
+# TrueType [![Package][package-img]][package-url] [![Documentation][documentation-img]][documentation-url] [![Build][build-img]][build-url]
 
 The package provides a parser for TrueType fonts. It is recommended to use a
 higher-level parser called [`opentype`][opentype], which internally relies on
 this package.
-
-## [Documentation][documentation]
 
 ## Contribution
 
@@ -14,8 +12,9 @@ will be licensed according to the terms given in [LICENSE.md](LICENSE.md).
 
 [opentype]: https://github.com/bodoni/opentype
 
-[documentation]: https://docs.rs/truetype
-[status-img]: https://travis-ci.org/bodoni/truetype.svg?branch=master
-[status-url]: https://travis-ci.org/bodoni/truetype
-[version-img]: https://img.shields.io/crates/v/truetype.svg
-[version-url]: https://crates.io/crates/truetype
+[build-img]: https://travis-ci.org/bodoni/truetype.svg?branch=master
+[build-url]: https://travis-ci.org/bodoni/truetype
+[documentation-img]: https://docs.rs/truetype/badge.svg
+[documentation-url]: https://docs.rs/truetype
+[package-img]: https://img.shields.io/crates/v/truetype.svg
+[package-url]: https://crates.io/crates/truetype
