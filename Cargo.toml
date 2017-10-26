@@ -3,6 +3,7 @@ name = "truetype"
 version = "0.26.1"
 license = "Apache-2.0/MIT"
 authors = [
+    "Boris-Chengbiao Zhou <bobo1239@web.de>",
     "Ivan Ukhov <ivan.ukhov@gmail.com>",
     "Vladimir Vukicevic <vladimir@pobox.com>",
 ]
