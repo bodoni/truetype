@@ -53,7 +53,9 @@ impl Record {
     /// Compute the checksum of the corresponding table and compare it with the
     /// one in the record.
     pub fn checksum<T, F>(&self, tape: &mut T, process: F) -> Result<bool>
-        where T: Tape, F: Fn(usize, u32) -> u32
+    where
+        T: Tape,
+        F: Fn(usize, u32) -> u32,
     {
         let length = ((self.length as usize + 4 - 1) & !(4 - 1)) / 4;
         tape.stay(|tape| {
@@ -77,7 +79,7 @@ mod tests {
     #[test]
     fn record_checksum() {
         macro_rules! checksum(
-            ($length:expr, $checksum:expr, $data:expr) => ({
+            ($length:expr, $checksum:expr, $data:expr,) => ({
                 let data: &[u8] = $data;
                 let mut reader = Cursor::new(data);
                 let table = Record {
@@ -89,7 +91,15 @@ mod tests {
                 table.checksum(&mut reader, |_, chunk| chunk).unwrap()
             })
         );
-        assert!(!checksum!(3 * 4, 1 + 2 + 4, &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3]));
-        assert!(checksum!(3 * 4, 1 + 2 + 3, &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3]));
+        assert!(!checksum!(
+            3 * 4,
+            1 + 2 + 4,
+            &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3],
+        ));
+        assert!(checksum!(
+            3 * 4,
+            1 + 2 + 3,
+            &[0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 3],
+        ));
     }
 }

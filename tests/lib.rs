@@ -49,14 +49,17 @@ fn encoding_records() {
     match &tables[0] {
         &Encoding::Format4(ref table) => {
             assert_eq!(table.segment_count_x2, 2 * 103);
-            assert_eq!(table.search_range, 2 * (1 << 103f64.log2().floor() as usize));
+            assert_eq!(
+                table.search_range,
+                2 * (1 << 103f64.log2().floor() as usize)
+            );
             assert_eq!(table.end_codes.len(), 103);
             assert_eq!(table.start_codes.len(), 103);
             assert_eq!(table.id_deltas.len(), 103);
             assert_eq!(table.id_range_offsets.len(), 103);
             assert_eq!(table.glyph_ids.len(), 353);
             assert_eq!(table.mapping(), fixture::mapping());
-        },
+        }
         _ => unreachable!(),
     }
     match &tables[1] {
@@ -64,13 +67,13 @@ fn encoding_records() {
             assert_eq!(table.first_code, 9);
             assert_eq!(table.entry_count, 247);
             assert_eq!(table.glyph_ids.len(), 247);
-        },
+        }
         _ => unreachable!(),
     }
     match &tables[2] {
         &Encoding::Format4(ref table) => {
             assert_eq!(table.segment_count_x2, 2 * 103);
-        },
+        }
         _ => unreachable!(),
     }
 }
@@ -93,7 +96,10 @@ fn glyph_data() {
 
     let parameter1 = ok!(FontHeader::read(&mut setup!(TTF, "head")));
     let parameter2 = ok!(MaximumProfile::read(&mut setup!(TTF, "maxp")));
-    let parameter = ok!(GlyphMapping::read(&mut setup!(TTF, "loca"), (&parameter1, &parameter2)));
+    let parameter = ok!(GlyphMapping::read(
+        &mut setup!(TTF, "loca"),
+        (&parameter1, &parameter2),
+    ));
     let table = ok!(GlyphData::read(&mut setup!(TTF, "glyf"), &parameter));
     let glyph = ok!(table[0].as_ref());
     assert_eq!((glyph.min_x, glyph.max_x), (193, 1034));
@@ -102,7 +108,7 @@ fn glyph_data() {
         Description::Simple(ref description) => {
             assert_eq!(&description.x, &[193, 841, 0, -841, 104, 633, 0, -633]);
             assert_eq!(&description.y, &[1462, 0, -1462, 0, 104, 0, 1254, 0])
-        },
+        }
         _ => unreachable!(),
     }
 }
@@ -113,10 +119,16 @@ fn glyph_mapping() {
 
     let parameter1 = ok!(FontHeader::read(&mut setup!(TTF, "head")));
     let parameter2 = ok!(MaximumProfile::read(&mut setup!(TTF, "maxp")));
-    match ok!(GlyphMapping::read(&mut setup!(TTF, "loca"), (&parameter1, &parameter2))) {
+    match ok!(GlyphMapping::read(
+        &mut setup!(TTF, "loca"),
+        (&parameter1, &parameter2),
+    )) {
         GlyphMapping::HalfOffsets(ref offsets) => {
-            assert_eq!(&offsets[0..10], &[0, 27, 27, 27, 27, 73, 102, 189, 293, 403]);
-        },
+            assert_eq!(
+                &offsets[0..10],
+                &[0, 27, 27, 27, 27, 73, 102, 189, 293, 403]
+            );
+        }
         _ => unreachable!(),
     }
 }
@@ -137,7 +149,10 @@ fn horizontal_metrics() {
 
     let parameter1 = ok!(HorizontalHeader::read(&mut setup!(CFF, "hhea")));
     let parameter2 = ok!(MaximumProfile::read(&mut setup!(CFF, "maxp")));
-    let table = ok!(HorizontalMetrics::read(&mut setup!(CFF, "hmtx"), (&parameter1, &parameter2)));
+    let table = ok!(HorizontalMetrics::read(
+        &mut setup!(CFF, "hmtx"),
+        (&parameter1, &parameter2),
+    ));
     assert_eq!(table.records.len(), 547);
     assert_eq!(table.left_side_bearings.len(), 547 - 547);
     assert_eq!(table.get(42), (549, 45));
@@ -150,7 +165,7 @@ fn maximum_profile() {
     match ok!(MaximumProfile::read(&mut setup!(CFF, "maxp"))) {
         MaximumProfile::Version0(ref table) => {
             assert_eq!(table.glyph_count, 547);
-        },
+        }
         _ => unreachable!(),
     }
 }
@@ -163,7 +178,7 @@ fn naming_table() {
         NamingTable::Format0(ref table) => {
             assert_eq!(table.count, 26);
             assert_eq!(ok!(table.strings())[9], "Frank Grießhammer");
-        },
+        }
         _ => unreachable!(),
     }
 }
@@ -177,11 +192,16 @@ fn offset_table() {
     assert_eq!(header.table_count, 12);
     assert_eq!(header.search_range, 8 * 16);
     assert_eq!(header.entry_selector, 3);
-    assert_eq!(header.range_shift, header.table_count * 16 - header.search_range);
+    assert_eq!(
+        header.range_shift,
+        header.table_count * 16 - header.search_range
+    );
     assert_eq!(records.len(), 12);
     for (i, record) in records.iter().enumerate() {
         if i == 6 {
-            assert!(ok!(record.checksum(&mut file, |i, chunk| if i == 2 { 0 } else { chunk })));
+            assert!(ok!(
+                record.checksum(&mut file, |i, chunk| if i == 2 { 0 } else { chunk })
+            ));
         } else {
             assert!(ok!(record.checksum(&mut file, |_, chunk| chunk)));
         }
@@ -198,14 +218,14 @@ fn postscript() {
             assert_eq!(table.glyph_names.len(), 938);
             assert_eq!(&table.glyph_names[0], ".notdef");
             assert_eq!(&table.glyph_names[42], "G");
-        },
+        }
         _ => unreachable!(),
     }
     match ok!(PostScript::read(&mut setup!(CFF, "post"))) {
         PostScript::Version3(ref table) => {
             assert_eq!(f32::from(table.version), 3.0);
             assert_eq!(table.underline_position, -75);
-        },
+        }
         _ => unreachable!(),
     }
 }
@@ -219,7 +239,7 @@ fn windows_metrics() {
             assert_eq!(table.panose, [2, 4, 6, 3, 5, 4, 5, 2, 2, 4]);
             assert_eq!(stringify(&table.vendor_id), "ADBE");
             assert_eq!(table.break_char, 32);
-        },
+        }
         _ => unreachable!(),
     }
 }
@@ -228,7 +248,9 @@ fn setup(fixture: Fixture, table: Option<&str>) -> File {
     use std::io::{Seek, SeekFrom};
 
     let mut file = ok!(File::open(fixture.path()));
-    ok!(file.seek(SeekFrom::Start(table.map(|table| fixture.offset(table)).unwrap_or(0))));
+    ok!(file.seek(SeekFrom::Start(
+        table.map(|table| fixture.offset(table)).unwrap_or(0),
+    )));
     file
 }
 

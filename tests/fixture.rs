@@ -16,28 +16,24 @@ impl Fixture {
 
     pub fn offset(&self, table: &str) -> u64 {
         match *self {
-            Fixture::CFF => {
-                match table {
-                    "OS/2" => 304,
-                    "cmap" => 15620,
-                    "head" => 204,
-                    "hhea" => 260,
-                    "hmtx" => 55460,
-                    "maxp" => 296,
-                    "name" => 400,
-                    "post" => 17700,
-                    _ => unreachable!(),
-                }
+            Fixture::CFF => match table {
+                "OS/2" => 304,
+                "cmap" => 15620,
+                "head" => 204,
+                "hhea" => 260,
+                "hmtx" => 55460,
+                "maxp" => 296,
+                "name" => 400,
+                "post" => 17700,
+                _ => unreachable!(),
             },
-            Fixture::TTF => {
-                match table {
-                    "glyf" => 9608,
-                    "head" => 316,
-                    "loca" => 7728,
-                    "maxp" => 408,
-                    "post" => 196560,
-                    _ => unreachable!(),
-                }
+            Fixture::TTF => match table {
+                "glyf" => 9608,
+                "head" => 316,
+                "loca" => 7728,
+                "maxp" => 408,
+                "post" => 196560,
+                _ => unreachable!(),
             },
         }
     }

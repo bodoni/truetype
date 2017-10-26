@@ -142,13 +142,13 @@ impl<'l> Walue<'l> for GlyphData {
 
     fn read<T: Tape>(tape: &mut T, mapping: &GlyphMapping) -> Result<Self> {
         macro_rules! reject(() => (raise!("found a malformed glyph-to-location mapping")));
-        let offsets: Vec<_> =  match mapping {
+        let offsets: Vec<_> = match mapping {
             &GlyphMapping::HalfOffsets(ref offsets) => {
                 offsets.iter().map(|&offset| 2 * (offset as u64)).collect()
-            },
+            }
             &GlyphMapping::Offsets(ref offsets) => {
                 offsets.iter().map(|&offset| offset as u64).collect()
-            },
+            }
         };
         if offsets.is_empty() {
             reject!();
@@ -179,7 +179,9 @@ impl Walue<'static> for Description {
 
     fn read<T: Tape>(tape: &mut T, contour_count: i16) -> Result<Self> {
         if contour_count >= 0 {
-            Ok(Description::Simple(tape.take_given(contour_count as usize)?))
+            Ok(Description::Simple(
+                tape.take_given(contour_count as usize)?,
+            ))
         } else {
             let mut components = vec![];
             let mut component_count = 0;
@@ -191,7 +193,11 @@ impl Walue<'static> for Description {
                 has_more_components = components[component_count].flags.has_more_components();
                 component_count += 1;
             }
-            let instruction_size = if has_instructions { tape.take::<u16>()? } else { 0 };
+            let instruction_size = if has_instructions {
+                tape.take::<u16>()?
+            } else {
+                0
+            };
             let instructions = tape.take_bytes(instruction_size as usize)?;
             Ok(Description::Composite(CompositeDescription {
                 components: components,
@@ -226,7 +232,11 @@ impl Walue<'static> for SimpleDescription {
             if flag.is_invalid() {
                 reject!();
             }
-            let count = 1 + if flag.is_repeated() { tape.take::<u8>()? as usize } else { 0 };
+            let count = 1 + if flag.is_repeated() {
+                tape.take::<u8>()? as usize
+            } else {
+                0
+            };
             if flag_count + count > point_count {
                 reject!();
             }
@@ -274,22 +284,22 @@ impl Walue<'static> for Arguments {
                 let x = tape.take::<i16>()?;
                 let y = tape.take::<i16>()?;
                 Ok(Arguments::Offsets(x, y))
-            },
+            }
             (false, true) => {
                 let x = tape.take::<i8>()? as i16;
                 let y = tape.take::<i8>()? as i16;
                 Ok(Arguments::Offsets(x, y))
-            },
+            }
             (true, false) => {
                 let i = tape.take::<u16>()?;
                 let j = tape.take::<u16>()?;
                 Ok(Arguments::Indices(i, j))
-            },
+            }
             (false, false) => {
                 let i = tape.take::<u8>()? as u16;
                 let j = tape.take::<u8>()? as u16;
                 Ok(Arguments::Indices(i, j))
-            },
+            }
         }
     }
 }
@@ -303,7 +313,12 @@ impl Walue<'static> for Options {
         } else if flags.has_vector_scale() {
             Ok(Options::Vector(tape.take()?, tape.take()?))
         } else if flags.has_matrix_scale() {
-            Ok(Options::Matrix(tape.take()?, tape.take()?, tape.take()?, tape.take()?))
+            Ok(Options::Matrix(
+                tape.take()?,
+                tape.take()?,
+                tape.take()?,
+                tape.take()?,
+            ))
         } else {
             Ok(Options::None)
         }

@@ -27,14 +27,23 @@ impl HorizontalMetrics {
     pub fn get(&self, mut index: usize) -> (u16, i16) {
         let longs = self.records.len();
         if index < longs {
-            (self.records[index].advance_width, self.records[index].left_side_bearing)
+            (
+                self.records[index].advance_width,
+                self.records[index].left_side_bearing,
+            )
         } else {
             let shorts = self.left_side_bearings.len();
             index -= longs;
             if index < shorts {
-                (self.records[longs - 1].advance_width, self.left_side_bearings[index])
+                (
+                    self.records[longs - 1].advance_width,
+                    self.left_side_bearings[index],
+                )
             } else {
-                (self.records[longs - 1].advance_width, self.left_side_bearings[shorts - 1])
+                (
+                    self.records[longs - 1].advance_width,
+                    self.left_side_bearings[shorts - 1],
+                )
             }
         }
     }

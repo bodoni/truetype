@@ -36,7 +36,8 @@ pub trait Tape: Read + Seek + Sized {
 
     #[doc(hidden)]
     fn stay<F, T>(&mut self, mut body: F) -> Result<T>
-        where F: FnMut(&mut Self) -> Result<T>
+    where
+        F: FnMut(&mut Self) -> Result<T>,
     {
         let position = self.position()?;
         let result = body(self);
@@ -115,7 +116,10 @@ value!([i8; 4], 1);
 value!([u8; 4], 1);
 value!([u8; 10], 1);
 
-impl<V> Walue<'static> for Vec<V> where V: Value {
+impl<V> Walue<'static> for Vec<V>
+where
+    V: Value,
+{
     type Parameter = usize;
 
     fn read<T: Tape>(tape: &mut T, count: usize) -> Result<Self> {

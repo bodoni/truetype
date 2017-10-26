@@ -109,7 +109,11 @@ impl Value for CharMapping {
                 _ => unimplemented!(),
             });
         }
-        Ok(CharMapping { header: header, records: records, encodings: encodings })
+        Ok(CharMapping {
+            header: header,
+            records: records,
+            encodings: encodings,
+        })
     }
 }
 

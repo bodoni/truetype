@@ -111,8 +111,8 @@ impl NamingTable1 {
 
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = tape.position()?;
-        let above = 4 * 2 + self.records.len() * mem::size_of::<Record>() +
-                            self.languages.len() * mem::size_of::<Language>();
+        let above = 4 * 2 + self.records.len() * mem::size_of::<Record>()
+            + self.languages.len() * mem::size_of::<Language>();
         tape.jump(current - above as u64 + self.offset as u64)?;
         tape.take_bytes(data_length(&self.records))
     }
@@ -139,10 +139,10 @@ fn strings(records: &[Record], data: &[u8]) -> Result<Vec<String>> {
                 Some(string) => {
                     strings.push(string);
                     continue;
-                },
-                _ => {},
+                }
+                _ => {}
             },
-            _ => {},
+            _ => {}
         }
         strings.push("<unsupported>".to_string());
     }
