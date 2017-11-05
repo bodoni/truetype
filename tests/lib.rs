@@ -88,11 +88,20 @@ fn char_mapping_encoding_format6() {
 }
 
 #[test]
-#[should_panic]
-fn char_mapping_encoding_unknown() {
-    use truetype::char_mapping::CharMapping;
+fn char_mapping_encoding_unsupported() {
+    use truetype::char_mapping::{CharMapping, Encoding};
 
-    let _ = ok!(CharMapping::read(&mut setup!(VeraMono, "cmap")));
+    let table = ok!(CharMapping::read(&mut setup!(VeraMono, "cmap")));
+    let tables = &table.encodings;
+    assert_eq!(tables.len(), 2);
+    match &tables[0] {
+        &Encoding::Unsupported(format) => assert_eq!(format, 0),
+        _ => unreachable!(),
+    }
+    match &tables[1] {
+        &Encoding::Format4(..) => {}
+        _ => unreachable!(),
+    }
 }
 
 #[test]

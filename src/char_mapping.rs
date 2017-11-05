@@ -21,6 +21,8 @@ pub enum Encoding {
     Format4(Encoding4),
     /// Format 6.
     Format6(Encoding6),
+    /// An unsupported format.
+    Unsupported(u16),
 }
 
 table! {
@@ -106,7 +108,7 @@ impl Value for CharMapping {
             encodings.push(match tape.peek::<u16>()? {
                 4 => Encoding::Format4(tape.take()?),
                 6 => Encoding::Format6(tape.take()?),
-                _ => unimplemented!(),
+                format => Encoding::Unsupported(format),
             });
         }
         Ok(CharMapping {
@@ -123,6 +125,7 @@ impl Encoding {
         match self {
             &Encoding::Format4(ref encoding) => encoding.mapping(),
             &Encoding::Format6(ref encoding) => encoding.mapping(),
+            &Encoding::Unsupported(..) => HashMap::new(),
         }
     }
 }
