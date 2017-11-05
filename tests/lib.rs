@@ -40,7 +40,7 @@ fn char_mapping_records() {
 }
 
 #[test]
-fn encoding_records() {
+fn char_mapping_encoding_format4() {
     use truetype::char_mapping::{CharMapping, Encoding};
 
     let table = ok!(CharMapping::read(&mut setup!(SourceSerif, "cmap")));
@@ -62,17 +62,26 @@ fn encoding_records() {
         }
         _ => unreachable!(),
     }
+    match &tables[2] {
+        &Encoding::Format4(ref table) => {
+            assert_eq!(table.segment_count_x2, 2 * 103);
+        }
+        _ => unreachable!(),
+    }
+}
+
+#[test]
+fn char_mapping_encoding_format6() {
+    use truetype::char_mapping::{CharMapping, Encoding};
+
+    let table = ok!(CharMapping::read(&mut setup!(SourceSerif, "cmap")));
+    let tables = &table.encodings;
+    assert_eq!(tables.len(), 3);
     match &tables[1] {
         &Encoding::Format6(ref table) => {
             assert_eq!(table.first_code, 9);
             assert_eq!(table.entry_count, 247);
             assert_eq!(table.glyph_ids.len(), 247);
-        }
-        _ => unreachable!(),
-    }
-    match &tables[2] {
-        &Encoding::Format4(ref table) => {
-            assert_eq!(table.segment_count_x2, 2 * 103);
         }
         _ => unreachable!(),
     }
