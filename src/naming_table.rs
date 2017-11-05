@@ -144,7 +144,7 @@ fn strings(records: &[Record], data: &[u8]) -> Result<Vec<String>> {
             },
             _ => {}
         }
-        strings.push("<unsupported>".to_string());
+        strings.push("<unknown>".to_string());
     }
     Ok(strings)
 }
