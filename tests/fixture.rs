@@ -4,6 +4,7 @@ use std::path::PathBuf;
 pub enum Fixture {
     OpenSans,
     SourceSerif,
+    VeraMono,
 }
 
 impl Fixture {
@@ -11,6 +12,7 @@ impl Fixture {
         match *self {
             Fixture::OpenSans => "tests/fixtures/OpenSans-Italic.ttf".into(),
             Fixture::SourceSerif => "tests/fixtures/SourceSerifPro-Regular.otf".into(),
+            Fixture::VeraMono => "tests/fixtures/VeraMono-Roman.ttf".into(),
         }
     }
 
@@ -33,6 +35,10 @@ impl Fixture {
                 "maxp" => 296,
                 "name" => 400,
                 "post" => 17700,
+                _ => unreachable!(),
+            },
+            Fixture::VeraMono => match table {
+                "cmap" => 40360,
                 _ => unreachable!(),
             },
         }

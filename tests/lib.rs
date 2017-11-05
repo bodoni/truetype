@@ -88,6 +88,14 @@ fn char_mapping_encoding_format6() {
 }
 
 #[test]
+#[should_panic]
+fn char_mapping_encoding_unknown() {
+    use truetype::char_mapping::CharMapping;
+
+    let _ = ok!(CharMapping::read(&mut setup!(VeraMono, "cmap")));
+}
+
+#[test]
 fn font_header() {
     use truetype::FontHeader;
 
