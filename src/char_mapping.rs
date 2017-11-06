@@ -25,6 +25,21 @@ impl Mapping {
             Mapping::None => {},
         }
     }
+
+    /// Convenience function which converts the underlying mapping to a `HashMap<u32, GlyphID>`.
+    pub fn to_hashmap_u32(&self) -> HashMap<u32, GlyphID> {
+        let entries: Vec<(u32, GlyphID)> = match *self {
+            Mapping::U8(ref map) => map.iter().map(|(&k, &v)| (k as u32, v)).collect(),
+            Mapping::U16(ref map) => map.iter().map(|(&k, &v)| (k as u32, v)).collect(),
+            Mapping::U32(ref map) => return map.clone(),
+            Mapping::None => return HashMap::new(),
+        };
+        let mut map = HashMap::new();
+        for (k, v) in entries {
+            map.insert(k, v);
+        }
+        map
+    }
 }
 
 /// A char-to-glyph mapping.
