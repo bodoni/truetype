@@ -41,7 +41,7 @@ fn char_mapping_records() {
 
 #[test]
 fn char_mapping_encoding_format4() {
-    use truetype::char_mapping::{CharMapping, Encoding};
+    use truetype::char_mapping::{CharMapping, Encoding, Mapping};
 
     let table = ok!(CharMapping::read(&mut setup!(SourceSerif, "cmap")));
     let tables = &table.encodings;
@@ -58,7 +58,11 @@ fn char_mapping_encoding_format4() {
             assert_eq!(table.id_deltas.len(), 103);
             assert_eq!(table.id_range_offsets.len(), 103);
             assert_eq!(table.glyph_ids.len(), 353);
-            assert_eq!(table.mapping(), fixture::mapping());
+            if let Mapping::U16(ref mapping) = Fixture::SourceSerif.mappings()[0] {
+                assert_eq!(&table.mapping(), mapping);
+            } else {
+                unreachable!();
+            }
         }
         _ => unreachable!(),
     }
@@ -87,6 +91,8 @@ fn char_mapping_encoding_format6() {
     }
 }
 
+// FIXME: need a new font with an unknown format
+#[ignore]
 #[test]
 fn char_mapping_encoding_unknown() {
     use truetype::char_mapping::{CharMapping, Encoding};
@@ -267,6 +273,27 @@ fn windows_metrics() {
             assert_eq!(table.break_char, 32);
         }
         _ => unreachable!(),
+    }
+}
+
+#[test]
+fn char_mappings() {
+    use truetype::char_mapping::{CharMapping, Encoding};
+
+    let fixtures = Fixture::all();
+    for fixture in fixtures {
+        let cmap = ok!(CharMapping::read(&mut setup(*fixture, Some("cmap"))));
+        let expected_maps = fixture.mappings();
+        for (encoding, expected_map) in cmap.encodings.iter().zip(expected_maps.iter()) {
+            if let Encoding::Format14(_) = *encoding {
+                continue;
+            }
+            let mut map = encoding.mapping();
+            // Some tables map characters to glyph id 0 but fonttools (used to generate the
+            // char mapping fixture) filters those out; Do the same here
+            map.filter_empty_mappings();
+            assert_eq!(map, *expected_map);
+        }
     }
 }
 
