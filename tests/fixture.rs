@@ -70,12 +70,17 @@ impl Fixture {
             Fixture::MPlus2P => match table {
                 "cmap" => 36100,
                 _ => unreachable!(),
-            }
+            },
         }
     }
 
 
-    fn read_mapping_file<T, B>(buf_read: B) -> HashMap<T, u16> where T: Eq + Hash + FromStr, T::Err: Debug, B: BufRead {
+    fn read_mapping_file<T, B>(buf_read: B) -> HashMap<T, u16>
+    where
+        T: Eq + Hash + FromStr,
+        T::Err: Debug,
+        B: BufRead,
+    {
         let mut map = HashMap::new();
         for line in buf_read.lines().map(|l| l.unwrap()) {
             let mut parts = line.split(" => ");

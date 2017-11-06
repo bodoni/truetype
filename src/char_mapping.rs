@@ -34,14 +34,14 @@ impl Mapping {
                 |mut map, (k, v)| {
                     map.insert(k, v);
                     map
-                }
+                },
             ),
             Mapping::U16(ref map) => map.iter().map(|(&k, &v)| (k as u32, v)).fold(
                 HashMap::new(),
                 |mut map, (k, v)| {
                     map.insert(k, v);
                     map
-                }
+                },
             ),
             Mapping::U32(ref map) => map.clone(),
             Mapping::None => HashMap::new(),
@@ -333,7 +333,10 @@ impl Encoding12 {
         for group in &self.groups {
             // TODO: change to ..= (inclusive range) once it's stabilized
             for i in 0..(group.end_char_code - group.start_char_code + 1) {
-                map.insert(group.start_char_code + i, group.start_glyph_id as u16 + i as u16);
+                map.insert(
+                    group.start_char_code + i,
+                    group.start_glyph_id as u16 + i as u16,
+                );
             }
         }
         map
