@@ -22,23 +22,30 @@ impl Mapping {
             Mapping::U8(ref mut map) => map.retain(|_, v| v != &0),
             Mapping::U16(ref mut map) => map.retain(|_, v| v != &0),
             Mapping::U32(ref mut map) => map.retain(|_, v| v != &0),
-            Mapping::None => {},
+            Mapping::None => {}
         }
     }
 
     /// Convenience function which converts the underlying mapping to a `HashMap<u32, GlyphID>`.
     pub fn to_hashmap_u32(&self) -> HashMap<u32, GlyphID> {
-        let entries: Vec<(u32, GlyphID)> = match *self {
-            Mapping::U8(ref map) => map.iter().map(|(&k, &v)| (k as u32, v)).collect(),
-            Mapping::U16(ref map) => map.iter().map(|(&k, &v)| (k as u32, v)).collect(),
-            Mapping::U32(ref map) => return map.clone(),
-            Mapping::None => return HashMap::new(),
-        };
-        let mut map = HashMap::new();
-        for (k, v) in entries {
-            map.insert(k, v);
+        match *self {
+            Mapping::U8(ref map) => map.iter().map(|(&k, &v)| (k as u32, v)).fold(
+                HashMap::new(),
+                |mut map, (k, v)| {
+                    map.insert(k, v);
+                    map
+                }
+            ),
+            Mapping::U16(ref map) => map.iter().map(|(&k, &v)| (k as u32, v)).fold(
+                HashMap::new(),
+                |mut map, (k, v)| {
+                    map.insert(k, v);
+                    map
+                }
+            ),
+            Mapping::U32(ref map) => map.clone(),
+            Mapping::None => HashMap::new(),
         }
-        map
     }
 }
 
