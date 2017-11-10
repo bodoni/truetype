@@ -6,47 +6,13 @@ use std::collections::HashMap;
 
 use {GlyphID, Result, Tape, Value};
 
-/// A mapping from a character code to a glyph id
+/// A mapping from a character code to a glyph identifier.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Mapping {
     U8(HashMap<u8, GlyphID>),
     U16(HashMap<u16, GlyphID>),
     U32(HashMap<u32, GlyphID>),
     None,
-}
-
-impl Mapping {
-    /// Remove entries in the mapping which map to glyph id 0 (.notdef).
-    pub fn filter_empty_mappings(&mut self) {
-        match *self {
-            Mapping::U8(ref mut map) => map.retain(|_, v| v != &0),
-            Mapping::U16(ref mut map) => map.retain(|_, v| v != &0),
-            Mapping::U32(ref mut map) => map.retain(|_, v| v != &0),
-            Mapping::None => {}
-        }
-    }
-
-    /// Convenience function which converts the underlying mapping to a `HashMap<u32, GlyphID>`.
-    pub fn to_hashmap_u32(&self) -> HashMap<u32, GlyphID> {
-        match *self {
-            Mapping::U8(ref map) => map.iter().map(|(&k, &v)| (k as u32, v)).fold(
-                HashMap::new(),
-                |mut map, (k, v)| {
-                    map.insert(k, v);
-                    map
-                },
-            ),
-            Mapping::U16(ref map) => map.iter().map(|(&k, &v)| (k as u32, v)).fold(
-                HashMap::new(),
-                |mut map, (k, v)| {
-                    map.insert(k, v);
-                    map
-                },
-            ),
-            Mapping::U32(ref map) => map.clone(),
-            Mapping::None => HashMap::new(),
-        }
-    }
 }
 
 /// A char-to-glyph mapping.
@@ -60,15 +26,15 @@ pub struct CharMapping {
 /// An encoding of a char-to-glyph mapping.
 #[derive(Clone, Debug)]
 pub enum Encoding {
-    /// Format 0: Byte encoding table.
+    /// Format 0.
     Format0(Encoding0),
-    /// Format 4: Segment mapping to delta values.
+    /// Format 4.
     Format4(Encoding4),
-    /// Format 6: Trimmed table mapping.
+    /// Format 6.
     Format6(Encoding6),
-    /// Format 12: Segmented coverage.
+    /// Format 12.
     Format12(Encoding12),
-    /// Format 14: Unicode Variation Sequences.
+    /// Format 14.
     Format14(Encoding14),
     /// An unknown format.
     Unknown(u16),
@@ -94,8 +60,8 @@ table! {
 }
 
 table! {
-    #[doc = "A SequentialMapGroup as used in char-to-glyph encoding formats 8 and 12."]
-    pub SequentialMapGroup {
+    #[doc = "A sequential mapping group used in formats 8 and 12."]
+    pub SequentialMappingGroup {
         start_char_code (u32), // startCharCode
         end_char_code   (u32), // endCharCode
         start_glyph_id  (u32), // startGlyphID
@@ -105,9 +71,10 @@ table! {
 table! {
     #[doc = "A char-to-glyph encoding in format 0."]
     pub Encoding0 {
-        format      (u16), // format
-        length      (u16), // length
-        language    (u16), // language
+        format   (u16), // format
+        length   (u16), // length
+        language (u16), // language
+
         glyph_ids (Vec<u8>) |_, tape| { // glyphIdArray
             tape.take_given(256)
         },
@@ -129,7 +96,7 @@ table! {
             tape.take_given(this.segment_count())
         },
 
-        reserved_pad (u16) = { 0 }, // reservedPad
+        reserved (u16) = { 0 }, // reservedPad
 
         start_codes (Vec<u16>) |this, tape| { // startCode
             tape.take_given(this.segment_count())
@@ -171,10 +138,10 @@ table! {
         reserved    (u16) = { 0 }, // reserved
         length      (u32), // length
         language    (u32), // language
-        num_groups  (u32), // numGroups
+        group_count (u32), // numGroups
 
-        groups (Vec<SequentialMapGroup>) |this, tape| { // groups
-            tape.take_given(this.num_groups as usize)
+        groups (Vec<SequentialMappingGroup>) |this, tape| { // groups
+            tape.take_given(this.group_count as usize)
         },
     }
 }
@@ -182,27 +149,28 @@ table! {
 table! {
     #[doc = "A char-to-glyph encoding in format 14."]
     pub Encoding14 {
-        format               (u16), // format
-        length               (u32), // length
-        num_var_selectors    (u32), // numVarSelectorRecords
+        format                   (u16), // format
+        length                   (u32), // length
+        variation_selector_count (u32), // numVarSelectorRecords
 
-        var_selector_records (Vec<VariationSelectorRecord>) |this, tape| { // varSelector
-            tape.take_given(this.num_var_selectors as usize)
+        variation_selectors (Vec<VariationSelector>) |this, tape| { // varSelector
+            tape.take_given(this.variation_selector_count as usize)
         },
     }
 }
 
 table! {
-    #[doc = "A VariationSelectorRecord."]
-    pub VariationSelectorRecord {
-        var_selector (u32) |_, tape| { // varSelector
-            let buf: [u8; 3] = tape.take()?;
+    #[doc = "A variation selector record."]
+    pub VariationSelector {
+        character (u32) |_, tape| { // varSelector
+            let buffer: [u8; 3] = tape.take()?;
             Ok(u32::from_be(
-                u32::from(buf[0]) << 8 |
-                u32::from(buf[1]) << 16 |
-                u32::from(buf[2]) << 24
+                u32::from(buffer[0]) << 8 |
+                u32::from(buffer[1]) << 16 |
+                u32::from(buffer[2]) << 24
             ))
         },
+
         default_uvs_offset     (u32), // defaultUVSOffset
         non_default_uvs_offset (u32), // nonDefaultUVSOffset
     }
@@ -331,7 +299,6 @@ impl Encoding12 {
     pub fn mapping(&self) -> HashMap<u32, GlyphID> {
         let mut map = HashMap::new();
         for group in &self.groups {
-            // TODO: change to ..= (inclusive range) once it's stabilized
             for i in 0..(group.end_char_code - group.start_char_code + 1) {
                 map.insert(
                     group.start_char_code + i,
@@ -348,13 +315,13 @@ mod tests {
     use std::io::Cursor;
 
     use Tape;
-    use super::VariationSelectorRecord;
+    use super::VariationSelector;
 
     #[test]
     fn variation_selector_record() {
         let mut buf = Cursor::new(vec![0x02u8, 0x01, 0xFF, 0x00, 0x02, 0x01, 0xFF, 0xAA, 0x02, 0x01, 0xFF]);
-        let vsr = buf.take::<VariationSelectorRecord>().unwrap();
-        assert!(vsr.var_selector == 0x000201FF);
+        let vsr = buf.take::<VariationSelector>().unwrap();
+        assert!(vsr.character == 0x000201FF);
         assert!(vsr.default_uvs_offset == 0x000201FF);
         assert!(vsr.non_default_uvs_offset == 0xAA0201FF);
     }

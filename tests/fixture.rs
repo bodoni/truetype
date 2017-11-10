@@ -33,7 +33,7 @@ impl Fixture {
             Fixture::OpenSans => "OpenSans-Italic.ttf",
             Fixture::SourceSerif => "SourceSerifPro-Regular.otf",
             Fixture::VeraMono => "VeraMono-Roman.ttf",
-            Fixture::MPlus2P => "mplus-2p-regular.ttf",
+            Fixture::MPlus2P => "MPlus2P-Regular.ttf",
         }
     }
 

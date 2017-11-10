@@ -8,7 +8,7 @@ font_files = [
     'OpenSans-Italic.ttf',
     'SourceSerifPro-Regular.otf',
     'VeraMono-Roman.ttf',
-    'mplus-2p-regular.ttf',
+    'MPlus2P-Regular.ttf',
 ]
 
 for font_file in font_files:
@@ -18,7 +18,7 @@ for font_file in font_files:
         dir = f"tests/fixtures/char_mapping/{font_file}"
         if not os.path.exists(dir):
             os.makedirs(dir)
-        f = open(f"{dir}/table{i}_format{table.format}.txt", 'w')
+        f = open(f"{dir}/table{i}_format{table.format}.txt", 'w', newline='\n')
         f.write(f"{table.format}\n")
         for key, value in table.cmap.items():
             f.write(f"{str(key)} => {str(font.getGlyphID(value))}\n")

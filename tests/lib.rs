@@ -91,25 +91,6 @@ fn char_mapping_encoding_format6() {
     }
 }
 
-// FIXME: need a new font with an unknown format
-#[ignore]
-#[test]
-fn char_mapping_encoding_unknown() {
-    use truetype::char_mapping::{CharMapping, Encoding};
-
-    let table = ok!(CharMapping::read(&mut setup!(VeraMono, "cmap")));
-    let tables = &table.encodings;
-    assert_eq!(tables.len(), 2);
-    match &tables[0] {
-        &Encoding::Unknown(format) => assert_eq!(format, 0),
-        _ => unreachable!(),
-    }
-    match &tables[1] {
-        &Encoding::Format4(..) => {}
-        _ => unreachable!(),
-    }
-}
-
 #[test]
 fn font_header() {
     use truetype::FontHeader;
@@ -278,21 +259,30 @@ fn windows_metrics() {
 
 #[test]
 fn char_mappings() {
-    use truetype::char_mapping::{CharMapping, Encoding};
+    use truetype::char_mapping::{CharMapping, Encoding, Mapping};
+
+    fn filter_empty_mappings(mapping: &mut Mapping) {
+        match *mapping {
+            Mapping::U8(ref mut map) => map.retain(|_, v| v != &0),
+            Mapping::U16(ref mut map) => map.retain(|_, v| v != &0),
+            Mapping::U32(ref mut map) => map.retain(|_, v| v != &0),
+            Mapping::None => {}
+        }
+    }
 
     let fixtures = Fixture::all();
     for fixture in fixtures {
-        let cmap = ok!(CharMapping::read(&mut setup(*fixture, Some("cmap"))));
-        let expected_maps = fixture.mappings();
-        for (encoding, expected_map) in cmap.encodings.iter().zip(expected_maps.iter()) {
-            if let Encoding::Format14(_) = *encoding {
-                continue;
+        let table = ok!(CharMapping::read(&mut setup(*fixture, Some("cmap"))));
+        let expected_mappings = fixture.mappings();
+        for (encoding, expected_map) in table.encodings.iter().zip(expected_mappings.iter()) {
+            match *encoding {
+                Encoding::Format14(_) => {}
+                _ => {
+                    let mut mapping = encoding.mapping();
+                    filter_empty_mappings(&mut mapping);
+                    assert_eq!(mapping, *expected_map);
+                }
             }
-            let mut map = encoding.mapping();
-            // Some tables map characters to glyph id 0 but fonttools (used to generate the
-            // char mapping fixture) filters those out; Do the same here
-            map.filter_empty_mappings();
-            assert_eq!(map, *expected_map);
         }
     }
 }
