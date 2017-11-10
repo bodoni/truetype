@@ -263,9 +263,9 @@ fn char_mappings() {
 
     fn filter_empty_mappings(mapping: &mut Mapping) {
         match *mapping {
-            Mapping::U8(ref mut map) => map.retain(|_, v| v != &0),
-            Mapping::U16(ref mut map) => map.retain(|_, v| v != &0),
-            Mapping::U32(ref mut map) => map.retain(|_, v| v != &0),
+            Mapping::U8(ref mut mapping) => mapping.retain(|_, v| v != &0),
+            Mapping::U16(ref mut mapping) => mapping.retain(|_, v| v != &0),
+            Mapping::U32(ref mut mapping) => mapping.retain(|_, v| v != &0),
             Mapping::None => {}
         }
     }

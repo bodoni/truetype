@@ -71,7 +71,7 @@ table! {
 table! {
     #[doc = "A char-to-glyph encoding in format 0."]
     pub Encoding0 {
-        format   (u16), // format
+        format   (u16) = { 0 }, // format
         length   (u16), // length
         language (u16), // language
 
@@ -84,7 +84,7 @@ table! {
 table! {
     #[doc = "A char-to-glyph encoding in format 4."]
     pub Encoding4 {
-        format           (u16), // format
+        format           (u16) = { 4 }, // format
         length           (u16), // length
         language         (u16), // language
         segment_count_x2 (u16), // segCountX2
@@ -119,7 +119,7 @@ table! {
 table! {
     #[doc = "A char-to-glyph encoding in format 6."]
     pub Encoding6 {
-        format      (u16), // format
+        format      (u16) = { 6 }, // format
         length      (u16), // length
         language    (u16), // language
         first_code  (u16), // firstCode
@@ -134,8 +134,8 @@ table! {
 table! {
     #[doc = "A char-to-glyph encoding in format 12."]
     pub Encoding12 {
-        format      (u16), // format
-        reserved    (u16) = { 0 }, // reserved
+        format      (u16) = { 12 }, // format
+        reserved    (u16) = { 0 },  // reserved
         length      (u32), // length
         language    (u32), // language
         group_count (u32), // numGroups
@@ -149,7 +149,7 @@ table! {
 table! {
     #[doc = "A char-to-glyph encoding in format 14."]
     pub Encoding14 {
-        format                   (u16), // format
+        format                   (u16) = { 14 }, // format
         length                   (u32), // length
         variation_selector_count (u32), // numVarSelectorRecords
 
@@ -220,11 +220,11 @@ impl Encoding {
 impl Encoding0 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u8, GlyphID> {
-        let mut map = HashMap::new();
+        let mut mapping = HashMap::new();
         for (i, glyph_id) in self.glyph_ids.iter().enumerate() {
-            map.insert(i as u8, *glyph_id as GlyphID);
+            mapping.insert(i as u8, *glyph_id as GlyphID);
         }
-        map
+        mapping
     }
 }
 
@@ -234,7 +234,7 @@ impl Encoding4 {
         use std::num::Wrapping;
 
         let count = self.segment_count();
-        let mut map = HashMap::new();
+        let mut mapping = HashMap::new();
         for i in 0..(count - 1) {
             let start_code = self.start_codes[i];
             let id_delta = self.id_deltas[i];
@@ -246,10 +246,10 @@ impl Encoding4 {
                 } else {
                     (Wrapping(id_delta) + Wrapping(j as i16)).0 as u16
                 };
-                map.insert(j, id);
+                mapping.insert(j, id);
             }
         }
-        map
+        mapping
     }
 
     fn glyph_id_count(&self) -> Result<usize> {
@@ -286,27 +286,27 @@ impl Encoding4 {
 impl Encoding6 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u16, GlyphID> {
-        let mut map = HashMap::new();
+        let mut mapping = HashMap::new();
         for (i, glyph_id) in self.glyph_ids.iter().enumerate() {
-            map.insert(self.first_code + i as u16, *glyph_id);
+            mapping.insert(self.first_code + i as u16, *glyph_id);
         }
-        map
+        mapping
     }
 }
 
 impl Encoding12 {
     /// Return the mapping.
     pub fn mapping(&self) -> HashMap<u32, GlyphID> {
-        let mut map = HashMap::new();
+        let mut mapping = HashMap::new();
         for group in &self.groups {
             for i in 0..(group.end_char_code - group.start_char_code + 1) {
-                map.insert(
+                mapping.insert(
                     group.start_char_code + i,
                     group.start_glyph_id as u16 + i as u16,
                 );
             }
         }
-        map
+        mapping
     }
 }
 
@@ -319,10 +319,10 @@ mod tests {
 
     #[test]
     fn variation_selector_record() {
-        let mut buf = Cursor::new(vec![0x02u8, 0x01, 0xFF, 0x00, 0x02, 0x01, 0xFF, 0xAA, 0x02, 0x01, 0xFF]);
-        let vsr = buf.take::<VariationSelector>().unwrap();
-        assert!(vsr.character == 0x000201FF);
-        assert!(vsr.default_uvs_offset == 0x000201FF);
-        assert!(vsr.non_default_uvs_offset == 0xAA0201FF);
+        let mut buffer = Cursor::new(vec![0x02u8, 0x01, 0xFF, 0x00, 0x02, 0x01, 0xFF, 0xAA, 0x02, 0x01, 0xFF]);
+        let record = buffer.take::<VariationSelector>().unwrap();
+        assert!(record.character == 0x000201FF);
+        assert!(record.default_uvs_offset == 0x000201FF);
+        assert!(record.non_default_uvs_offset == 0xAA0201FF);
     }
 }
