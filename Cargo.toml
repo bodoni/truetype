@@ -1,6 +1,6 @@
 [package]
 name = "truetype"
-version = "0.27.0"
+version = "0.28.0"
 license = "Apache-2.0/MIT"
 authors = [
     "Boris-Chengbiao Zhou <bobo1239@web.de>",
