@@ -102,7 +102,8 @@ fn char_mappings() {
     for fixture in Fixture::all() {
         let table = ok!(CharMapping::read(&mut setup(*fixture, Some("cmap"))));
         let expected_mappings = fixture.mappings();
-        for (encoding, expected_mapping) in table.encodings.iter().zip(expected_mappings.iter()) {
+        assert!(table.encodings.len() == expected_mappings.len());
+        for (encoding, expected_mapping) in table.encodings.iter().zip(expected_mappings) {
             let mut mapping = match encoding {
                 &Encoding::Format0(ref encoding) => convert!(encoding.mapping()),
                 &Encoding::Format4(ref encoding) => convert!(encoding.mapping()),
@@ -112,7 +113,7 @@ fn char_mappings() {
                 _ => unreachable!(),
             };
             mapping.retain(|_, value| value != &0);
-            assert!(mapping == *expected_mapping);
+            assert!(mapping == expected_mapping);
         }
     }
 }
