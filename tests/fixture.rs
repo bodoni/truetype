@@ -73,7 +73,7 @@ impl Fixture {
     }
 
     pub fn mappings(&self) -> Vec<Mapping> {
-        let path = format!("tests/fixtures/char_mapping/{}", self.file_name());
+        let path = format!("tests/fixtures/char_mappings/{}", self.file_name());
         let mut file_names = ok!(fs::read_dir(&path))
             .map(|entry| ok!(ok!(entry).file_name().into_string()))
             .collect::<Vec<_>>();
