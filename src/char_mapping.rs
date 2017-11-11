@@ -320,7 +320,17 @@ mod tests {
     #[test]
     fn variation_selector_record() {
         let mut buffer = Cursor::new(vec![
-            0x02u8, 0x01, 0xFF, 0x00, 0x02, 0x01, 0xFF, 0xAA, 0x02, 0x01, 0xFF,
+            0x02u8,
+            0x01,
+            0xFF,
+            0x00,
+            0x02,
+            0x01,
+            0xFF,
+            0xAA,
+            0x02,
+            0x01,
+            0xFF,
         ]);
         let record = buffer.take::<VariationSelector>().unwrap();
         assert!(record.character == 0x000201FF);
