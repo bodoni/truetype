@@ -99,8 +99,7 @@ fn char_mapping_encoding_format6() {
 fn char_mappings() {
     use truetype::char_mapping::{CharMapping, Encoding};
 
-    let fixtures = Fixture::all();
-    for fixture in fixtures {
+    for fixture in Fixture::all() {
         let table = ok!(CharMapping::read(&mut setup(*fixture, Some("cmap"))));
         let expected_mappings = fixture.mappings();
         for (encoding, expected_mapping) in table.encodings.iter().zip(expected_mappings.iter()) {
