@@ -74,7 +74,6 @@ impl Fixture {
         }
     }
 
-
     fn read_mapping_file<T, B>(buf_read: B) -> HashMap<T, u16>
     where
         T: Eq + Hash + FromStr,
