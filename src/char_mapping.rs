@@ -126,7 +126,7 @@ table! {
     #[doc = "A char-to-glyph encoding in format 12."]
     pub Encoding12 {
         format      (u16) = { 12 }, // format
-        reserved    (u16) = { 0 },  // reserved
+        reserved    (u16) = { 0 }, // reserved
         length      (u32), // length
         language    (u32), // language
         group_count (u32), // numGroups
