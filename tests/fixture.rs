@@ -81,15 +81,15 @@ impl Fixture {
         T::Err: Debug,
         B: BufRead,
     {
-        let mut map = HashMap::new();
+        let mut mapping = HashMap::new();
         for line in buf_read.lines().map(|l| l.unwrap()) {
             let mut parts = line.split(" => ");
-            map.insert(
+            mapping.insert(
                 parts.next().unwrap().parse().unwrap(),
                 parts.next().unwrap().parse().unwrap(),
             );
         }
-        map
+        mapping
     }
 
     pub fn mappings(&self) -> Vec<Mapping> {

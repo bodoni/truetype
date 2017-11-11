@@ -274,13 +274,13 @@ fn char_mappings() {
     for fixture in fixtures {
         let table = ok!(CharMapping::read(&mut setup(*fixture, Some("cmap"))));
         let expected_mappings = fixture.mappings();
-        for (encoding, expected_map) in table.encodings.iter().zip(expected_mappings.iter()) {
+        for (encoding, expected_mapping) in table.encodings.iter().zip(expected_mappings.iter()) {
             match *encoding {
                 Encoding::Format14(_) => {}
                 _ => {
                     let mut mapping = encoding.mapping();
                     filter_empty_mappings(&mut mapping);
-                    assert_eq!(mapping, *expected_map);
+                    assert_eq!(mapping, *expected_mapping);
                 }
             }
         }
