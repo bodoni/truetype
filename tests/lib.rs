@@ -92,6 +92,36 @@ fn char_mapping_encoding_format6() {
 }
 
 #[test]
+fn char_mappings() {
+    use truetype::char_mapping::{CharMapping, Encoding, Mapping};
+
+    fn filter_empty_mappings(mapping: &mut Mapping) {
+        match *mapping {
+            Mapping::U8(ref mut mapping) => mapping.retain(|_, v| v != &0),
+            Mapping::U16(ref mut mapping) => mapping.retain(|_, v| v != &0),
+            Mapping::U32(ref mut mapping) => mapping.retain(|_, v| v != &0),
+            Mapping::None => {}
+        }
+    }
+
+    let fixtures = Fixture::all();
+    for fixture in fixtures {
+        let table = ok!(CharMapping::read(&mut setup(*fixture, Some("cmap"))));
+        let expected_mappings = fixture.mappings();
+        for (encoding, expected_mapping) in table.encodings.iter().zip(expected_mappings.iter()) {
+            match *encoding {
+                Encoding::Format14(_) => {}
+                _ => {
+                    let mut mapping = encoding.mapping();
+                    filter_empty_mappings(&mut mapping);
+                    assert_eq!(mapping, *expected_mapping);
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn font_header() {
     use truetype::FontHeader;
 
@@ -254,36 +284,6 @@ fn windows_metrics() {
             assert_eq!(table.break_char, 32);
         }
         _ => unreachable!(),
-    }
-}
-
-#[test]
-fn char_mappings() {
-    use truetype::char_mapping::{CharMapping, Encoding, Mapping};
-
-    fn filter_empty_mappings(mapping: &mut Mapping) {
-        match *mapping {
-            Mapping::U8(ref mut mapping) => mapping.retain(|_, v| v != &0),
-            Mapping::U16(ref mut mapping) => mapping.retain(|_, v| v != &0),
-            Mapping::U32(ref mut mapping) => mapping.retain(|_, v| v != &0),
-            Mapping::None => {}
-        }
-    }
-
-    let fixtures = Fixture::all();
-    for fixture in fixtures {
-        let table = ok!(CharMapping::read(&mut setup(*fixture, Some("cmap"))));
-        let expected_mappings = fixture.mappings();
-        for (encoding, expected_mapping) in table.encodings.iter().zip(expected_mappings.iter()) {
-            match *encoding {
-                Encoding::Format14(_) => {}
-                _ => {
-                    let mut mapping = encoding.mapping();
-                    filter_empty_mappings(&mut mapping);
-                    assert_eq!(mapping, *expected_mapping);
-                }
-            }
-        }
     }
 }
 
