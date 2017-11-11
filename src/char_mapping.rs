@@ -6,15 +6,6 @@ use std::collections::HashMap;
 
 use {GlyphID, Result, Tape, Value};
 
-/// A mapping from a character code to a glyph identifier.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Mapping {
-    U8(HashMap<u8, GlyphID>),
-    U16(HashMap<u16, GlyphID>),
-    U32(HashMap<u32, GlyphID>),
-    None,
-}
-
 /// A char-to-glyph mapping.
 #[derive(Clone, Debug)]
 pub struct CharMapping {
@@ -40,6 +31,15 @@ pub enum Encoding {
     Unknown(u16),
 }
 
+/// A mapping from a character code to a glyph identifier.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Mapping {
+    U8(HashMap<u8, GlyphID>),
+    U16(HashMap<u16, GlyphID>),
+    U32(HashMap<u32, GlyphID>),
+    None,
+}
+
 table! {
     #[doc = "The header of a char-to-glyph mapping."]
     #[derive(Copy)]
@@ -56,15 +56,6 @@ table! {
         platform_id (u16), // platformID
         encoding_id (u16), // encodingID
         offset      (u32), // offset
-    }
-}
-
-table! {
-    #[doc = "A sequential mapping group used in formats 8 and 12."]
-    pub SequentialMappingGroup {
-        start_char_code (u32), // startCharCode
-        end_char_code   (u32), // endCharCode
-        start_glyph_id  (u32), // startGlyphID
     }
 }
 
@@ -156,6 +147,15 @@ table! {
         variation_selectors (Vec<VariationSelector>) |this, tape| { // varSelector
             tape.take_given(this.variation_selector_count as usize)
         },
+    }
+}
+
+table! {
+    #[doc = "A sequential mapping group used in formats 8 and 12."]
+    pub SequentialMappingGroup {
+        start_char_code (u32), // startCharCode
+        end_char_code   (u32), // endCharCode
+        start_glyph_id  (u32), // startGlyphID
     }
 }
 
