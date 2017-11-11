@@ -52,17 +52,17 @@ mod tests {
 
     #[test]
     fn debug() {
-        assert_eq!(format!("{:?}", Tag(*b"true")), r#"Tag("true")"#);
+        assert!(format!("{:?}", Tag(*b"true")) == r#"Tag("true")"#);
     }
 
     #[test]
     fn from() {
-        assert_eq!(Tag(*b"true"), Tag::from(0x74727565));
+        assert!(Tag(*b"true") == Tag::from(0x74727565));
     }
 
     #[test]
     fn read() {
         let mut cursor = Cursor::new(b"true".to_vec());
-        assert_eq!(Tag::read(&mut cursor).unwrap(), Tag(*b"true"));
+        assert!(Tag::read(&mut cursor).unwrap() == Tag(*b"true"));
     }
 }
