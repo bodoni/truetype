@@ -212,7 +212,7 @@ impl Encoding {
             &Encoding::Format4(ref encoding) => Mapping::U16(encoding.mapping()),
             &Encoding::Format6(ref encoding) => Mapping::U16(encoding.mapping()),
             &Encoding::Format12(ref encoding) => Mapping::U32(encoding.mapping()),
-            &Encoding::Unknown(_) | &Encoding::Format14(_) => Mapping::None,
+            &Encoding::Format14(_) | &Encoding::Unknown(_) => Mapping::None,
         }
     }
 }
