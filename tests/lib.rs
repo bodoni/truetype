@@ -41,7 +41,7 @@ fn char_mapping_records() {
 
 #[test]
 fn char_mapping_encoding_format4() {
-    use truetype::char_mapping::{CharMapping, Encoding};
+    use truetype::char_mapping::{CharMapping, Encoding, Mapping};
 
     let table = ok!(CharMapping::read(&mut setup!(SourceSerif, "cmap")));
     let tables = &table.encodings;
@@ -58,7 +58,11 @@ fn char_mapping_encoding_format4() {
             assert_eq!(table.id_deltas.len(), 103);
             assert_eq!(table.id_range_offsets.len(), 103);
             assert_eq!(table.glyph_ids.len(), 353);
-            assert_eq!(table.mapping(), fixture::mapping());
+            if let Mapping::U16(ref mapping) = Fixture::SourceSerif.mappings()[0] {
+                assert_eq!(&table.mapping(), mapping);
+            } else {
+                unreachable!();
+            }
         }
         _ => unreachable!(),
     }
@@ -83,23 +87,6 @@ fn char_mapping_encoding_format6() {
             assert_eq!(table.entry_count, 247);
             assert_eq!(table.glyph_ids.len(), 247);
         }
-        _ => unreachable!(),
-    }
-}
-
-#[test]
-fn char_mapping_encoding_unknown() {
-    use truetype::char_mapping::{CharMapping, Encoding};
-
-    let table = ok!(CharMapping::read(&mut setup!(VeraMono, "cmap")));
-    let tables = &table.encodings;
-    assert_eq!(tables.len(), 2);
-    match &tables[0] {
-        &Encoding::Unknown(format) => assert_eq!(format, 0),
-        _ => unreachable!(),
-    }
-    match &tables[1] {
-        &Encoding::Format4(..) => {}
         _ => unreachable!(),
     }
 }
@@ -267,6 +254,36 @@ fn windows_metrics() {
             assert_eq!(table.break_char, 32);
         }
         _ => unreachable!(),
+    }
+}
+
+#[test]
+fn char_mappings() {
+    use truetype::char_mapping::{CharMapping, Encoding, Mapping};
+
+    fn filter_empty_mappings(mapping: &mut Mapping) {
+        match *mapping {
+            Mapping::U8(ref mut mapping) => mapping.retain(|_, v| v != &0),
+            Mapping::U16(ref mut mapping) => mapping.retain(|_, v| v != &0),
+            Mapping::U32(ref mut mapping) => mapping.retain(|_, v| v != &0),
+            Mapping::None => {}
+        }
+    }
+
+    let fixtures = Fixture::all();
+    for fixture in fixtures {
+        let table = ok!(CharMapping::read(&mut setup(*fixture, Some("cmap"))));
+        let expected_mappings = fixture.mappings();
+        for (encoding, expected_map) in table.encodings.iter().zip(expected_mappings.iter()) {
+            match *encoding {
+                Encoding::Format14(_) => {}
+                _ => {
+                    let mut mapping = encoding.mapping();
+                    filter_empty_mappings(&mut mapping);
+                    assert_eq!(mapping, *expected_map);
+                }
+            }
+        }
     }
 }
 
