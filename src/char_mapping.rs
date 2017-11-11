@@ -31,7 +31,7 @@ pub enum Encoding {
     Unknown(u16),
 }
 
-/// A mapping from a character code to a glyph identifier.
+/// A mapping from character codes to glyph identifiers.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Mapping {
     U8(HashMap<u8, GlyphID>),
@@ -151,7 +151,7 @@ table! {
 }
 
 table! {
-    #[doc = "A sequential mapping group used in formats 8 and 12."]
+    #[doc = "A sequential mapping group."]
     pub SequentialMappingGroup {
         start_char_code (u32), // startCharCode
         end_char_code   (u32), // endCharCode
@@ -160,7 +160,7 @@ table! {
 }
 
 table! {
-    #[doc = "A variation selector record."]
+    #[doc = "A variation selector."]
     pub VariationSelector {
         character (u32) |_, tape| { // varSelector
             let buffer: [u8; 3] = tape.take()?;
