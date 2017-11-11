@@ -12,28 +12,28 @@ use truetype::char_mapping::Mapping;
 
 #[derive(Clone, Copy, Debug)]
 pub enum Fixture {
+    MPlus2P,
     OpenSans,
     SourceSerif,
     VeraMono,
-    MPlus2P,
 }
 
 impl Fixture {
     pub fn all() -> &'static [Fixture] {
         &[
+            Fixture::MPlus2P,
             Fixture::OpenSans,
             Fixture::SourceSerif,
             Fixture::VeraMono,
-            Fixture::MPlus2P,
         ]
     }
 
     pub fn file_name(&self) -> &'static str {
         match *self {
+            Fixture::MPlus2P => "MPlus2P-Regular.ttf",
             Fixture::OpenSans => "OpenSans-Italic.ttf",
             Fixture::SourceSerif => "SourceSerifPro-Regular.otf",
             Fixture::VeraMono => "VeraMono-Roman.ttf",
-            Fixture::MPlus2P => "MPlus2P-Regular.ttf",
         }
     }
 
@@ -43,6 +43,10 @@ impl Fixture {
 
     pub fn offset(&self, table: &str) -> u64 {
         match *self {
+            Fixture::MPlus2P => match table {
+                "cmap" => 36100,
+                _ => unreachable!(),
+            },
             Fixture::OpenSans => match table {
                 "cmap" => 4276,
                 "glyf" => 9608,
@@ -65,10 +69,6 @@ impl Fixture {
             },
             Fixture::VeraMono => match table {
                 "cmap" => 40360,
-                _ => unreachable!(),
-            },
-            Fixture::MPlus2P => match table {
-                "cmap" => 36100,
                 _ => unreachable!(),
             },
         }
