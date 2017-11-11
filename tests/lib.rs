@@ -95,11 +95,11 @@ fn char_mapping_encoding_format6() {
 fn char_mappings() {
     use truetype::char_mapping::{CharMapping, Encoding, Mapping};
 
-    fn filter_empty_mappings(mapping: &mut Mapping) {
+    fn filter_out_empty_mappings(mapping: &mut Mapping) {
         match *mapping {
-            Mapping::U8(ref mut mapping) => mapping.retain(|_, v| v != &0),
-            Mapping::U16(ref mut mapping) => mapping.retain(|_, v| v != &0),
-            Mapping::U32(ref mut mapping) => mapping.retain(|_, v| v != &0),
+            Mapping::U8(ref mut mapping) => mapping.retain(|_, value| value != &0),
+            Mapping::U16(ref mut mapping) => mapping.retain(|_, value| value != &0),
+            Mapping::U32(ref mut mapping) => mapping.retain(|_, value| value != &0),
             Mapping::None => {}
         }
     }
@@ -113,7 +113,7 @@ fn char_mappings() {
                 Encoding::Format14(_) => {}
                 _ => {
                     let mut mapping = encoding.mapping();
-                    filter_empty_mappings(&mut mapping);
+                    filter_out_empty_mappings(&mut mapping);
                     assert_eq!(mapping, *expected_mapping);
                 }
             }
