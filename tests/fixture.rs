@@ -1,12 +1,7 @@
 use std::collections::HashMap;
-use std::fmt::Debug;
 use std::fs::{self, File};
-use std::hash::Hash;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
-use std::str::FromStr;
-
-use truetype::char_mapping::Mapping;
 
 #[derive(Clone, Copy, Debug)]
 pub enum Fixture {
@@ -72,42 +67,20 @@ impl Fixture {
         }
     }
 
-    pub fn mappings(&self) -> Vec<Mapping> {
+    pub fn mappings(&self) -> Vec<HashMap<u32, u32>> {
         let path = format!("tests/fixtures/char_mappings/{}", self.file_name());
         let mut file_names = ok!(fs::read_dir(&path))
             .map(|entry| ok!(ok!(entry).file_name().into_string()))
             .collect::<Vec<_>>();
         file_names.sort();
-        let mut mappings = Vec::new();
-        for file_name in file_names {
-            let path = format!("{}/{}", path, file_name);
-            let mapping = match read_format(&file_name) {
-                0 => Mapping::U8(read_mapping(&path)),
-                4 | 6 => Mapping::U16(read_mapping(&path)),
-                12 => Mapping::U32(read_mapping(&path)),
-                14 => Mapping::U32(HashMap::new()),
-                _ => unreachable!(),
-            };
-            mappings.push(mapping);
-        }
-        mappings
+        file_names
+            .iter()
+            .map(|file_name| read_mapping(&format!("{}/{}", path, file_name)))
+            .collect::<Vec<_>>()
     }
 }
 
-fn read_format(name: &str) -> u8 {
-    ok!(
-        name.split("format").collect::<Vec<_>>()[1]
-            .split(".")
-            .collect::<Vec<_>>()[0]
-            .parse()
-    )
-}
-
-fn read_mapping<T>(path: &str) -> HashMap<T, u16>
-where
-    T: Eq + Hash + FromStr,
-    T::Err: Debug,
-{
+fn read_mapping(path: &str) -> HashMap<u32, u32> {
     let reader = BufReader::new(ok!(File::open(path)));
     let mut mapping = HashMap::new();
     for line in reader.lines().map(|line| ok!(line)) {

@@ -31,15 +31,6 @@ pub enum Encoding {
     Unknown(u16),
 }
 
-/// A mapping from character codes to glyph identifiers.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub enum Mapping {
-    U8(HashMap<u8, GlyphID>),
-    U16(HashMap<u16, GlyphID>),
-    U32(HashMap<u32, GlyphID>),
-    None,
-}
-
 table! {
     #[doc = "The header of a char-to-glyph mapping."]
     #[derive(Copy)]
@@ -201,19 +192,6 @@ impl Value for CharMapping {
             records: records,
             encodings: encodings,
         })
-    }
-}
-
-impl Encoding {
-    /// Return the mapping.
-    pub fn mapping(&self) -> Mapping {
-        match self {
-            &Encoding::Format0(ref encoding) => Mapping::U8(encoding.mapping()),
-            &Encoding::Format4(ref encoding) => Mapping::U16(encoding.mapping()),
-            &Encoding::Format6(ref encoding) => Mapping::U16(encoding.mapping()),
-            &Encoding::Format12(ref encoding) => Mapping::U32(encoding.mapping()),
-            &Encoding::Format14(_) | &Encoding::Unknown(_) => Mapping::None,
-        }
     }
 }
 
