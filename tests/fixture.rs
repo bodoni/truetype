@@ -1,5 +1,3 @@
-extern crate truetype;
-
 use std::collections::HashMap;
 use std::fmt::Debug;
 use std::fs::{self, File};
@@ -74,48 +72,22 @@ impl Fixture {
         }
     }
 
-    fn read_mapping_file<T, B>(buf_read: B) -> HashMap<T, u16>
-    where
-        T: Eq + Hash + FromStr,
-        T::Err: Debug,
-        B: BufRead,
-    {
-        let mut mapping = HashMap::new();
-        for line in buf_read.lines().map(|l| l.unwrap()) {
-            let mut parts = line.split(" => ");
-            mapping.insert(
-                parts.next().unwrap().parse().unwrap(),
-                parts.next().unwrap().parse().unwrap(),
-            );
-        }
-        mapping
-    }
-
     pub fn mappings(&self) -> Vec<Mapping> {
-        let dir_entries =
-            fs::read_dir(format!("tests/fixtures/char_mapping/{}", self.file_name())).unwrap();
-        let mut mapping_files = Vec::new();
-        for entry in dir_entries {
-            mapping_files.push(entry.unwrap().file_name().into_string().unwrap());
-        }
-        mapping_files.sort();
-
+        let path = format!("tests/fixtures/char_mapping/{}", self.file_name());
+        let mut files = ok!(fs::read_dir(path))
+            .map(|entry| ok!(ok!(entry).file_name().into_string()))
+            .collect::<Vec<_>>();
+        files.sort();
         let mut mappings = Vec::new();
-        for mapping_file in mapping_files {
-            let mut reader = BufReader::new(
-                File::open(format!(
-                    "tests/fixtures/char_mapping/{}/{}",
-                    self.file_name(),
-                    mapping_file,
-                )).unwrap(),
-            );
-            let mut format_line = String::new();
-            reader.read_line(&mut format_line).unwrap();
-            let format = format_line.trim().parse().unwrap();
-            let mapping = match format {
-                0 => Mapping::U8(Self::read_mapping_file(reader)),
-                4 | 6 => Mapping::U16(Self::read_mapping_file(reader)),
-                12 => Mapping::U32(Self::read_mapping_file(reader)),
+        for file in files {
+            let path = format!("tests/fixtures/char_mapping/{}/{}", self.file_name(), file);
+            let mut reader = BufReader::new(ok!(File::open(path)));
+            let mut format = String::new();
+            ok!(reader.read_line(&mut format));
+            let mapping = match ok!(format.trim().parse()) {
+                0 => Mapping::U8(read_mapping(reader)),
+                4 | 6 => Mapping::U16(read_mapping(reader)),
+                12 => Mapping::U32(read_mapping(reader)),
                 14 => Mapping::U32(HashMap::new()),
                 _ => unreachable!(),
             };
@@ -123,4 +95,18 @@ impl Fixture {
         }
         mappings
     }
+}
+
+fn read_mapping<T, U>(reader: U) -> HashMap<T, u16>
+where
+    T: Eq + Hash + FromStr,
+    T::Err: Debug,
+    U: BufRead,
+{
+    let mut mapping = HashMap::new();
+    for line in reader.lines().map(|line| ok!(line)) {
+        let parts = line.split(" => ").collect::<Vec<_>>();
+        mapping.insert(ok!(parts[0].parse()), ok!(parts[1].parse()));
+    }
+    mapping
 }

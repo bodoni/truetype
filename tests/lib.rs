@@ -3,16 +3,16 @@ extern crate truetype;
 use std::fs::File;
 use truetype::{Value, Walue};
 
-mod fixture;
-
-use fixture::Fixture;
-
 macro_rules! ok(($result:expr) => ($result.unwrap()));
 
 macro_rules! setup(
     ($fixture:ident) => (setup(Fixture::$fixture, None));
     ($fixture:ident, $table:expr) => (setup(Fixture::$fixture, Some($table)));
 );
+
+mod fixture;
+
+use fixture::Fixture;
 
 #[test]
 fn char_mapping_header() {
