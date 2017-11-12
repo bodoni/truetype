@@ -122,7 +122,7 @@ table! {
         language    (u32), // language
         group_count (u32), // numGroups
 
-        groups (Vec<SequentialMappingGroup>) |this, tape| { // groups
+        groups (Vec<SequentialGroup>) |this, tape| { // groups
             tape.take_given(this.group_count as usize)
         },
     }
@@ -131,22 +131,22 @@ table! {
 table! {
     #[doc = "A char-to-glyph encoding in format 14."]
     pub Encoding14 {
-        format                   (u16) = { 14 }, // format
-        length                   (u32), // length
-        variation_selector_count (u32), // numVarSelectorRecords
+        format         (u16) = { 14 }, // format
+        length         (u32), // length
+        selector_count (u32), // numVarSelectorRecords
 
-        variation_selectors (Vec<VariationSelector>) |this, tape| { // varSelector
-            tape.take_given(this.variation_selector_count as usize)
+        selectors (Vec<VariationSelector>) |this, tape| { // varSelector
+            tape.take_given(this.selector_count as usize)
         },
     }
 }
 
 table! {
     #[doc = "A sequential mapping group."]
-    pub SequentialMappingGroup {
-        start_char_code (u32), // startCharCode
-        end_char_code   (u32), // endCharCode
-        start_glyph_id  (u32), // startGlyphID
+    pub SequentialGroup {
+        start_code     (u32), // startCharCode
+        end_code       (u32), // endCharCode
+        start_glyph_id (u32), // startGlyphID
     }
 }
 
@@ -277,9 +277,9 @@ impl Encoding12 {
     pub fn mapping(&self) -> HashMap<u32, GlyphID> {
         let mut mapping = HashMap::new();
         for group in &self.groups {
-            for i in 0..(group.end_char_code - group.start_char_code + 1) {
+            for i in 0..(group.end_code - group.start_code + 1) {
                 mapping.insert(
-                    group.start_char_code + i,
+                    group.start_code + i,
                     group.start_glyph_id as u16 + i as u16,
                 );
             }
