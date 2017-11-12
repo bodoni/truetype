@@ -288,6 +288,13 @@ impl Encoding12 {
     }
 }
 
+impl Encoding14 {
+    /// Return the mapping.
+    pub fn mapping(&self) -> HashMap<u32, GlyphID> {
+        unimplemented!();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::io::Cursor;
