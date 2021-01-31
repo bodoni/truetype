@@ -3,7 +3,7 @@ use {Result, Tape, Value};
 macro_rules! number {
     ($(#[$attribute:meta])* pub $name:ident($kind:ty | $fraction:expr)) => {
         $(#[$attribute])*
-        #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+        #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
         pub struct $name(pub $kind);
 
         impl From<$name> for f32 {

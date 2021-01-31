@@ -74,7 +74,7 @@ impl<T: Read + Seek> Tape for T {}
 
 macro_rules! read(
     ($tape:ident, $size:expr) => (unsafe {
-        let mut buffer: [u8; $size] = ::std::mem::uninitialized();
+        let mut buffer: [u8; $size] = ::std::mem::zeroed();
         ::std::io::Read::read_exact($tape, &mut buffer)?;
         ::std::mem::transmute(buffer)
     });

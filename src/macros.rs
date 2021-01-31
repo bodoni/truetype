@@ -5,7 +5,7 @@ macro_rules! flags {
         $($mask:expr => $method:ident,)*
     }) => (
         $(#[$attribute])*
-        #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+        #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
         pub struct $name(pub $kind);
 
         impl $name {
@@ -53,7 +53,7 @@ macro_rules! table {
     );
     (@define $(#[$attribute:meta])* pub $name:ident { $($field:ident ($kind:ty),)* }) => (
         $(#[$attribute])*
-        #[derive(Clone, Debug)]
+        #[derive(Clone, Debug, Default)]
         pub struct $name { $(pub $field: $kind,)* }
     );
     (@implement pub $name:ident {
@@ -61,7 +61,7 @@ macro_rules! table {
     }) => (
         impl ::Value for $name {
             fn read<T: ::Tape>(tape: &mut T) -> ::Result<Self> {
-                let mut table: $name = unsafe { ::std::mem::zeroed() };
+                let mut table: $name = $name::default();
                 $({
                     let value = table!(@read $name, table, tape [$($kind)+] [$($value)*]
                                        $(|$($argument),+| $body)*);

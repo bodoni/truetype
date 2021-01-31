@@ -174,6 +174,13 @@ impl<'l> Walue<'l> for GlyphData {
     }
 }
 
+impl Default for Description {
+    #[inline]
+    fn default() -> Self {
+        Description::Simple(SimpleDescription::default())
+    }
+}
+
 impl Walue<'static> for Description {
     type Parameter = i16;
 
@@ -275,6 +282,13 @@ impl Walue<'static> for SimpleDescription {
     }
 }
 
+impl Default for Arguments {
+    #[inline]
+    fn default() -> Self {
+        Arguments::Offsets(0, 0)
+    }
+}
+
 impl Walue<'static> for Arguments {
     type Parameter = ComponentFlags;
 
@@ -301,6 +315,13 @@ impl Walue<'static> for Arguments {
                 Ok(Arguments::Indices(i, j))
             }
         }
+    }
+}
+
+impl Default for Options {
+    #[inline]
+    fn default() -> Self {
+        Options::None
     }
 }
 

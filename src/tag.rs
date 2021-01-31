@@ -4,7 +4,7 @@ use std::ops::Deref;
 use {Result, Tape, Value};
 
 /// A tag.
-#[derive(Clone, Copy, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Default, Eq, Hash, PartialEq)]
 pub struct Tag(pub [u8; 4]);
 
 impl Deref for Tag {
