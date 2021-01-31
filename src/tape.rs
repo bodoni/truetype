@@ -58,7 +58,7 @@ pub trait Tape: Read + Seek + Sized {
 /// A type that can be read.
 pub trait Value: Sized {
     /// Read a value.
-    fn read<T: Tape>(&mut T) -> Result<Self>;
+    fn read<T: Tape>(tape: &mut T) -> Result<Self>;
 }
 
 /// A type that can be read given a parameter.
@@ -67,7 +67,7 @@ pub trait Walue<'l>: Sized {
     type Parameter;
 
     /// Read a value.
-    fn read<T: Tape>(&mut T, Self::Parameter) -> Result<Self>;
+    fn read<T: Tape>(tape: &mut T, parameter: Self::Parameter) -> Result<Self>;
 }
 
 impl<T: Read + Seek> Tape for T {}
