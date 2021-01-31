@@ -2,7 +2,7 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/maxp.htm
 
-use crate::{Result, Tape, Value, q32};
+use crate::{q32, Result, Tape, Value};
 
 /// A maximum profile.
 #[derive(Clone, Debug)]

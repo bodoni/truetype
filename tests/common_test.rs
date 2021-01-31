@@ -131,8 +131,8 @@ fn font_header() {
 
 #[test]
 fn glyph_data() {
-    use truetype::{FontHeader, GlyphData, GlyphMapping, MaximumProfile};
     use truetype::glyph_data::Description;
+    use truetype::{FontHeader, GlyphData, GlyphMapping, MaximumProfile};
 
     let parameter1 = ok!(FontHeader::read(&mut setup!(OpenSans, "head")));
     let parameter2 = ok!(MaximumProfile::read(&mut setup!(OpenSans, "maxp")));
@@ -233,9 +233,11 @@ fn offset_table() {
     assert!(records.len() == 12);
     for (i, record) in records.iter().enumerate() {
         if i == 6 {
-            assert!(ok!(
-                record.checksum(&mut file, |i, chunk| if i == 2 { 0 } else { chunk })
-            ));
+            assert!(ok!(record.checksum(&mut file, |i, chunk| if i == 2 {
+                0
+            } else {
+                chunk
+            })));
         } else {
             assert!(ok!(record.checksum(&mut file, |_, chunk| chunk)));
         }

@@ -47,8 +47,8 @@ impl Value for Tag {
 mod tests {
     use std::io::Cursor;
 
-    use crate::Value;
     use super::Tag;
+    use crate::Value;
 
     #[test]
     fn debug() {

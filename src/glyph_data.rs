@@ -4,7 +4,7 @@
 
 use std::ops::Deref;
 
-use crate::{GlyphMapping, Result, Tape, Walue, q16};
+use crate::{q16, GlyphMapping, Result, Tape, Walue};
 
 /// Glyph data.
 #[derive(Clone, Debug)]

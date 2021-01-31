@@ -278,10 +278,7 @@ impl Encoding12 {
         let mut mapping = HashMap::new();
         for group in &self.groups {
             for i in 0..(group.end_code - group.start_code + 1) {
-                mapping.insert(
-                    group.start_code + i,
-                    group.start_glyph_id as u16 + i as u16,
-                );
+                mapping.insert(group.start_code + i, group.start_glyph_id as u16 + i as u16);
             }
         }
         mapping
@@ -299,23 +296,13 @@ impl Encoding14 {
 mod tests {
     use std::io::Cursor;
 
-    use crate::Tape;
     use super::VariationSelector;
+    use crate::Tape;
 
     #[test]
     fn variation_selector_record() {
         let mut buffer = Cursor::new(vec![
-            0x02u8,
-            0x01,
-            0xFF,
-            0x00,
-            0x02,
-            0x01,
-            0xFF,
-            0xAA,
-            0x02,
-            0x01,
-            0xFF,
+            0x02u8, 0x01, 0xFF, 0x00, 0x02, 0x01, 0xFF, 0xAA, 0x02, 0x01, 0xFF,
         ]);
         let record = buffer.take::<VariationSelector>().unwrap();
         assert!(record.character == 0x000201FF);

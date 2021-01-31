@@ -111,7 +111,8 @@ impl NamingTable1 {
 
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = tape.position()?;
-        let above = 4 * 2 + self.records.len() * mem::size_of::<Record>()
+        let above = 4 * 2
+            + self.records.len() * mem::size_of::<Record>()
             + self.languages.len() * mem::size_of::<Language>();
         tape.jump(current - above as u64 + self.offset as u64)?;
         tape.take_bytes(data_length(&self.records))
@@ -152,6 +153,7 @@ fn strings(records: &[Record], data: &[u8]) -> Result<Vec<String>> {
 // The implementation is based on
 // https://github.com/nodebox/opentype.js/blob/master/src/types.js#L300
 fn decode_macintosh(bytes: &[u8], encoding_id: u16) -> Option<String> {
+    #[rustfmt::skip]
     const ROMAN: [char; 128] = [
         'Ä', 'Å', 'Ç', 'É', 'Ñ', 'Ö', 'Ü', 'á', 'à', 'â', 'ä', 'ã', 'å',
         'ç', 'é', 'è', 'ê', 'ë', 'í', 'ì', 'î', 'ï', 'ñ', 'ó', 'ò', 'ô',

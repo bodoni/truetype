@@ -81,29 +81,29 @@ macro_rules! read(
 );
 
 macro_rules! value {
-    ([$kind:ident; $count:expr], 1) => (
+    ([$kind:ident; $count:expr], 1) => {
         impl Value for [$kind; $count] {
             fn read<T: Tape>(tape: &mut T) -> Result<Self> {
                 Ok(read!(tape, $count))
             }
         }
-    );
-    ($kind:ident, 1) => (
+    };
+    ($kind:ident, 1) => {
         impl Value for $kind {
             #[inline]
             fn read<T: Tape>(tape: &mut T) -> Result<Self> {
                 Ok(read!(tape, 1))
             }
         }
-    );
-    ($kind:ident, $size:expr) => (
+    };
+    ($kind:ident, $size:expr) => {
         impl Value for $kind {
             #[inline]
             fn read<T: Tape>(tape: &mut T) -> Result<Self> {
                 Ok($kind::from_be(read!(tape, $size)))
             }
         }
-    );
+    };
 }
 
 value!(i8, 1);

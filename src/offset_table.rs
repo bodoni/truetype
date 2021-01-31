@@ -73,8 +73,8 @@ impl Record {
 mod tests {
     use std::io::Cursor;
 
-    use crate::Tag;
     use super::Record;
+    use crate::Tag;
 
     #[test]
     fn record_checksum() {
