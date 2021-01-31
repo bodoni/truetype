@@ -2,7 +2,7 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/otff.htm
 
-use {Result, Tag, Tape};
+use crate::{Result, Tag, Tape};
 
 table! {
     #[doc = "An offset table."]
@@ -73,7 +73,7 @@ impl Record {
 mod tests {
     use std::io::Cursor;
 
-    use Tag;
+    use crate::Tag;
     use super::Record;
 
     #[test]

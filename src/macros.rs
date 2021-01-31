@@ -38,7 +38,7 @@ macro_rules! flags {
 }
 
 macro_rules! raise(
-    ($message:expr) => (return Err(::Error::new(::std::io::ErrorKind::Other, $message)));
+    ($message:expr) => (return Err(crate::Error::new(::std::io::ErrorKind::Other, $message)));
 );
 
 macro_rules! table {
@@ -59,8 +59,8 @@ macro_rules! table {
     (@implement pub $name:ident {
         $($field:ident ($($kind:tt)+) [$($value:block)*] $(|$($argument:tt),+| $body:block)*,)*
     }) => (
-        impl ::Value for $name {
-            fn read<T: ::Tape>(tape: &mut T) -> ::Result<Self> {
+        impl crate::Value for $name {
+            fn read<T: crate::Tape>(tape: &mut T) -> crate::Result<Self> {
                 let mut table: $name = $name::default();
                 $({
                     let value = table!(@read $name, table, tape [$($kind)+] [$($value)*]
@@ -82,7 +82,7 @@ macro_rules! table {
     (@read $name:ident, $this:ident, $tape:ident [$kind:ty] []
      |$this_:pat, $tape_:pat| $body:block) => ({
         #[inline(always)]
-        fn read<T: ::Tape>($this_: &$name, $tape_: &mut T) -> ::Result<$kind> $body
+        fn read<T: crate::Tape>($this_: &$name, $tape_: &mut T) -> crate::Result<$kind> $body
         read(&$this, $tape)?
     });
 }

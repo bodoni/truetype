@@ -1,6 +1,6 @@
 use std::io::{Read, Seek, SeekFrom};
 
-use Result;
+use crate::Result;
 
 /// A type that can read.
 pub trait Tape: Read + Seek + Sized {

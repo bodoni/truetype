@@ -2,7 +2,7 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/loca.htm
 
-use {FontHeader, MaximumProfile, Result, Tape, Walue};
+use crate::{FontHeader, MaximumProfile, Result, Tape, Walue};
 
 /// A glyph-to-location mapping.
 #[derive(Clone, Debug)]

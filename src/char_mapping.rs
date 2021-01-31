@@ -4,7 +4,7 @@
 
 use std::collections::HashMap;
 
-use {GlyphID, Result, Tape, Value};
+use crate::{GlyphID, Result, Tape, Value};
 
 /// A char-to-glyph mapping.
 #[derive(Clone, Debug)]
@@ -299,7 +299,7 @@ impl Encoding14 {
 mod tests {
     use std::io::Cursor;
 
-    use Tape;
+    use crate::Tape;
     use super::VariationSelector;
 
     #[test]

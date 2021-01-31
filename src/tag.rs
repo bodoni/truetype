@@ -1,7 +1,7 @@
 use std::fmt;
 use std::ops::Deref;
 
-use {Result, Tape, Value};
+use crate::{Result, Tape, Value};
 
 /// A tag.
 #[derive(Clone, Copy, Default, Eq, Hash, PartialEq)]
@@ -47,7 +47,7 @@ impl Value for Tag {
 mod tests {
     use std::io::Cursor;
 
-    use Value;
+    use crate::Value;
     use super::Tag;
 
     #[test]

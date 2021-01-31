@@ -1,4 +1,4 @@
-use {Result, Tape, Value};
+use crate::{Result, Tape, Value};
 
 macro_rules! number {
     ($(#[$attribute:meta])* pub $name:ident($kind:ty | $fraction:expr)) => {

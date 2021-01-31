@@ -2,7 +2,7 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/head.htm
 
-use q32;
+use crate::q32;
 
 table! {
     #[doc = "A font header."]

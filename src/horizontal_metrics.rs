@@ -2,7 +2,7 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/hmtx.htm
 
-use {HorizontalHeader, MaximumProfile, Result, Tape, Walue};
+use crate::{HorizontalHeader, MaximumProfile, Result, Tape, Walue};
 
 table! {
     @define

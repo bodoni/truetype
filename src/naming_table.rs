@@ -4,7 +4,7 @@
 
 use std::mem;
 
-use {Result, Tape, Value};
+use crate::{Result, Tape, Value};
 
 /// A naming table.
 #[derive(Clone, Debug)]

@@ -2,7 +2,7 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/post.htm
 
-use {Result, Tape, Value, q32};
+use crate::{Result, Tape, Value, q32};
 
 /// PostScript information.
 #[derive(Clone, Debug)]

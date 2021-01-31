@@ -2,7 +2,7 @@
 //!
 //! [1]: https://www.microsoft.com/typography/otspec/os2.htm
 
-use {Result, Tape, Value};
+use crate::{Result, Tape, Value};
 
 /// OS/2 and Windows metrics.
 #[derive(Clone, Copy, Debug)]
