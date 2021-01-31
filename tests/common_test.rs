@@ -21,9 +21,9 @@ macro_rules! setup(
     ($fixture:ident, $table:expr) => (setup(Fixture::$fixture, Some($table)));
 );
 
-mod fixture;
+mod common;
 
-use fixture::Fixture;
+use common::Fixture;
 
 #[test]
 fn char_mapping_header() {
