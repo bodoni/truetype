@@ -15,7 +15,3 @@ readme = "README.md"
 categories = ["parsing"]
 keywords = ["font", "truetype", "typeface", "typography"]
 exclude = ["tests/fixtures/*"]
-
-[[test]]
-name = "truetype"
-path = "tests/lib.rs"
