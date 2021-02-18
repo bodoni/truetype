@@ -48,8 +48,7 @@ pub trait Tape: Read + Seek + Sized {
     #[doc(hidden)]
     #[inline(always)]
     fn take_bytes(&mut self, count: usize) -> Result<Vec<u8>> {
-        let mut buffer = Vec::with_capacity(count);
-        unsafe { buffer.set_len(count) };
+        let mut buffer = vec![0; count];
         self.read_exact(&mut buffer)?;
         Ok(buffer)
     }
