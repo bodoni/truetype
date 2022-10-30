@@ -12,8 +12,8 @@ will be licensed according to the terms given in [LICENSE.md](LICENSE.md).
 
 [opentype]: https://github.com/bodoni/opentype
 
-[build-img]: https://travis-ci.org/bodoni/truetype.svg?branch=master
-[build-url]: https://travis-ci.org/bodoni/truetype
+[build-img]: https://github.com/bodoni/truetype/workflows/build/badge.svg
+[build-url]: https://github.com/bodoni/truetype/actions/workflows/build.yml
 [documentation-img]: https://docs.rs/truetype/badge.svg
 [documentation-url]: https://docs.rs/truetype
 [package-img]: https://img.shields.io/crates/v/truetype.svg
