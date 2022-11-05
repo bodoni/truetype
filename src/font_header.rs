@@ -1,6 +1,6 @@
 //! The [font header][1].
 //!
-//! [1]: https://www.microsoft.com/typography/otspec/head.htm
+//! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/head
 
 use crate::q32;
 

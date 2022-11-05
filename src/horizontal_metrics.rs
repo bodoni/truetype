@@ -1,6 +1,6 @@
 //! The [horizontal metrics][1].
 //!
-//! [1]: https://www.microsoft.com/typography/otspec/hmtx.htm
+//! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/hmtx
 
 use crate::{HorizontalHeader, MaximumProfile, Result, Tape, Walue};
 

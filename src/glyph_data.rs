@@ -1,6 +1,6 @@
 //! The [glyph data][1].
 //!
-//! [1]: https://www.microsoft.com/typography/otspec/glyf.htm
+//! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/glyf
 
 use std::ops::Deref;
 

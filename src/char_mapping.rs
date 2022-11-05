@@ -1,6 +1,6 @@
 //! The [char-to-glyph mapping][1].
 //!
-//! [1]: https://www.microsoft.com/typography/otspec/cmap.htm
+//! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/cmap
 
 use std::collections::HashMap;
 

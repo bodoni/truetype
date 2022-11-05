@@ -1,6 +1,6 @@
 //! The [horizontal header][1].
 //!
-//! [1]: https://www.microsoft.com/typography/otspec/hhea.htm
+//! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/hhea
 
 table! {
     #[doc = "A horizontal header."]

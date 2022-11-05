@@ -1,6 +1,6 @@
 //! The [offset table][1].
 //!
-//! [1]: https://www.microsoft.com/typography/otspec/otff.htm
+//! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/otff
 
 use crate::{Result, Tag, Tape};
 

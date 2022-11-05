@@ -1,6 +1,6 @@
 //! The [maximum profile][1].
 //!
-//! [1]: https://www.microsoft.com/typography/otspec/maxp.htm
+//! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/maxp
 
 use crate::{q32, Result, Tape, Value};
 

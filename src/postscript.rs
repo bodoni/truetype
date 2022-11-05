@@ -1,6 +1,6 @@
 //! The [PostScript information][1].
 //!
-//! [1]: https://www.microsoft.com/typography/otspec/post.htm
+//! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/post
 
 use crate::{q32, Result, Tape, Value};
 

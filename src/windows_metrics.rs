@@ -1,6 +1,6 @@
 //! The [OS/2 and Windows metrics][1].
 //!
-//! [1]: https://www.microsoft.com/typography/otspec/os2.htm
+//! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/os2
 
 use crate::{Result, Tape, Value};
 

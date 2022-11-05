@@ -1,6 +1,6 @@
 //! The [glyph-to-location mapping][1].
 //!
-//! [1]: https://www.microsoft.com/typography/otspec/loca.htm
+//! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/loca
 
 use crate::{FontHeader, MaximumProfile, Result, Tape, Walue};
 
