@@ -83,7 +83,8 @@ flags! {
         0b0001_0000 => is_x_same,
         0b0010_0000 => is_y_positive,
         0b0010_0000 => is_y_same,
-        0b1100_0000 => is_invalid,
+        0b0100_0000 => is_overlap_simple,
+        0b1000_0000 => is_invalid,
     }
 }
 
