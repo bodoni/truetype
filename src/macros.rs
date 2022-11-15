@@ -38,7 +38,9 @@ macro_rules! flags {
 }
 
 macro_rules! raise(
-    ($message:expr) => (return Err(crate::Error::new(::std::io::ErrorKind::Other, $message)));
+    ($($argument:tt)*) => (
+        return Err(crate::Error::new(::std::io::ErrorKind::Other, format!($($argument)*)))
+    );
 );
 
 macro_rules! table {
