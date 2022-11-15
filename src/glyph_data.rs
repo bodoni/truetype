@@ -186,33 +186,35 @@ impl Walue<'static> for Description {
     type Parameter = i16;
 
     fn read<T: Tape>(tape: &mut T, contour_count: i16) -> Result<Self> {
-        if contour_count >= 0 {
-            Ok(Description::Simple(
-                tape.take_given(contour_count as usize)?,
-            ))
-        } else {
-            let mut components = vec![];
-            let mut component_count = 0;
-            let mut has_more_components = true;
-            let mut has_instructions = false;
-            while has_more_components {
-                components.push(tape.take::<Component>()?);
-                has_instructions |= components[component_count].flags.has_instructions();
-                has_more_components = components[component_count].flags.has_more_components();
-                component_count += 1;
-            }
-            let instruction_size = if has_instructions {
-                tape.take::<u16>()?
-            } else {
-                0
-            };
-            let instructions = tape.take_bytes(instruction_size as usize)?;
-            Ok(Description::Composite(CompositeDescription {
-                components: components,
-                instruction_size: instruction_size,
-                instructions: instructions,
-            }))
+        if contour_count < -1 {
+            raise!("found a malformed glyph");
         }
+        if contour_count >= 0 {
+            return Ok(Description::Simple(
+                tape.take_given(contour_count as usize)?,
+            ));
+        }
+        let mut components = vec![];
+        let mut component_count = 0;
+        let mut has_more_components = true;
+        let mut has_instructions = false;
+        while has_more_components {
+            components.push(tape.take::<Component>()?);
+            has_instructions |= components[component_count].flags.has_instructions();
+            has_more_components = components[component_count].flags.has_more_components();
+            component_count += 1;
+        }
+        let instruction_size = if has_instructions {
+            tape.take::<u16>()?
+        } else {
+            0
+        };
+        let instructions = tape.take_bytes(instruction_size as usize)?;
+        Ok(Description::Composite(CompositeDescription {
+            components: components,
+            instruction_size: instruction_size,
+            instructions: instructions,
+        }))
     }
 }
 
