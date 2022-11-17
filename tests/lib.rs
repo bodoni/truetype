@@ -5,7 +5,7 @@ use truetype::{Value, Walue};
 #[macro_use]
 mod common;
 
-use common::{Fixture, setup, stringify};
+use common::{setup, stringify, Fixture};
 
 #[test]
 fn char_mapping_header() {

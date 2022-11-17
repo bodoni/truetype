@@ -82,7 +82,7 @@ macro_rules! table {
         value
     });
     (@read $name:ident, $this:ident, $tape:ident [$kind:ty] []
-     |$this_:pat, $tape_:pat| $body:block) => ({
+     |$this_:tt, $tape_:tt| $body:block) => ({
         #[inline(always)]
         fn read<T: crate::Tape>($this_: &$name, $tape_: &mut T) -> crate::Result<$kind> $body
         read(&$this, $tape)?
