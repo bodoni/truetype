@@ -1,29 +1,11 @@
 extern crate truetype;
 
-use std::collections::HashMap;
-use std::fs::File;
 use truetype::{Value, Walue};
 
-macro_rules! convert(
-    ($mapping:expr) => ({
-        let mut mapping = HashMap::new();
-        for (key, value) in $mapping {
-            mapping.insert(key as u32, value as u32);
-        }
-        mapping
-    });
-);
-
-macro_rules! ok(($result:expr) => ($result.unwrap()));
-
-macro_rules! setup(
-    ($fixture:ident) => (setup(Fixture::$fixture, None));
-    ($fixture:ident, $table:expr) => (setup(Fixture::$fixture, Some($table)));
-);
-
+#[macro_use]
 mod common;
 
-use common::Fixture;
+use common::{Fixture, setup, stringify};
 
 #[test]
 fn char_mapping_header() {
@@ -277,25 +259,5 @@ fn windows_metrics() {
             assert!(table.break_char == 32);
         }
         _ => unreachable!(),
-    }
-}
-
-fn setup(fixture: Fixture, table: Option<&str>) -> File {
-    use std::io::{Seek, SeekFrom};
-
-    let mut file = ok!(File::open(fixture.path()));
-    ok!(file.seek(SeekFrom::Start(
-        table.map(|table| fixture.offset(table)).unwrap_or(0),
-    )));
-    file
-}
-
-fn stringify<T>(data: &[T]) -> &str {
-    use std::{mem, slice, str};
-
-    unsafe {
-        let length = data.len() * mem::size_of::<T>();
-        let bytes = slice::from_raw_parts(data as *const _ as *const _, length);
-        str::from_utf8_unchecked(bytes)
     }
 }

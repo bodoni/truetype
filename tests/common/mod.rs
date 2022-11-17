@@ -3,6 +3,23 @@ use std::fs::{self, File};
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 
+macro_rules! convert(
+    ($mapping:expr) => ({
+        let mut mapping = std::collections::HashMap::new();
+        for (key, value) in $mapping {
+            mapping.insert(key as u32, value as u32);
+        }
+        mapping
+    });
+);
+
+macro_rules! ok(($result:expr) => ($result.unwrap()));
+
+macro_rules! setup(
+    ($fixture:ident) => (setup(crate::common::Fixture::$fixture, None));
+    ($fixture:ident, $table:expr) => (setup(crate::common::Fixture::$fixture, Some($table)));
+);
+
 #[derive(Clone, Copy, Debug)]
 pub enum Fixture {
     MPlus2P,
@@ -77,6 +94,26 @@ impl Fixture {
             .iter()
             .map(|file_name| read_mapping(&format!("{}/{}", path, file_name)))
             .collect::<Vec<_>>()
+    }
+}
+
+pub fn setup(fixture: Fixture, table: Option<&str>) -> File {
+    use std::io::{Seek, SeekFrom};
+
+    let mut file = ok!(File::open(fixture.path()));
+    ok!(file.seek(SeekFrom::Start(
+        table.map(|table| fixture.offset(table)).unwrap_or(0),
+    )));
+    file
+}
+
+pub fn stringify<T>(data: &[T]) -> &str {
+    use std::{mem, slice, str};
+
+    unsafe {
+        let length = data.len() * mem::size_of::<T>();
+        let bytes = slice::from_raw_parts(data as *const _ as *const _, length);
+        str::from_utf8_unchecked(bytes)
     }
 }
 
