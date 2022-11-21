@@ -50,21 +50,20 @@ table! {
 }
 
 impl Record {
-    /// Compute the checksum of the corresponding table and compare it with the
-    /// one in the record.
-    pub fn checksum<T, F>(&self, tape: &mut T, process: F) -> Result<bool>
-    where
-        T: Tape,
-        F: Fn(usize, u32) -> u32,
-    {
+    /// Compute the checksum of the corresponding table.
+    pub fn checksum<T: Tape>(&self, tape: &mut T) -> Result<u32> {
+        let head = self.tag == Tag(*b"head");
         let length = ((self.length as usize + 4 - 1) & !(4 - 1)) / 4;
         tape.stay(|tape| {
             tape.jump(self.offset as u64)?;
-            let mut checksum: u64 = 0;
+            let mut total: u32 = 0;
             for i in 0..length {
-                checksum += process(i, tape.take()?) as u64;
+                let value: u32 = tape.take()?;
+                if !head || i != 2 {
+                    total = total.wrapping_add(value);
+                }
             }
-            Ok(self.checksum == checksum as u32)
+            Ok(total)
         })
     }
 }
@@ -88,7 +87,7 @@ mod tests {
                     offset: 0,
                     checksum: $checksum,
                 };
-                table.checksum(&mut reader, |_, chunk| chunk).unwrap()
+                table.checksum == table.checksum(&mut reader).unwrap()
             })
         );
         assert!(!checksum!(

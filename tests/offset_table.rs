@@ -4,7 +4,7 @@ extern crate truetype;
 mod common;
 
 mod kaushan_script {
-    use truetype::{Tag, Value};
+    use truetype::Value;
 
     use crate::common::setup;
 
@@ -18,21 +18,13 @@ mod kaushan_script {
         assert_eq!(header.table_count, 18);
         assert_eq!(records.len(), 18);
         for record in records.iter() {
-            if record.tag == Tag(*b"head") {
-                assert!(ok!(record.checksum(&mut file, |i, chunk| if i == 2 {
-                    0
-                } else {
-                    chunk
-                })));
-            } else {
-                assert!(ok!(record.checksum(&mut file, |_, chunk| chunk)));
-            }
+            assert_eq!(record.checksum, ok!(record.checksum(&mut file)));
         }
     }
 }
 
 mod source_serif {
-    use truetype::{Tag, Value};
+    use truetype::Value;
 
     use crate::common::setup;
 
@@ -48,15 +40,7 @@ mod source_serif {
         assert_eq!(header.range_shift, header.table_count * 16 - header.search_range);
         assert_eq!(records.len(), 12);
         for record in records.iter() {
-            if record.tag == Tag(*b"head") {
-                assert!(ok!(record.checksum(&mut file, |i, chunk| if i == 2 {
-                    0
-                } else {
-                    chunk
-                })));
-            } else {
-                assert!(ok!(record.checksum(&mut file, |_, chunk| chunk)));
-            }
+            assert_eq!(record.checksum, ok!(record.checksum(&mut file)));
         }
     }
 }
