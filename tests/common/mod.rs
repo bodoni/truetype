@@ -13,6 +13,7 @@ macro_rules! setup(
 #[allow(dead_code)]
 #[derive(Clone, Copy, Debug)]
 pub enum Fixture {
+    KaushanScript,
     MPlus2P,
     OpenSans,
     SourceSerif,
@@ -32,6 +33,7 @@ impl Fixture {
 
     pub fn file_name(&self) -> &'static str {
         match *self {
+            Fixture::KaushanScript => "KaushanScript-Regular.ttf",
             Fixture::MPlus2P => "MPlus2P-Regular.ttf",
             Fixture::OpenSans => "OpenSans-Italic.ttf",
             Fixture::SourceSerif => "SourceSerifPro-Regular.otf",
@@ -45,6 +47,9 @@ impl Fixture {
 
     pub fn offset(&self, table: &str) -> u64 {
         match *self {
+            Fixture::KaushanScript => match table {
+                _ => unreachable!(),
+            },
             Fixture::MPlus2P => match table {
                 "cmap" => 36100,
                 _ => unreachable!(),
