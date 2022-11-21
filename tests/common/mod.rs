@@ -3,16 +3,6 @@ use std::fs::{self, File};
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 
-macro_rules! convert(
-    ($mapping:expr) => ({
-        let mut mapping = std::collections::HashMap::new();
-        for (key, value) in $mapping {
-            mapping.insert(key as u32, value as u32);
-        }
-        mapping
-    });
-);
-
 macro_rules! ok(($result:expr) => ($result.unwrap()));
 
 macro_rules! setup(
@@ -20,6 +10,7 @@ macro_rules! setup(
     ($fixture:ident, $table:expr) => (setup(crate::common::Fixture::$fixture, Some($table)));
 );
 
+#[allow(dead_code)]
 #[derive(Clone, Copy, Debug)]
 pub enum Fixture {
     MPlus2P,
@@ -28,6 +19,7 @@ pub enum Fixture {
     VeraMono,
 }
 
+#[allow(dead_code)]
 impl Fixture {
     pub fn all() -> &'static [Fixture] {
         &[
@@ -105,16 +97,6 @@ pub fn setup(fixture: Fixture, table: Option<&str>) -> File {
         table.map(|table| fixture.offset(table)).unwrap_or(0),
     )));
     file
-}
-
-pub fn stringify<T>(data: &[T]) -> &str {
-    use std::{mem, slice, str};
-
-    unsafe {
-        let length = data.len() * mem::size_of::<T>();
-        let bytes = slice::from_raw_parts(data as *const _ as *const _, length);
-        str::from_utf8_unchecked(bytes)
-    }
 }
 
 fn read_mapping(path: &str) -> HashMap<u32, u32> {
