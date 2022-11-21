@@ -4,36 +4,31 @@ extern crate truetype;
 mod common;
 
 mod kaushan_script {
-    use truetype::Value;
+    use truetype::{OffsetTable, Value};
 
     use crate::common::setup;
 
-    #[should_panic]
     #[test]
     fn read() {
-        use truetype::OffsetTable;
-
         let mut file = setup!(KaushanScript);
         let OffsetTable { header, records } = ok!(OffsetTable::read(&mut file));
         assert_eq!(header.table_count, 18);
         assert_eq!(records.len(), 18);
         let (_, failures): (Vec<_>, Vec<_>) = records
             .iter()
-            .map(|record| (record.tag, record.checksum, ok!(record.checksum(&mut file))))
-            .partition(|(_, left, right)| left == right);
+            .map(|record| (record, ok!(record.checksum(&mut file))))
+            .partition(|(record, checksum)| record.checksum == *checksum);
         assert_eq!(failures.len(), 0, "{:?}", failures);
     }
 }
 
 mod source_serif {
-    use truetype::Value;
+    use truetype::{OffsetTable, Value};
 
     use crate::common::setup;
 
     #[test]
     fn read() {
-        use truetype::OffsetTable;
-
         let mut file = setup!(SourceSerif);
         let OffsetTable { header, records } = ok!(OffsetTable::read(&mut file));
         assert_eq!(header.table_count, 12);
@@ -46,8 +41,8 @@ mod source_serif {
         assert_eq!(records.len(), 12);
         let (_, failures): (Vec<_>, Vec<_>) = records
             .iter()
-            .map(|record| (record.tag, record.checksum, ok!(record.checksum(&mut file))))
-            .partition(|(_, left, right)| left == right);
+            .map(|record| (record, ok!(record.checksum(&mut file))))
+            .partition(|(record, checksum)| record.checksum == *checksum);
         assert_eq!(failures.len(), 0, "{:?}", failures);
     }
 }

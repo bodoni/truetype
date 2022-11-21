@@ -48,6 +48,7 @@ impl Fixture {
     pub fn offset(&self, table: &str) -> u64 {
         match *self {
             Fixture::KaushanScript => match table {
+                "head" => 176888,
                 _ => unreachable!(),
             },
             Fixture::MPlus2P => match table {
