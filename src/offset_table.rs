@@ -53,12 +53,17 @@ impl Record {
     /// Compute the checksum of the corresponding table.
     pub fn checksum<T: Tape>(&self, tape: &mut T) -> Result<u32> {
         let head = self.tag == Tag(*b"head");
-        let length = ((self.length as usize + 4 - 1) & !(4 - 1)) / 4;
+        let count = ((self.length + 4 - 1) & !(4 - 1)) / 4;
+        let excess = 4 * count - self.length;
+        debug_assert!(excess < 4);
         tape.stay(|tape| {
             tape.jump(self.offset as u64)?;
             let mut total: u32 = 0;
-            for i in 0..length {
-                let value: u32 = tape.take()?;
+            for i in 0..count {
+                let mut value: u32 = tape.take()?;
+                if i + 1 == count {
+                    value &= !((1u32 << (8 * excess)) - 1);
+                }
                 if !head || i != 2 {
                     total = total.wrapping_add(value);
                 }
