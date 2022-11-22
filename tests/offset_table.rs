@@ -8,7 +8,10 @@ mod kaushan_script {
 
     use crate::common::setup;
 
+    // The font header is known to be corrupted. See
+    // https://github.com/google/fonts/issues/5553
     #[test]
+    #[should_panic]
     fn read() {
         let mut file = setup!(KaushanScript);
         let OffsetTable { header, records } = ok!(OffsetTable::read(&mut file));
