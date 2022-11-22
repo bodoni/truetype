@@ -4,14 +4,11 @@ extern crate truetype;
 mod common;
 
 mod kaushan_script {
-    use truetype::{OffsetTable, Value};
+    use truetype::{OffsetTable, Tag, Value};
 
     use crate::common::setup;
 
-    // The font header is known to be corrupted. See
-    // https://github.com/google/fonts/issues/5553
     #[test]
-    #[should_panic]
     fn read() {
         let mut file = setup!(KaushanScript);
         let OffsetTable { header, records } = ok!(OffsetTable::read(&mut file));
@@ -21,7 +18,17 @@ mod kaushan_script {
             .iter()
             .map(|record| (record, ok!(record.checksum(&mut file))))
             .partition(|(record, checksum)| record.checksum == *checksum);
-        assert_eq!(failures.len(), 0, "{:?}", failures);
+        // The header is known to be corrupted. See
+        // https://github.com/google/fonts/issues/5553
+        assert_eq!(
+            failures
+                .iter()
+                .map(|(record, _)| record.tag)
+                .collect::<Vec<_>>(),
+            &[Tag(*b"head")],
+            "{:?}",
+            failures,
+        );
     }
 }
 
