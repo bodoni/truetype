@@ -142,7 +142,17 @@ impl<'l> Walue<'l> for GlyphData {
     type Parameter = &'l GlyphMapping;
 
     fn read<T: Tape>(tape: &mut T, mapping: &GlyphMapping) -> Result<Self> {
-        macro_rules! reject(() => (raise!("found a malformed glyph-to-location mapping")));
+        macro_rules! reject(
+            () => (
+                raise!("found a malformed glyph-to-location mapping")
+            );
+            ($index:ident) => (
+                raise!("found a malformed glyph-to-location mapping at index {}", $index)
+            );
+            ($index:ident, $error:ident) => (
+                raise!(@from $error, "found a malformed glyph-to-location mapping at index {}", $index)
+            );
+        );
         let offsets: Vec<_> = match mapping {
             &GlyphMapping::HalfOffsets(ref offsets) => {
                 offsets.iter().map(|&offset| 2 * (offset as u64)).collect()
@@ -159,16 +169,19 @@ impl<'l> Walue<'l> for GlyphData {
         let position = tape.position()?;
         for i in 0..glyph_count {
             if offsets[i] > offsets[i + 1] {
-                reject!();
+                reject!(i);
             }
             if offsets[i] == offsets[i + 1] {
                 glyphs.push(None);
                 continue;
             }
             tape.jump(position + offsets[i])?;
-            glyphs.push(Some(tape.take()?));
+            match tape.take() {
+                Ok(glyph) => glyphs.push(Some(glyph)),
+                Err(error) => reject!(i, error),
+            }
             if tape.position()? > position + offsets[i + 1] {
-                reject!();
+                reject!(i);
             }
         }
         Ok(GlyphData(glyphs))

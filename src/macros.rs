@@ -44,8 +44,24 @@ macro_rules! flags {
 }
 
 macro_rules! raise(
+    (@from $error:ident, $($argument:tt)*) => (
+        return Err(
+            crate::Error::new(
+                ::std::io::ErrorKind::Other,
+                crate::ErrorWithSource {
+                    description: format!($($argument)*),
+                    source: $error,
+                },
+            )
+        )
+    );
     ($($argument:tt)*) => (
-        return Err(crate::Error::new(::std::io::ErrorKind::Other, format!($($argument)*)))
+        return Err(
+            crate::Error::new(
+                ::std::io::ErrorKind::Other,
+                format!($($argument)*),
+            )
+        )
     );
 );
 
