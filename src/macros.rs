@@ -22,7 +22,7 @@ macro_rules! flags {
             fn read<T: $crate::Tape>(tape: &mut T) -> $crate::Result<Self> {
                 let value = $name(tape.take::<$kind>()?);
                 if value.is_invalid() {
-                    raise!("found malformed flags");
+                    raise!(concat!("found malformed flags of type ", stringify!($name)));
                 }
                 Ok(value)
             }
