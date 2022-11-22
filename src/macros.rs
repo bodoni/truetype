@@ -22,9 +22,15 @@ macro_rules! flags {
             fn read<T: $crate::Tape>(tape: &mut T) -> $crate::Result<Self> {
                 let value = $name(tape.take::<$kind>()?);
                 if value.is_invalid() {
-                    raise!(concat!("found malformed flags of type ", stringify!($name)));
+                    raise!("found malformed flags with value {}", value);
                 }
                 Ok(value)
+            }
+        }
+
+        impl ::std::fmt::Display for $name {
+            fn fmt(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                write!(formatter, concat!(stringify!($name), "(0x{:X})"), self.0)
             }
         }
 
