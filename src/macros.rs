@@ -21,8 +21,10 @@ macro_rules! flags {
             #[inline(always)]
             fn read<T: $crate::Tape>(tape: &mut T) -> $crate::Result<Self> {
                 let value = $name(tape.take::<$kind>()?);
-                if value.is_invalid() {
-                    raise!("found malformed flags with value {}", value);
+                if cfg!(not(feature = "ignore-invalid-flags")) {
+                    if value.is_invalid() {
+                        raise!("found malformed flags with value {}", value);
+                    }
                 }
                 Ok(value)
             }

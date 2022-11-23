@@ -16,3 +16,6 @@ readme = "README.md"
 categories = ["parsing"]
 keywords = ["font", "truetype", "typeface", "typography"]
 exclude = ["tests/fixtures/*"]
+
+[features]
+ignore-invalid-flags = []
