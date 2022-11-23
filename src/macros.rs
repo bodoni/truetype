@@ -5,7 +5,7 @@ macro_rules! flags {
         $($mask:expr => $method:ident,)*
     }) => (
         $(#[$attribute])*
-        #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+        #[derive(Clone, Copy, Default, Eq, PartialEq)]
         pub struct $name(pub $kind);
 
         impl $name {
@@ -28,9 +28,16 @@ macro_rules! flags {
             }
         }
 
-        impl ::std::fmt::Display for $name {
+        impl ::std::fmt::Debug for $name {
             fn fmt(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
                 write!(formatter, concat!(stringify!($name), "(0x{:X})"), self.0)
+            }
+        }
+
+        impl ::std::fmt::Display for $name {
+            #[inline]
+            fn fmt(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                ::std::fmt::Debug::fmt(self, formatter)
             }
         }
 
