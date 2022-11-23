@@ -30,7 +30,7 @@ macro_rules! flags {
 
         impl ::std::fmt::Debug for $name {
             fn fmt(&self, formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-                write!(formatter, concat!(stringify!($name), "(0x{:X})"), self.0)
+                write!(formatter, concat!(stringify!($name), "({:#b})"), self.0)
             }
         }
 
