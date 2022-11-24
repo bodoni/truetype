@@ -21,12 +21,43 @@ mod open_sans {
         ));
         let table = ok!(GlyphData::read(&mut setup!(OpenSans, "glyf"), &parameter));
         let glyph = ok!(table[0].as_ref());
-        assert!((glyph.min_x, glyph.max_x) == (193, 1034));
-        assert!((glyph.min_y, glyph.max_y) == (0, 1462));
+        assert_eq!((glyph.min_x, glyph.max_x), (193, 1034));
+        assert_eq!((glyph.min_y, glyph.max_y), (0, 1462));
         match glyph.description {
             Description::Simple(ref description) => {
-                assert!(&description.x == &[193, 841, 0, -841, 104, 633, 0, -633]);
-                assert!(&description.y == &[1462, 0, -1462, 0, 104, 0, 1254, 0])
+                assert_eq!(&description.x, &[193, 841, 0, -841, 104, 633, 0, -633]);
+                assert_eq!(&description.y, &[1462, 0, -1462, 0, 104, 0, 1254, 0])
+            }
+            _ => unreachable!(),
+        }
+    }
+}
+
+#[cfg(feature = "ignore-invalid-flags")]
+mod ubuntu_condensed {
+    use truetype::{Value, Walue};
+
+    use crate::common::setup;
+
+    #[test]
+    fn read() {
+        use truetype::glyph_data::Description;
+        use truetype::{FontHeader, GlyphData, GlyphMapping, MaximumProfile};
+
+        let parameter1 = ok!(FontHeader::read(&mut setup!(UbuntuCondensed, "head")));
+        let parameter2 = ok!(MaximumProfile::read(&mut setup!(UbuntuCondensed, "maxp")));
+        let parameter = ok!(GlyphMapping::read(
+            &mut setup!(UbuntuCondensed, "loca"),
+            (&parameter1, &parameter2),
+        ));
+        let table = ok!(GlyphData::read(&mut setup!(UbuntuCondensed, "glyf"), &parameter));
+        let glyph = ok!(table[0].as_ref());
+        assert_eq!((glyph.min_x, glyph.max_x), (50, 450));
+        assert_eq!((glyph.min_y, glyph.max_y), (0, 750));
+        match glyph.description {
+            Description::Simple(ref description) => {
+                assert_eq!(&description.x, &[50, 0, 400, 0, -50, 0, -300, 0]);
+                assert_eq!(&description.y, &[0, 750, 0, -750, 50, 650, 0, -650])
             }
             _ => unreachable!(),
         }

@@ -16,6 +16,7 @@ pub enum Fixture {
     MPlus2P,
     OpenSans,
     SourceSerif,
+    UbuntuCondensed,
     VeraMono,
 }
 
@@ -35,6 +36,7 @@ impl Fixture {
             Fixture::MPlus2P => "MPlus2P-Regular.ttf",
             Fixture::OpenSans => "OpenSans-Italic.ttf",
             Fixture::SourceSerif => "SourceSerifPro-Regular.otf",
+            Fixture::UbuntuCondensed => "UbuntuCondensed-Regular.ttf",
             Fixture::VeraMono => "VeraMono-Roman.ttf",
         }
     }
@@ -67,6 +69,13 @@ impl Fixture {
                 "maxp" => 296,
                 "name" => 400,
                 "post" => 17700,
+                _ => unreachable!(),
+            },
+            Fixture::UbuntuCondensed => match table {
+                "glyf" => 42520,
+                "head" => 348,
+                "loca" => 39992,
+                "maxp" => 440,
                 _ => unreachable!(),
             },
             Fixture::VeraMono => match table {
