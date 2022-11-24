@@ -18,4 +18,5 @@ keywords = ["font", "truetype", "typeface", "typography"]
 exclude = ["tests/fixtures/*"]
 
 [features]
+# https://github.com/google/fonts/issues/5551
 ignore-invalid-flags = []

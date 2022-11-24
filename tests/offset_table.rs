@@ -18,8 +18,6 @@ mod kaushan_script {
             .iter()
             .map(|record| (record, ok!(record.checksum(&mut file))))
             .partition(|(record, checksum)| record.checksum == *checksum);
-        // The header is known to be corrupted. See
-        // https://github.com/google/fonts/issues/5553
         assert_eq!(
             failures
                 .iter()
