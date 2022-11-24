@@ -50,7 +50,10 @@ mod ubuntu_condensed {
             &mut setup!(UbuntuCondensed, "loca"),
             (&parameter1, &parameter2),
         ));
-        let table = ok!(GlyphData::read(&mut setup!(UbuntuCondensed, "glyf"), &parameter));
+        let table = ok!(GlyphData::read(
+            &mut setup!(UbuntuCondensed, "glyf"),
+            &parameter,
+        ));
         let glyph = ok!(table[0].as_ref());
         assert_eq!((glyph.min_x, glyph.max_x), (50, 450));
         assert_eq!((glyph.min_y, glyph.max_y), (0, 750));
