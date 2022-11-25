@@ -33,13 +33,13 @@ mod open_sans {
     }
 }
 
-#[cfg(feature = "ignore-invalid-flags")]
 mod ubuntu_condensed {
     use truetype::{Value, Walue};
 
     use crate::common::setup;
 
     #[test]
+    #[cfg_attr(not(feature = "ignore-invalid-flags"), should_panic)]
     fn read() {
         use truetype::glyph_data::Description;
         use truetype::{FontHeader, GlyphData, GlyphMapping, MaximumProfile};
