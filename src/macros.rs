@@ -108,7 +108,7 @@ macro_rules! table {
     (@read $name:ident, $this:ident, $tape:ident [$kind:ty] [$value:block]) => ({
         let value = $tape.take()?;
         if value != $value {
-            raise!("found a malformed or unknown table");
+            raise!(concat!("found a malformed table of type ", stringify!($name)));
         }
         value
     });
