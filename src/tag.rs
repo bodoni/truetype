@@ -1,5 +1,4 @@
 use std::fmt;
-use std::ops::Deref;
 
 use crate::{Result, Tape, Value};
 
@@ -7,14 +6,7 @@ use crate::{Result, Tape, Value};
 #[derive(Clone, Copy, Default, Eq, Hash, PartialEq)]
 pub struct Tag(pub [u8; 4]);
 
-impl Deref for Tag {
-    type Target = [u8; 4];
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
+deref! { Tag::0 => [u8; 4] }
 
 impl fmt::Debug for Tag {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {

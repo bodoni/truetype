@@ -2,8 +2,6 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/glyf
 
-use std::ops::Deref;
-
 use crate::{q16, GlyphMapping, Result, Tape, Walue};
 
 /// Glyph data.
@@ -129,14 +127,7 @@ pub enum Options {
     Matrix(q16, q16, q16, q16),
 }
 
-impl Deref for GlyphData {
-    type Target = [Option<Glyph>];
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
+deref! { GlyphData::0 => [Option<Glyph>] }
 
 impl<'l> Walue<'l> for GlyphData {
     type Parameter = &'l GlyphMapping;
