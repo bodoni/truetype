@@ -2,7 +2,7 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/hmtx
 
-use crate::{HorizontalHeader, MaximumProfile, Result, Tape, Walue};
+use crate::{GlyphID, HorizontalHeader, MaximumProfile, Result, Tape, Walue};
 
 table! {
     @define
@@ -24,7 +24,8 @@ table! {
 
 impl HorizontalMetrics {
     /// Return the advance width and left side bearing.
-    pub fn get(&self, mut index: usize) -> (u16, i16) {
+    pub fn get(&self, glyph_id: GlyphID) -> (u16, i16) {
+        let mut index = glyph_id as usize;
         let longs = self.records.len();
         if index < longs {
             (
