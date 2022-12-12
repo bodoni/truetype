@@ -143,6 +143,13 @@ fn strings(records: &[Record], data: &[u8]) -> Result<Vec<String>> {
                 }
                 _ => {}
             },
+            3 => match crate::encoding::windows::decode(bytes, record.encoding_id) {
+                Some(string) => {
+                    strings.push(string);
+                    continue;
+                }
+                _ => {}
+            },
             _ => {}
         }
         strings.push("<unknown>".to_string());
