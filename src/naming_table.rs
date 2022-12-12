@@ -135,22 +135,15 @@ fn strings(records: &[Record], data: &[u8]) -> Result<Vec<String>> {
     for record in records {
         let (offset, length) = (record.offset as usize, record.length as usize);
         let bytes = &data[offset..(offset + length)];
-        match record.platform_id {
-            1 => match crate::encoding::macintosh::decode(bytes, record.encoding_id) {
-                Some(string) => {
-                    strings.push(string);
-                    continue;
-                }
-                _ => {}
-            },
-            3 => match crate::encoding::windows::decode(bytes, record.encoding_id) {
-                Some(string) => {
-                    strings.push(string);
-                    continue;
-                }
-                _ => {}
-            },
-            _ => {}
+        let string = match record.platform_id {
+            0 => crate::encoding::unicode::decode(bytes, record.encoding_id),
+            1 => crate::encoding::macintosh::decode(bytes, record.encoding_id),
+            3 => crate::encoding::windows::decode(bytes, record.encoding_id),
+            _ => None,
+        };
+        if let Some(string) = string {
+            strings.push(string);
+            continue;
         }
         strings.push("<unknown>".to_string());
     }
