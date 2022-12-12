@@ -136,7 +136,7 @@ fn strings(records: &[Record], data: &[u8]) -> Result<Vec<String>> {
         let (offset, length) = (record.offset as usize, record.length as usize);
         let bytes = &data[offset..(offset + length)];
         match record.platform_id {
-            1 => match decode_macintosh(bytes, record.encoding_id) {
+            1 => match crate::encoding::macintosh::decode(bytes, record.encoding_id) {
                 Some(string) => {
                     strings.push(string);
                     continue;
@@ -148,39 +148,4 @@ fn strings(records: &[Record], data: &[u8]) -> Result<Vec<String>> {
         strings.push("<unknown>".to_string());
     }
     Ok(strings)
-}
-
-// Reference:
-// https://github.com/opentypejs/opentype.js/blob/aea4ad304a8361fe5c047e8b0feee8ef3a6b3658/src/types.js#L300
-fn decode_macintosh(bytes: &[u8], encoding_id: u16) -> Option<String> {
-    #[rustfmt::skip]
-    const ROMAN: [char; 128] = [
-        'Ä', 'Å', 'Ç', 'É', 'Ñ', 'Ö', 'Ü', 'á', 'à', 'â', 'ä', 'ã', 'å',
-        'ç', 'é', 'è', 'ê', 'ë', 'í', 'ì', 'î', 'ï', 'ñ', 'ó', 'ò', 'ô',
-        'ö', 'õ', 'ú', 'ù', 'û', 'ü', '†', '°', '¢', '£', '§', '•', '¶',
-        'ß', '®', '©', '™', '´', '¨', '≠', 'Æ', 'Ø', '∞', '±', '≤', '≥',
-        '¥', 'µ', '∂', '∑', '∏', 'π', '∫', 'ª', 'º', 'Ω', 'æ', 'ø', '¿',
-        '¡', '¬', '√', 'ƒ', '≈', '∆', '«', '»', '…', ' ', 'À', 'Ã', 'Õ',
-        'Œ', 'œ', '–', '—', '“', '”', '‘', '’', '÷', '◊', 'ÿ', 'Ÿ', '⁄',
-        '€', '‹', '›', 'ﬁ', 'ﬂ', '‡', '·', '‚', '„', '‰', 'Â', 'Ê', 'Á',
-        'Ë', 'È', 'Í', 'Î', 'Ï', 'Ì', 'Ó', 'Ô', '', 'Ò', 'Ú', 'Û', 'Ù',
-        'ı', 'ˆ', '˜', '¯', '˘', '˙', '˚', '¸', '˝', '˛', 'ˇ',
-    ];
-
-    if encoding_id != 0 {
-        return None;
-    }
-
-    let table = &ROMAN;
-
-    let mut string = String::new();
-    for &byte in bytes {
-        if byte <= 0x7F {
-            string.push(byte as char);
-        } else {
-            string.push(table[(byte & 0x7F) as usize]);
-        }
-    }
-
-    Some(string)
 }

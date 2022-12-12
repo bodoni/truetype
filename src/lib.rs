@@ -3,6 +3,7 @@
 #[macro_use(deref, flags, raise, table)]
 extern crate typeface;
 
+mod encoding;
 mod number;
 mod tag;
 
