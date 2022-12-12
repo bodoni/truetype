@@ -150,8 +150,8 @@ fn strings(records: &[Record], data: &[u8]) -> Result<Vec<String>> {
     Ok(strings)
 }
 
-// The implementation is based on
-// https://github.com/nodebox/opentype.js/blob/master/src/types.js#L300
+// Reference:
+// https://github.com/opentypejs/opentype.js/blob/aea4ad304a8361fe5c047e8b0feee8ef3a6b3658/src/types.js#L300
 fn decode_macintosh(bytes: &[u8], encoding_id: u16) -> Option<String> {
     #[rustfmt::skip]
     const ROMAN: [char; 128] = [
