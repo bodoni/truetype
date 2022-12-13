@@ -9,3 +9,28 @@ pub fn decode(_: &[u8], encoding_id: u16) -> Option<String> {
         _ => None,
     }
 }
+
+pub fn decode_utf16be(data: &[u8]) -> Option<String> {
+    use std::io::Cursor;
+    use typeface::Tape;
+
+    let mut tape = Cursor::new(data);
+    match tape.take_given::<Vec<_>>(data.len() / 2) {
+        Ok(data) => match String::from_utf16(&data) {
+            Ok(string) => Some(string),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn decode_utf16be() {
+        assert_eq!(
+            super::decode_utf16be(&[0xD8, 0x52, 0xDF, 0x62]).unwrap(),
+            "\u{24B62}",
+        );
+    }
+}

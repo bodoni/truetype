@@ -54,7 +54,7 @@ mod tests {
 
     #[test]
     fn read() {
-        let mut cursor = Cursor::new(b"true".to_vec());
-        assert!(Tag::read(&mut cursor).unwrap() == Tag(*b"true"));
+        let mut tape = Cursor::new(b"true".to_vec());
+        assert!(Tag::read(&mut tape).unwrap() == Tag(*b"true"));
     }
 }

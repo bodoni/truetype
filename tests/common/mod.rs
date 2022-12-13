@@ -57,6 +57,7 @@ impl Fixture {
                 "head" => 316,
                 "loca" => 7728,
                 "maxp" => 408,
+                "name" => 195040,
                 "post" => 196560,
                 _ => unreachable!(),
             },

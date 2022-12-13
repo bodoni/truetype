@@ -1,8 +1,10 @@
+use super::unicode;
+
 #[inline]
-pub fn decode(_: &[u8], encoding_id: u16) -> Option<String> {
+pub fn decode(data: &[u8], encoding_id: u16) -> Option<String> {
     match encoding_id {
         // 0 => Symbol
-        // 1 => Unicode BMP
+        1 => unicode::decode_utf16be(data), // Unicode BMP
         // 2 => ShiftJIS
         // 3 => PRC
         // 4 => Big5
