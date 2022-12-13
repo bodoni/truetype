@@ -1,16 +1,16 @@
 #[inline]
-pub fn decode(_: &[u8], encoding_id: u16) -> Option<String> {
+pub fn decode(data: &[u8], encoding_id: u16) -> Option<String> {
     match encoding_id {
         // 0 => Unicode 1.0 semantics—deprecated
         // 1 => Unicode 1.1 semantics—deprecated
         // 2 => ISO/IEC 10646 semantics—deprecated
-        // 3 => Unicode 2.0 and onwards semantics, Unicode BMP only
-        // 4 => Unicode 2.0 and onwards semantics, Unicode full repertoire
+        3 => decode_utf16(data), // Unicode 2.0 and onwards semantics, Unicode BMP only
+        4 => decode_utf16(data), // Unicode 2.0 and onwards semantics, Unicode full repertoire
         _ => None,
     }
 }
 
-pub fn decode_utf16be(data: &[u8]) -> Option<String> {
+pub fn decode_utf16(data: &[u8]) -> Option<String> {
     use std::io::Cursor;
     use typeface::Tape;
 
@@ -27,9 +27,9 @@ pub fn decode_utf16be(data: &[u8]) -> Option<String> {
 #[cfg(test)]
 mod tests {
     #[test]
-    fn decode_utf16be() {
+    fn decode_utf16() {
         assert_eq!(
-            super::decode_utf16be(&[0xD8, 0x52, 0xDF, 0x62]).unwrap(),
+            super::decode_utf16(&[0xD8, 0x52, 0xDF, 0x62]).unwrap(),
             "\u{24B62}",
         );
     }

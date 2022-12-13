@@ -4,7 +4,7 @@ use super::unicode;
 pub fn decode(data: &[u8], encoding_id: u16) -> Option<String> {
     match encoding_id {
         // 0 => Symbol
-        1 => unicode::decode_utf16be(data), // Unicode BMP
+        1 => unicode::decode_utf16(data), // Unicode BMP
         // 2 => ShiftJIS
         // 3 => PRC
         // 4 => Big5
@@ -13,7 +13,7 @@ pub fn decode(data: &[u8], encoding_id: u16) -> Option<String> {
         // 7 => Reserved
         // 8 => Reserved
         // 9 => Reserved
-        // 10 => Unicode full repertoire
+        10 => unicode::decode_utf16(data), // Unicode full repertoire
         _ => None,
     }
 }
