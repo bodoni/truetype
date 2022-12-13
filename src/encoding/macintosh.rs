@@ -1,3 +1,6 @@
+// Reference:
+// https://github.com/opentypejs/opentype.js/blob/c37fcdfbd89c1bd0aac1cecb2b287dfb7d00cee0/src/types.js#L463-L482
+
 #[rustfmt::skip]
 const ROMAN: [char; 128] = [
     'Ä', 'Å', 'Ç', 'É', 'Ñ', 'Ö', 'Ü', 'á', 'à', 'â', 'ä', 'ã', 'å',
@@ -12,18 +15,32 @@ const ROMAN: [char; 128] = [
     'ı', 'ˆ', '˜', '¯', '˘', '˙', '˚', '¸', '˝', '˛', 'ˇ',
 ];
 
-// Reference:
-// https://github.com/opentypejs/opentype.js/blob/c37fcdfbd89c1bd0aac1cecb2b287dfb7d00cee0/src/types.js#L463-L482
+#[rustfmt::skip]
+const RUSSIAN: [char; 128] = [
+    'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М',
+    'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ',
+    'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я', '†', '°', 'Ґ', '£', '§', '•', '¶',
+    'І', '®', '©', '™', 'Ђ', 'ђ', '≠', 'Ѓ', 'ѓ', '∞', '±', '≤', '≥',
+    'і', 'µ', 'ґ', 'Ј', 'Є', 'є', 'Ї', 'ї', 'Љ', 'љ', 'Њ', 'њ', 'ј',
+    'Ѕ', '¬', '√', 'ƒ', '≈', '∆', '«', '»', '…', ' ', 'Ћ', 'ћ', 'Ќ',
+    'ќ', 'ѕ', '–', '—', '“', '”', '‘', '’', '÷', '„', 'Ў', 'ў', 'Џ',
+    'џ', '№', 'Ё', 'ё', 'я', 'а', 'б', 'в', 'г', 'д', 'е', 'ж', 'з',
+    'и', 'й', 'к', 'л', 'м', 'н', 'о', 'п', 'р', 'с', 'т', 'у', 'ф',
+    'х', 'ц', 'ч', 'ш', 'щ', 'ъ', 'ы', 'ь', 'э', 'ю',
+
+    '\0',
+];
+
 pub fn decode(bytes: &[u8], encoding_id: u16) -> Option<String> {
     let table = match encoding_id {
-        0 => &ROMAN,
+        0 => &ROMAN, // Roman
         // 1 => Japanese
         // 2 => Chinese (Traditional)
         // 3 => Korean
         // 4 => Arabic
         // 5 => Hebrew
         // 6 => Greek
-        // 7 => Russian
+        7 => &RUSSIAN, // Russian
         // 8 => RSymbol
         // 9 => Devanagari
         // 10 => Gurmukhi
