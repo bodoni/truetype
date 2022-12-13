@@ -16,7 +16,7 @@ const ENCODING_GREEK: [char; 128] = [
 ];
 
 #[rustfmt::skip]
-const ROMAN: [char; 128] = [
+const ENCODING_ROMAN: [char; 128] = [
     'Ä', 'Å', 'Ç', 'É', 'Ñ', 'Ö', 'Ü', 'á', 'à', 'â', 'ä', 'ã', 'å',
     'ç', 'é', 'è', 'ê', 'ë', 'í', 'ì', 'î', 'ï', 'ñ', 'ó', 'ò', 'ô',
     'ö', 'õ', 'ú', 'ù', 'û', 'ü', '†', '°', '¢', '£', '§', '•', '¶',
@@ -86,6 +86,20 @@ const LANGUAGE_ICELANDIC: [char; 128] = [
 ];
 
 #[rustfmt::skip]
+const LANGUAGE_ROMANIAN: [char; 128] = [
+    'Ä', 'Å', 'Ç', 'É', 'Ñ', 'Ö', 'Ü', 'á', 'à', 'â', 'ä', 'ã', 'å',
+    'ç', 'é', 'è', 'ê', 'ë', 'í', 'ì', 'î', 'ï', 'ñ', 'ó', 'ò', 'ô',
+    'ö', 'õ', 'ú', 'ù', 'û', 'ü', '†', '°', '¢', '£', '§', '•', '¶',
+    'ß', '®', '©', '™', '´', '¨', '≠', 'Ă', 'Ș', '∞', '±', '≤', '≥',
+    '¥', 'µ', '∂', '∑', '∏', 'π', '∫', 'ª', 'º', 'Ω', 'ă', 'ș', '¿',
+    '¡', '¬', '√', 'ƒ', '≈', '∆', '«', '»', '…', ' ', 'À', 'Ã', 'Õ',
+    'Œ', 'œ', '–', '—', '“', '”', '‘', '’', '÷', '◊', 'ÿ', 'Ÿ', '⁄',
+    '€', '‹', '›', 'Ț', 'ț', '‡', '·', '‚', '„', '‰', 'Â', 'Ê', 'Á',
+    'Ë', 'È', 'Í', 'Î', 'Ï', 'Ì', 'Ó', 'Ô', '', 'Ò', 'Ú', 'Û', 'Ù',
+    'ı', 'ˆ', '˜', '¯', '˘', '˙', '˚', '¸', '˝', '˛', 'ˇ',
+];
+
+#[rustfmt::skip]
 const LANGUAGE_TURKISH: [char; 128] = [
     'Ä', 'Å', 'Ç', 'É', 'Ñ', 'Ö', 'Ü', 'á', 'à', 'â', 'ä', 'ã', 'å',
     'ç', 'é', 'è', 'ê', 'ë', 'í', 'ì', 'î', 'ï', 'ñ', 'ó', 'ò', 'ô',
@@ -101,7 +115,7 @@ const LANGUAGE_TURKISH: [char; 128] = [
 
 pub fn decode(bytes: &[u8], encoding_id: u16, language_id: u16) -> Option<String> {
     let table = match (encoding_id, language_id) {
-        (0, _) => &ROMAN, // Roman
+        (0, _) => &ENCODING_ROMAN, // Roman
         // 1 => Japanese
         // 2 => Chinese (Traditional)
         // 3 => Korean
@@ -172,10 +186,10 @@ pub fn decode(bytes: &[u8], encoding_id: u16, language_id: u16) -> Option<String
         // 34 => Flemish
         // 35 => Irish Gaelic
         // 36 => Albanian
-        // 37 => Romanian
-        (_, 38) => &ENCODING_SLAVIC, // Czech
-        (_, 39) => &ENCODING_SLAVIC, // Slovak
-        (_, 40) => &ENCODING_SLAVIC, // Slovenian
+        (_, 37) => &LANGUAGE_ROMANIAN, // Romanian
+        (_, 38) => &ENCODING_SLAVIC,   // Czech
+        (_, 39) => &ENCODING_SLAVIC,   // Slovak
+        (_, 40) => &ENCODING_SLAVIC,   // Slovenian
         // 41 => Yiddish
         // 42 => Serbian
         // 43 => Macedonian
