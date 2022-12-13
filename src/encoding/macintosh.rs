@@ -165,7 +165,7 @@ pub fn decode(bytes: &[u8], encoding_id: u16, language_id: u16) -> Option<String
         (_, 27) => &ENCODING_SLAVIC, // Estonian
         (_, 28) => &ENCODING_SLAVIC, // Latvian
         // 29 => Sami
-        // 30 => Faroese
+        (_, 30) => &LANGUAGE_ICELANDIC, // Faroese
         // 31 => Farsi/Persian
         // 32 => Russian
         // 33 => Chinese (Simplified)
