@@ -2,7 +2,7 @@
 // https://github.com/opentypejs/opentype.js/blob/c37fcdfbd89c1bd0aac1cecb2b287dfb7d00cee0/src/types.js#L463-L482
 
 #[rustfmt::skip]
-const GREEK: [char; 128] = [
+const ENCODING_GREEK: [char; 128] = [
     'Ä', '¹', '²', 'É', '³', 'Ö', 'Ü', '΅', 'à', 'â', 'ä', '΄', '¨',
     'ç', 'é', 'è', 'ê', 'ë', '£', '™', 'î', 'ï', '•', '½', '‰', 'ô',
     'ö', '¦', '€', 'ù', 'û', 'ü', '†', 'Γ', 'Δ', 'Θ', 'Λ', 'Ξ', 'Π',
@@ -30,7 +30,7 @@ const ROMAN: [char; 128] = [
 ];
 
 #[rustfmt::skip]
-const RUSSIAN: [char; 128] = [
+const ENCODING_RUSSIAN: [char; 128] = [
     'А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М',
     'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ',
     'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я', '†', '°', 'Ґ', '£', '§', '•', '¶',
@@ -44,7 +44,7 @@ const RUSSIAN: [char; 128] = [
 ];
 
 #[rustfmt::skip]
-const SLAVIC: [char; 128] = [
+const ENCODING_SLAVIC: [char; 128] = [
     'Ä', 'Ā', 'ā', 'É', 'Ą', 'Ö', 'Ü', 'á', 'ą', 'Č', 'ä', 'č', 'Ć',
     'ć', 'é', 'Ź', 'ź', 'Ď', 'í', 'ď', 'Ē', 'ē', 'Ė', 'ó', 'ė', 'ô',
     'ö', 'õ', 'ú', 'Ě', 'ě', 'ü', '†', '°', 'Ę', '£', '§', '•', '¶',
@@ -57,16 +57,16 @@ const SLAVIC: [char; 128] = [
     'ű', 'Ų', 'ų', 'Ý', 'ý', 'ķ', 'Ż', 'Ł', 'ż', 'Ģ', 'ˇ',
 ];
 
-pub fn decode(bytes: &[u8], encoding_id: u16) -> Option<String> {
-    let table = match encoding_id {
-        0 => &ROMAN, // Roman
+pub fn decode(bytes: &[u8], encoding_id: u16, language_id: u16) -> Option<String> {
+    let table = match (encoding_id, language_id) {
+        (0, _) => &ROMAN, // Roman
         // 1 => Japanese
         // 2 => Chinese (Traditional)
         // 3 => Korean
         // 4 => Arabic
         // 5 => Hebrew
-        6 => &GREEK,   // Greek
-        7 => &RUSSIAN, // Russian
+        (6, _) => &ENCODING_GREEK,   // Greek
+        (7, _) => &ENCODING_RUSSIAN, // Russian
         // 8 => RSymbol
         // 9 => Devanagari
         // 10 => Gurmukhi
@@ -88,10 +88,129 @@ pub fn decode(bytes: &[u8], encoding_id: u16) -> Option<String> {
         // 26 => Tibetan
         // 27 => Mongolian
         // 28 => Geez
-        29 => &SLAVIC, // Slavic
+        (29, _) => &ENCODING_SLAVIC, // Slavic
         // 30 => Vietnamese
         // 31 => Sindhi
         // 32 => Uninterpreted
+
+        // 0 => English
+        // 1 => French
+        // 2 => German
+        // 3 => Italian
+        // 4 => Dutch
+        // 5 => Swedish
+        // 6 => Spanish
+        // 7 => Danish
+        // 8 => Portuguese
+        // 9 => Norwegian
+        // 10 => Hebrew
+        // 11 => Japanese
+        // 12 => Arabic
+        // 13 => Finnish
+        // 14 => Greek
+        // 15 => Icelandic
+        // 16 => Maltese
+        // 17 => Turkish
+        // 18 => Croatian
+        // 19 => Chinese (Traditional)
+        // 20 => Urdu
+        // 21 => Hindi
+        // 22 => Thai
+        // 23 => Korean
+        (_, 24) => &ENCODING_SLAVIC, // Lithuanian
+        (_, 25) => &ENCODING_SLAVIC, // Polish
+        (_, 26) => &ENCODING_SLAVIC, // Hungarian
+        (_, 27) => &ENCODING_SLAVIC, // Estonian
+        (_, 28) => &ENCODING_SLAVIC, // Latvian
+        // 29 => Sami
+        // 30 => Faroese
+        // 31 => Farsi/Persian
+        // 32 => Russian
+        // 33 => Chinese (Simplified)
+        // 34 => Flemish
+        // 35 => Irish Gaelic
+        // 36 => Albanian
+        // 37 => Romanian
+        (_, 38) => &ENCODING_SLAVIC, // Czech
+        (_, 39) => &ENCODING_SLAVIC, // Slovak
+        (_, 40) => &ENCODING_SLAVIC, // Slovenian
+        // 41 => Yiddish
+        // 42 => Serbian
+        // 43 => Macedonian
+        // 44 => Bulgarian
+        // 45 => Ukrainian
+        // 46 => Byelorussian
+        // 47 => Uzbek
+        // 48 => Kazakh
+        // 49 => Azerbaijani (Cyrillic script)
+        // 50 => Azerbaijani (Arabic script)
+        // 51 => Armenian
+        // 52 => Georgian
+        // 53 => Moldavian
+        // 54 => Kirghiz
+        // 55 => Tajiki
+        // 56 => Turkmen
+        // 57 => Mongolian (Mongolian script)
+        // 58 => Mongolian (Cyrillic script)
+        // 59 => Pashto
+        // 60 => Kurdish
+        // 61 => Kashmiri
+        // 62 => Sindhi
+        // 63 => Tibetan
+        // 64 => Nepali
+        // 65 => Sanskrit
+        // 66 => Marathi
+        // 67 => Bengali
+        // 68 => Assamese
+        // 69 => Gujarati
+        // 70 => Punjabi
+        // 71 => Oriya
+        // 72 => Malayalam
+        // 73 => Kannada
+        // 74 => Tamil
+        // 75 => Telugu
+        // 76 => Sinhalese
+        // 77 => Burmese
+        // 78 => Khmer
+        // 79 => Lao
+        // 80 => Vietnamese
+        // 81 => Indonesian
+        // 82 => Tagalog
+        // 83 => Malay (Roman script)
+        // 84 => Malay (Arabic script)
+        // 85 => Amharic
+        // 86 => Tigrinya
+        // 87 => Galla
+        // 88 => Somali
+        // 89 => Swahili
+        // 90 => Kinyarwanda/Ruanda
+        // 91 => Rundi
+        // 92 => Nyanja/Chewa
+        // 93 => Malagasy
+        // 94 => Esperanto
+        // 128 => Welsh
+        // 129 => Basque
+        // 130 => Catalan
+        // 131 => Latin
+        // 132 => Quechua
+        // 133 => Guarani
+        // 134 => Aymara
+        // 135 => Tatar
+        // 136 => Uighur
+        // 137 => Dzongkha
+        // 138 => Javanese (Roman script)
+        // 139 => Sundanese (Roman script)
+        // 140 => Galician
+        // 141 => Afrikaans
+        // 142 => Breton
+        // 143 => Inuktitut
+        // 144 => Scottish Gaelic
+        // 145 => Manx Gaelic
+        // 146 => Irish Gaelic (with dot above)
+        // 147 => Tongan
+        // 148 => Greek (polytonic)
+        // 149 => Greenlandic
+        // 150 => Azerbaijani (Roman script)
         _ => return None,
     };
 

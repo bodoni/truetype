@@ -137,7 +137,7 @@ fn strings(records: &[Record], data: &[u8]) -> Result<Vec<String>> {
         let bytes = &data[offset..(offset + length)];
         let string = match record.platform_id {
             0 => crate::encoding::unicode::decode(bytes, record.encoding_id),
-            1 => crate::encoding::macintosh::decode(bytes, record.encoding_id),
+            1 => crate::encoding::macintosh::decode(bytes, record.encoding_id, record.language_id),
             3 => crate::encoding::windows::decode(bytes, record.encoding_id),
             _ => None,
         };
