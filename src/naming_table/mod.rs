@@ -6,6 +6,8 @@ use std::mem;
 
 use crate::{NameID, Result, Tape, Value};
 
+mod encoding;
+
 /// A naming table.
 #[derive(Clone, Debug)]
 pub enum NamingTable {
@@ -179,9 +181,9 @@ fn compute_length(records: &[Record]) -> usize {
 #[inline]
 fn decode(record: &Record, data: &[u8]) -> Option<String> {
     match record.platform_id {
-        0 => crate::encoding::unicode::decode(data, record.encoding_id),
-        1 => crate::encoding::macintosh::decode(data, record.encoding_id, record.language_id),
-        3 => crate::encoding::windows::decode(data, record.encoding_id),
+        0 => encoding::unicode::decode(data, record.encoding_id),
+        1 => encoding::macintosh::decode(data, record.encoding_id, record.language_id),
+        3 => encoding::windows::decode(data, record.encoding_id),
         _ => None,
     }
 }
