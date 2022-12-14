@@ -70,13 +70,19 @@ mod source_serif {
 
         let table = ok!(NamingTable::read(&mut setup!(SourceSerif, "name")));
         assert_eq!(
-            ok!(table.get(PredefinedName::DesignerName)),
-            "Frank Grießhammer",
+            ok!(table.get(PredefinedName::UniqueFontID)),
+            "1.017;ADBE;SourceSerifPro-Regular;ADOBE",
         );
         assert_eq!(
             ok!(table.get(PredefinedName::FontFamilyName)),
             "Source Serif Pro",
         );
-        assert!(table.get(PredefinedName::PostScriptCIDFontName).is_none());
+        assert_eq!(
+            ok!(table.get(PredefinedName::DesignerName)),
+            "Frank Grießhammer",
+        );
+        assert!(table
+            .get(PredefinedName::PostScriptCIDFindFontName)
+            .is_none());
     }
 }

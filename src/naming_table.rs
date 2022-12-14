@@ -100,14 +100,14 @@ pub enum PredefinedName {
     // Reserved = 15,
     TypographicFamilyName = 16,
     TypographicSubfamilyName = 17,
-    CompatibleFull = 18,
+    CompatibleFullFontName = 18,
     SampleText = 19,
-    PostScriptCIDFontName = 20,
+    PostScriptCIDFindFontName = 20,
     WWSFamilyName = 21,
     WWSSubfamilyName = 22,
     LightBackgroundPalette = 23,
     DarkBackgroundPalette = 24,
-    VariationsPostScriptNamePrefix = 25,
+    PostScriptVariationNamePrefix = 25,
 }
 
 impl NamingTable {
