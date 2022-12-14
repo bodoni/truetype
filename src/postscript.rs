@@ -2,7 +2,8 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/post
 
-use crate::{q32, Result, Tape, Value};
+use crate::number::q32;
+use crate::{Result, Tape, Value};
 
 /// PostScript information.
 #[derive(Clone, Debug)]

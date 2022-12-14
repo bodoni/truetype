@@ -2,7 +2,9 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/glyf
 
-use crate::{q16, GlyphMapping, Result, Tape, Walue};
+use crate::glyph_mapping::GlyphMapping;
+use crate::number::q16;
+use crate::{Result, Tape, Walue};
 
 /// Glyph data.
 #[derive(Clone, Debug)]

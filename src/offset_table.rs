@@ -2,7 +2,8 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/otff
 
-use crate::{Result, Tag, Tape};
+use crate::tag::Tag;
+use crate::{Result, Tape};
 
 table! {
     #[doc = "An offset table."]

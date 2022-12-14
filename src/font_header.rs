@@ -2,7 +2,7 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/head
 
-use crate::q32;
+use crate::number::q32;
 
 table! {
     #[doc = "A font header."]

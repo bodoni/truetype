@@ -36,6 +36,3 @@ pub use windows_metrics::WindowsMetrics;
 
 /// A glyph identifier.
 pub type GlyphID = u16;
-
-/// A name identifier.
-pub type NameID = u16;

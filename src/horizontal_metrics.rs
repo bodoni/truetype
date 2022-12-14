@@ -2,7 +2,9 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/hmtx
 
-use crate::{GlyphID, HorizontalHeader, MaximumProfile, Result, Tape, Walue};
+use crate::horizontal_header::HorizontalHeader;
+use crate::maximum_profile::MaximumProfile;
+use crate::{GlyphID, Result, Tape, Walue};
 
 table! {
     @define

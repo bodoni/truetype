@@ -4,9 +4,12 @@
 
 use std::mem;
 
-use crate::{NameID, Result, Tape, Value};
+use crate::{Result, Tape, Value};
 
 mod encoding;
+
+/// A name identifier.
+pub type NameID = u16;
 
 /// A naming table.
 #[derive(Clone, Debug)]
