@@ -7,6 +7,7 @@ use std::mem;
 use crate::{Result, Tape, Value};
 
 mod encoding;
+mod language;
 
 /// A name identifier.
 pub type NameID = u16;
