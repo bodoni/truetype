@@ -66,23 +66,15 @@ mod source_serif {
 
     #[test]
     fn read() {
-        use truetype::naming_table::{NamingTable, PredefinedName};
+        use truetype::naming_table::{Name, NamingTable};
 
         let table = ok!(NamingTable::read(&mut setup!(SourceSerif, "name")));
         assert_eq!(
-            ok!(table.get(PredefinedName::UniqueFontID)),
+            ok!(table.get(Name::UniqueFontID)),
             "1.017;ADBE;SourceSerifPro-Regular;ADOBE",
         );
-        assert_eq!(
-            ok!(table.get(PredefinedName::FontFamilyName)),
-            "Source Serif Pro",
-        );
-        assert_eq!(
-            ok!(table.get(PredefinedName::DesignerName)),
-            "Frank Grießhammer",
-        );
-        assert!(table
-            .get(PredefinedName::PostScriptCIDFindFontName)
-            .is_none());
+        assert_eq!(ok!(table.get(Name::FontFamilyName)), "Source Serif Pro",);
+        assert_eq!(ok!(table.get(Name::DesignerName)), "Frank Grießhammer",);
+        assert!(table.get(Name::PostScriptCIDFindFontName).is_none());
     }
 }

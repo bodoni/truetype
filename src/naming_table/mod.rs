@@ -7,10 +7,20 @@ use std::mem;
 use crate::{Result, Tape, Value};
 
 mod encoding;
-mod language;
+
+pub mod language;
+
+/// An encoding identifier.
+pub type EncodingID = u16;
+
+/// A language identifier.
+pub type LanguageID = u16;
 
 /// A name identifier.
 pub type NameID = u16;
+
+/// A platform identifier.
+pub type PlatformID = u16;
 
 /// A naming table.
 #[derive(Clone, Debug)]
@@ -66,12 +76,12 @@ table! {
     #[derive(Copy)]
     #[repr(C)]
     pub Record { // NameRecord
-        platform_id (u16   ), // platformID
-        encoding_id (u16   ), // encodingID
-        language_id (u16   ), // languageID
-        name_id     (NameID), // nameID
-        length      (u16   ), // length
-        offset      (u16   ), // offset
+        platform_id (PlatformID), // platformID
+        encoding_id (EncodingID), // encodingID
+        language_id (LanguageID), // languageID
+        name_id     (NameID    ), // nameID
+        length      (u16       ), // length
+        offset      (u16       ), // offset
     }
 }
 
@@ -85,9 +95,9 @@ table! {
     }
 }
 
-/// A predefined name.
+/// A name.
 #[derive(Clone, Copy, Debug)]
-pub enum PredefinedName {
+pub enum Name {
     CopyrightNotice = 0,
     FontFamilyName = 1,
     FontSubfamilyName = 2,
@@ -114,6 +124,14 @@ pub enum PredefinedName {
     LightBackgroundPalette = 23,
     DarkBackgroundPalette = 24,
     PostScriptVariationNamePrefix = 25,
+}
+
+/// A platform.
+#[derive(Clone, Copy, Debug)]
+pub enum Platform {
+    Unicode = 0,
+    Macintosh = 1,
+    Windows = 3,
 }
 
 impl NamingTable {
@@ -164,10 +182,17 @@ impl NamingTable1 {
     }
 }
 
-impl From<PredefinedName> for NameID {
+impl From<Name> for NameID {
     #[inline]
-    fn from(name: PredefinedName) -> NameID {
+    fn from(name: Name) -> NameID {
         name as NameID
+    }
+}
+
+impl From<Platform> for PlatformID {
+    #[inline]
+    fn from(platform: Platform) -> PlatformID {
+        platform as PlatformID
     }
 }
 
