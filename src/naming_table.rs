@@ -4,7 +4,7 @@
 
 use std::mem;
 
-use crate::{Result, Tape, Value};
+use crate::{NameID, Result, Tape, Value};
 
 /// A naming table.
 #[derive(Clone, Debug)]
@@ -60,12 +60,12 @@ table! {
     #[derive(Copy)]
     #[repr(C)]
     pub Record { // NameRecord
-        platform_id (u16), // platformID
-        encoding_id (u16), // encodingID
-        language_id (u16), // languageID
-        name_id     (u16), // nameID
-        length      (u16), // length
-        offset      (u16), // offset
+        platform_id (u16   ), // platformID
+        encoding_id (u16   ), // encodingID
+        language_id (u16   ), // languageID
+        name_id     (NameID), // nameID
+        length      (u16   ), // length
+        offset      (u16   ), // offset
     }
 }
 
@@ -76,6 +76,55 @@ table! {
     pub Language { // LangTagRecord
         length (u16), // length
         offset (u16), // offset
+    }
+}
+
+/// A predefined name.
+#[derive(Clone, Copy, Debug)]
+pub enum PredefinedName {
+    CopyrightNotice = 0,
+    FontFamilyName = 1,
+    FontSubfamilyName = 2,
+    UniqueFontID = 3,
+    FullFontName = 4,
+    VersionString = 5,
+    PostScriptFontName = 6,
+    Trademark = 7,
+    ManufacturerName = 8,
+    DesignerName = 9,
+    Description = 10,
+    VendorURL = 11,
+    DesignerURL = 12,
+    LicenseDescription = 13,
+    LicenseURL = 14,
+    // Reserved = 15,
+    TypographicFamilyName = 16,
+    TypographicSubfamilyName = 17,
+    CompatibleFull = 18,
+    SampleText = 19,
+    PostScriptCIDFontName = 20,
+    WWSFamilyName = 21,
+    WWSSubfamilyName = 22,
+    LightBackgroundPalette = 23,
+    DarkBackgroundPalette = 24,
+    VariationsPostScriptNamePrefix = 25,
+}
+
+impl NamingTable {
+    /// Search and decode a specific name.
+    pub fn get<T: Into<NameID>>(&self, name_id: T) -> Option<String> {
+        match self {
+            &NamingTable::Format0(ref table) => get(&table.records, &table.data, name_id.into()),
+            &NamingTable::Format1(ref table) => get(&table.records, &table.data, name_id.into()),
+        }
+    }
+
+    /// Decode all names.
+    pub fn get_all(&self) -> Vec<(NameID, Option<String>)> {
+        match self {
+            &NamingTable::Format0(ref table) => get_all(&table.records, &table.data),
+            &NamingTable::Format1(ref table) => get_all(&table.records, &table.data),
+        }
     }
 }
 
@@ -90,36 +139,33 @@ impl Value for NamingTable {
 }
 
 impl NamingTable0 {
-    #[inline]
-    pub fn strings(&self) -> Result<Vec<String>> {
-        strings(&self.records, &self.data)
-    }
-
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = tape.position()?;
         let above = 3 * 2 + self.records.len() * mem::size_of::<Record>();
         tape.jump(current - above as u64 + self.offset as u64)?;
-        tape.take_bytes(data_length(&self.records))
+        tape.take_bytes(compute_length(&self.records))
     }
 }
 
 impl NamingTable1 {
-    #[inline]
-    pub fn strings(&self) -> Result<Vec<String>> {
-        strings(&self.records, &self.data)
-    }
-
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = tape.position()?;
         let above = 4 * 2
             + self.records.len() * mem::size_of::<Record>()
             + self.languages.len() * mem::size_of::<Language>();
         tape.jump(current - above as u64 + self.offset as u64)?;
-        tape.take_bytes(data_length(&self.records))
+        tape.take_bytes(compute_length(&self.records))
     }
 }
 
-fn data_length(records: &[Record]) -> usize {
+impl From<PredefinedName> for NameID {
+    #[inline]
+    fn from(name: PredefinedName) -> NameID {
+        name as NameID
+    }
+}
+
+fn compute_length(records: &[Record]) -> usize {
     let mut length = 0;
     for record in records {
         let end = record.offset + record.length;
@@ -130,22 +176,37 @@ fn data_length(records: &[Record]) -> usize {
     length as usize
 }
 
-fn strings(records: &[Record], data: &[u8]) -> Result<Vec<String>> {
-    let mut strings = vec![];
+#[inline]
+fn decode(record: &Record, data: &[u8]) -> Option<String> {
+    match record.platform_id {
+        0 => crate::encoding::unicode::decode(data, record.encoding_id),
+        1 => crate::encoding::macintosh::decode(data, record.encoding_id, record.language_id),
+        3 => crate::encoding::windows::decode(data, record.encoding_id),
+        _ => None,
+    }
+}
+
+fn get(records: &[Record], data: &[u8], name_id: NameID) -> Option<String> {
     for record in records {
-        let (offset, length) = (record.offset as usize, record.length as usize);
-        let bytes = &data[offset..(offset + length)];
-        let string = match record.platform_id {
-            0 => crate::encoding::unicode::decode(bytes, record.encoding_id),
-            1 => crate::encoding::macintosh::decode(bytes, record.encoding_id, record.language_id),
-            3 => crate::encoding::windows::decode(bytes, record.encoding_id),
-            _ => None,
-        };
-        if let Some(string) = string {
-            strings.push(string);
+        if record.name_id != name_id {
             continue;
         }
-        strings.push("<unknown>".to_string());
+        let (offset, length) = (record.offset as usize, record.length as usize);
+        let string = decode(record, &data[offset..(offset + length)]);
+        if string.is_none() {
+            continue;
+        }
+        return string;
     }
-    Ok(strings)
+    None
+}
+
+fn get_all(records: &[Record], data: &[u8]) -> Vec<(NameID, Option<String>)> {
+    let mut names = vec![];
+    for record in records {
+        let (offset, length) = (record.offset as usize, record.length as usize);
+        let string = decode(record, &data[offset..(offset + length)]);
+        names.push((record.name_id, string));
+    }
+    names
 }
