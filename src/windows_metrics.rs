@@ -3,6 +3,7 @@
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/os2
 
 use crate::{Result, Tape, Value};
+use crate::tag::Tag;
 
 /// OS/2 and Windows metrics.
 #[derive(Clone, Copy, Debug)]
@@ -46,7 +47,7 @@ table! {
         unicode_range2        (u32           ), // ulUnicodeRange2
         unicode_range3        (u32           ), // ulUnicodeRange3
         unicode_range4        (u32           ), // ulUnicodeRange4
-        vendor_id             ([i8; 4]       ), // achVendID
+        vendor_id             (Tag           ), // achVendID
         selection_flags       (SelectionFlags), // fsSelection
         first_char_index      (u16           ), // usFirstCharIndex
         last_char_index       (u16           ), // usLastCharIndex
@@ -83,7 +84,7 @@ table! {
         unicode_range2        (u32           ), // ulUnicodeRange2
         unicode_range3        (u32           ), // ulUnicodeRange3
         unicode_range4        (u32           ), // ulUnicodeRange4
-        vendor_id             ([i8; 4]       ), // achVendID
+        vendor_id             (Tag           ), // achVendID
         selection_flags       (SelectionFlags), // fsSelection
         first_char_index      (u16           ), // usFirstCharIndex
         last_char_index       (u16           ), // usLastCharIndex
@@ -122,7 +123,7 @@ table! {
         unicode_range2        (u32           ), // ulUnicodeRange2
         unicode_range3        (u32           ), // ulUnicodeRange3
         unicode_range4        (u32           ), // ulUnicodeRange4
-        vendor_id             ([i8; 4]       ), // achVendID
+        vendor_id             (Tag           ), // achVendID
         selection_flags       (SelectionFlags), // fsSelection
         first_char_index      (u16           ), // usFirstCharIndex
         last_char_index       (u16           ), // usLastCharIndex
@@ -172,7 +173,7 @@ table! {
         unicode_range2           (u32           ), // ulUnicodeRange2
         unicode_range3           (u32           ), // ulUnicodeRange3
         unicode_range4           (u32           ), // ulUnicodeRange4
-        vendor_id                ([i8; 4]       ), // achVendID
+        vendor_id                (Tag           ), // achVendID
         selection_flags          (SelectionFlags), // fsSelection
         first_char_index         (u16           ), // usFirstCharIndex
         last_char_index          (u16           ), // usLastCharIndex
