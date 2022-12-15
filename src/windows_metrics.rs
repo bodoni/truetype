@@ -2,8 +2,8 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/os2
 
-use crate::{Result, Tape, Value};
 use crate::tag::Tag;
+use crate::{Result, Tape, Value};
 
 /// OS/2 and Windows metrics.
 #[derive(Clone, Copy, Debug)]
