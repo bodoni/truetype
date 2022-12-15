@@ -109,11 +109,20 @@ mod source_serif {
     #[test]
     fn read() {
         let table = ok!(NamingTable::read(&mut setup!(SourceSerif, "name")));
-        let names: HashMap<_, _> = table
-            .decode()
-            .into_iter()
-            .filter(|(_, language_tag, _)| ok!(language_tag.as_deref()) == "en")
-            .map(|(name_id, _, string)| (name_id, ok!(string)))
+        let names = table.decode();
+        let names: HashMap<_, _> = names
+            .iter()
+            .filter(|(_, language_tag, _)| language_tag.is_some())
+            .filter(|(_, _, string)| string.is_some())
+            .map(|(name_id, language_tag, string)| {
+                (
+                    *name_id,
+                    language_tag.as_deref().unwrap(),
+                    string.as_deref().unwrap(),
+                )
+            })
+            .filter(|(_, language_tag, _)| language_tag.starts_with("en"))
+            .map(|(name_id, _, string)| (name_id, string))
             .collect();
         assert_eq!(
             names[&NameID::UniqueFontID],
