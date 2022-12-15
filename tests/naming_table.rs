@@ -117,7 +117,7 @@ mod source_serif {
             .collect();
         assert_eq!(
             names[&NameID::UniqueFontID],
-            "1.017;ADBE;SourceSerifPro-Regular;ADOBE"
+            "1.017;ADBE;SourceSerifPro-Regular;ADOBE",
         );
         assert_eq!(names[&NameID::FontFamilyName], "Source Serif Pro");
         assert_eq!(names[&NameID::DesignerName], "Frank Grießhammer");
