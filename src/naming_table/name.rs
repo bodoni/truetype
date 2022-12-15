@@ -1,9 +1,6 @@
-/// A name identifier.
-pub type NameID = u16;
-
 enumeration! {
-    #[doc = "A name."]
-    pub Name(NameID) {
+    #[doc = "A name identifier."]
+    pub NameID(u16) {
         0 => CopyrightNotice,
         1 => FontFamilyName,
         2 => FontSubfamilyName,
@@ -30,5 +27,6 @@ enumeration! {
         23 => LightBackgroundPalette,
         24 => DarkBackgroundPalette,
         25 => PostScriptVariationNamePrefix,
+        _ => Other,
     }
 }

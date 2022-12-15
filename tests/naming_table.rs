@@ -4,14 +4,13 @@ extern crate truetype;
 mod common;
 
 mod open_sans {
+    use truetype::naming_table::{NameID, NamingTable};
     use truetype::Value;
 
     use crate::common::setup;
 
     #[test]
     fn read() {
-        use truetype::NamingTable;
-
         let table = ok!(NamingTable::read(&mut setup!(OpenSans, "name")));
         let names = table.decode();
         let name_ids: Vec<_> = names.iter().map(|(name_id, _, _)| *name_id).collect();
@@ -27,8 +26,33 @@ mod open_sans {
         assert_eq!(
             name_ids,
             &[
-                0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14,
-                0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14,
+                NameID::CopyrightNotice,
+                NameID::FontFamilyName,
+                NameID::FontSubfamilyName,
+                NameID::UniqueFontID,
+                NameID::FullFontName,
+                NameID::VersionString,
+                NameID::PostScriptFontName,
+                NameID::Trademark,
+                NameID::ManufacturerName,
+                NameID::VendorURL,
+                NameID::DesignerURL,
+                NameID::LicenseDescription,
+                NameID::LicenseURL,
+
+                NameID::CopyrightNotice,
+                NameID::FontFamilyName,
+                NameID::FontSubfamilyName,
+                NameID::UniqueFontID,
+                NameID::FullFontName,
+                NameID::VersionString,
+                NameID::PostScriptFontName,
+                NameID::Trademark,
+                NameID::ManufacturerName,
+                NameID::VendorURL,
+                NameID::DesignerURL,
+                NameID::LicenseDescription,
+                NameID::LicenseURL,
             ],
         );
         #[rustfmt::skip]
@@ -75,28 +99,27 @@ mod open_sans {
 }
 
 mod source_serif {
+    use truetype::naming_table::{NameID, NamingTable};
     use truetype::Value;
 
     use crate::common::setup;
 
     #[test]
     fn read() {
-        use truetype::naming_table::{Name, NamingTable};
-
         let table = ok!(NamingTable::read(&mut setup!(SourceSerif, "name")));
         let names = table.decode();
         assert_eq!(
             names
                 .iter()
-                .find(|(name_id, _, _)| *name_id == Name::UniqueFontID.into())
+                .find(|(name_id, _, _)| *name_id == NameID::UniqueFontID.into())
                 .map(|(name_id, language_tag, string)| (
-                    ok!(Name::try_from(*name_id)),
+                    *name_id,
                     ok!(language_tag.as_deref()),
                     ok!(string.as_deref())
                 ))
                 .unwrap(),
             (
-                Name::UniqueFontID,
+                NameID::UniqueFontID,
                 "en",
                 "1.017;ADBE;SourceSerifPro-Regular;ADOBE"
             ),
@@ -104,30 +127,30 @@ mod source_serif {
         assert_eq!(
             names
                 .iter()
-                .find(|(name_id, _, _)| *name_id == Name::FontFamilyName.into())
+                .find(|(name_id, _, _)| *name_id == NameID::FontFamilyName)
                 .map(|(name_id, language_tag, string)| (
-                    ok!(Name::try_from(*name_id)),
+                    *name_id,
                     ok!(language_tag.as_deref()),
                     ok!(string.as_deref())
                 ))
                 .unwrap(),
-            (Name::FontFamilyName, "en", "Source Serif Pro"),
+            (NameID::FontFamilyName, "en", "Source Serif Pro"),
         );
         assert_eq!(
             names
                 .iter()
-                .find(|(name_id, _, _)| *name_id == Name::DesignerName.into())
+                .find(|(name_id, _, _)| *name_id == NameID::DesignerName)
                 .map(|(name_id, language_tag, string)| (
-                    ok!(Name::try_from(*name_id)),
+                    *name_id,
                     ok!(language_tag.as_deref()),
                     ok!(string.as_deref())
                 ))
                 .unwrap(),
-            (Name::DesignerName, "en", "Frank Grießhammer"),
+            (NameID::DesignerName, "en", "Frank Grießhammer"),
         );
         assert!(names
             .iter()
-            .find(|(name_id, _, _)| *name_id == Name::PostScriptCIDFindFontName.into())
+            .find(|(name_id, _, _)| *name_id == NameID::PostScriptCIDFindFontName)
             .is_none());
     }
 }

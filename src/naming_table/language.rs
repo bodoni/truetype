@@ -1,53 +1,23 @@
 //! The languages.
 
+use crate::naming_table::platform::PlatformID;
+use crate::{Result, Tape, Walue};
+
 /// A language identifier.
-pub type LanguageID = u16;
-
-macro_rules! language {
-    ($(#[$attribute:meta])* pub $name:ident {
-        $($value:expr => $variant:ident ($tag:expr),)*
-    }) => (
-        $(#[$attribute])*
-        #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-        pub enum $name {
-            $($variant = $value,)*
-        }
-
-        impl From<$name> for crate::naming_table::language::LanguageID {
-            #[inline]
-            fn from(value: $name) -> Self {
-                value as crate::naming_table::language::LanguageID
-            }
-        }
-
-        impl From<$name> for &'static str {
-            #[inline]
-            fn from(value: $name) -> Self {
-                match value {
-                    $($name::$variant => $tag,)*
-                }
-            }
-        }
-
-        impl TryFrom<crate::naming_table::language::LanguageID> for $name {
-            type Error = ::typeface::Error;
-
-            #[inline]
-            fn try_from(value: crate::naming_table::language::LanguageID) -> ::typeface::Result<$name> {
-                match value {
-                    $($value => Ok($name::$variant),)*
-                    _ => raise!(concat!("found a malformed enumeration of type ", stringify!($name), " with value {}"), value),
-                }
-            }
-        }
-    )
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum LanguageID {
+    #[default]
+    Unicode,
+    Macintosh(Macintosh),
+    Windows(Windows),
+    Other(usize),
 }
 
 // Reference:
 // https://github.com/opentypejs/opentype.js/blob/c37fcdfbd89c1bd0aac1cecb2b287dfb7d00cee0/src/tables/name.js#L35-L155
-language! {
+enumeration! {
     #[doc = "A Macintosh language."]
-    pub Macintosh {
+    pub Macintosh(u16) {
         0 => English ("en"), // English
         1 => French ("fr"), // French
         2 => German ("de"), // German
@@ -171,9 +141,9 @@ language! {
 
 // Reference:
 // https://github.com/opentypejs/opentype.js/blob/c37fcdfbd89c1bd0aac1cecb2b287dfb7d00cee0/src/tables/name.js#L307-L522
-language! {
+enumeration! {
     #[doc = "A Windows language."]
-    pub Windows {
+    pub Windows(u16) {
         0x0436 => AfrikaansSouthAfrica ("af"), // Afrikaans, South Africa
         0x041C => AlbanianAlbania ("sq"), // Albanian, Albania
         0x0484 => AlsatianFrance ("gsw"), // Alsatian, France
@@ -379,5 +349,22 @@ language! {
         0x0485 => YakutRussia ("sah"), // Yakut, Russia
         0x0478 => YiPRC ("ii"), // Yi, PRC
         0x046A => YorubaNigeria ("yo"), // Yoruba, Nigeria
+    }
+}
+
+impl Walue<'static> for LanguageID {
+    type Parameter = PlatformID;
+
+    fn read<T: Tape>(tape: &mut T, platform_id: PlatformID) -> Result<Self> {
+        match (platform_id, tape.take::<u16>()?) {
+            (PlatformID::Unicode, _) => Ok(LanguageID::Unicode),
+            (PlatformID::Macintosh, value) if value < 0x8000 => {
+                Ok(LanguageID::Macintosh(value.try_into()?))
+            }
+            (PlatformID::Windows, value) if value < 0x8000 => {
+                Ok(LanguageID::Windows(value.try_into()?))
+            }
+            (_, value) => Ok(LanguageID::Other(value as usize - 0x8000)),
+        }
     }
 }

@@ -1,7 +1,8 @@
 // Reference:
 // https://github.com/opentypejs/opentype.js/blob/c37fcdfbd89c1bd0aac1cecb2b287dfb7d00cee0/src/types.js#L463-L482
 
-use crate::naming_table::{EncodingID, LanguageID};
+use crate::naming_table::encoding::EncodingID;
+use crate::naming_table::language::{LanguageID, Macintosh};
 
 #[rustfmt::skip]
 const MACINTOSH: [char; 128] = [
@@ -221,32 +222,32 @@ fn identify(
         // 12 => Arabic
         // 13 => Finnish
         // 14 => Greek
-        15 => return Some(&X_MAC_ICELANDIC), // Icelandic
+        LanguageID::Macintosh(Macintosh::Icelandic) => return Some(&X_MAC_ICELANDIC), // Icelandic
         // 16 => Maltese
-        17 => return Some(&X_MAC_TURKISH),  // Turkish
-        18 => return Some(&X_MAC_CROATIAN), // Croatian
+        LanguageID::Macintosh(Macintosh::Turkish) => return Some(&X_MAC_TURKISH), // Turkish
+        LanguageID::Macintosh(Macintosh::Croatian) => return Some(&X_MAC_CROATIAN), // Croatian
         // 19 => Chinese (Traditional)
         // 20 => Urdu
         // 21 => Hindi
         // 22 => Thai
         // 23 => Korean
-        24 => return Some(&X_MAC_CE), // Lithuanian
-        25 => return Some(&X_MAC_CE), // Polish
-        26 => return Some(&X_MAC_CE), // Hungarian
-        27 => return Some(&X_MAC_CE), // Estonian
-        28 => return Some(&X_MAC_CE), // Latvian
+        LanguageID::Macintosh(Macintosh::Lithuanian) => return Some(&X_MAC_CE), // Lithuanian
+        LanguageID::Macintosh(Macintosh::Polish) => return Some(&X_MAC_CE),     // Polish
+        LanguageID::Macintosh(Macintosh::Hungarian) => return Some(&X_MAC_CE),  // Hungarian
+        LanguageID::Macintosh(Macintosh::Estonian) => return Some(&X_MAC_CE),   // Estonian
+        LanguageID::Macintosh(Macintosh::Latvian) => return Some(&X_MAC_CE),    // Latvian
         // 29 => Sami
-        30 => return Some(&X_MAC_ICELANDIC), // Faroese
+        LanguageID::Macintosh(Macintosh::Faroese) => return Some(&X_MAC_ICELANDIC), // Faroese
         // 31 => Farsi/Persian
         // 32 => Russian
         // 33 => Chinese (Simplified)
         // 34 => Flemish
         // 35 => Irish Gaelic
         // 36 => Albanian
-        37 => return Some(&X_MAC_ROMANIAN), // Romanian
-        38 => return Some(&X_MAC_CE),       // Czech
-        39 => return Some(&X_MAC_CE),       // Slovak
-        40 => return Some(&X_MAC_CE),       // Slovenian
+        LanguageID::Macintosh(Macintosh::Romanian) => return Some(&X_MAC_ROMANIAN), // Romanian
+        LanguageID::Macintosh(Macintosh::Czech) => return Some(&X_MAC_CE),          // Czech
+        LanguageID::Macintosh(Macintosh::Slovak) => return Some(&X_MAC_CE),         // Slovak
+        LanguageID::Macintosh(Macintosh::Slovenian) => return Some(&X_MAC_CE),      // Slovenian
         // 41 => Yiddish
         // 42 => Serbian
         // 43 => Macedonian
@@ -316,10 +317,10 @@ fn identify(
         // 140 => Galician
         // 141 => Afrikaans
         // 142 => Breton
-        143 => return Some(&X_MAC_INUIT), // Inuktitut
+        LanguageID::Macintosh(Macintosh::Inuktitut) => return Some(&X_MAC_INUIT), // Inuktitut
         // 144 => Scottish Gaelic
         // 145 => Manx Gaelic
-        146 => return Some(&X_MAC_GAELIC), // Irish Gaelic (with dot above)
+        LanguageID::Macintosh(Macintosh::IrishGaelicDot) => return Some(&X_MAC_GAELIC), // Irish Gaelic (with dot above)
         // 147 => Tongan
         // 148 => Greek (polytonic)
         // 149 => Greenlandic

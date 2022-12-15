@@ -8,14 +8,12 @@ mod platform;
 
 pub mod language;
 
-use std::mem;
-
 use crate::{Result, Tape, Value};
 
 pub use encoding::EncodingID;
 pub use language::LanguageID;
-pub use name::{Name, NameID};
-pub use platform::{Platform, PlatformID};
+pub use name::NameID;
+pub use platform::PlatformID;
 
 /// A naming table.
 #[derive(Clone, Debug)]
@@ -69,21 +67,23 @@ table! {
 table! {
     #[doc = "A record of a naming table."]
     #[derive(Copy)]
-    #[repr(C)]
     pub Record { // NameRecord
         platform_id (PlatformID), // platformID
         encoding_id (EncodingID), // encodingID
-        language_id (LanguageID), // languageID
-        name_id     (NameID    ), // nameID
-        length      (u16       ), // length
-        offset      (u16       ), // offset
+
+        language_id (LanguageID) |this, tape| { // languageID
+            tape.take_given(this.platform_id)
+        },
+
+        name_id     (NameID), // nameID
+        length      (u16   ), // length
+        offset      (u16   ), // offset
     }
 }
 
 table! {
     #[doc = "A language-tag record of a naming table."]
     #[derive(Copy)]
-    #[repr(C)]
     pub LanguageTag { // LangTagRecord
         length (u16), // length
         offset (u16), // offset
@@ -137,7 +137,7 @@ impl Value for NamingTable {
 impl NamingTable0 {
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = tape.position()?;
-        let above = 3 * 2 + self.records.len() * mem::size_of::<Record>();
+        let above = 3 * 2 + self.records.len() * 6 * 2;
         tape.jump(current - above as u64 + self.offset as u64)?;
         tape.take_bytes(compute_length(&self.records))
     }
@@ -146,9 +146,7 @@ impl NamingTable0 {
 impl NamingTable1 {
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = tape.position()?;
-        let above = 4 * 2
-            + self.records.len() * mem::size_of::<Record>()
-            + self.language_tags.len() * mem::size_of::<LanguageTag>();
+        let above = 4 * 2 + self.records.len() * 6 * 2 + self.language_tags.len() * 2 * 2;
         tape.jump(current - above as u64 + self.offset as u64)?;
         tape.take_bytes(compute_length(&self.records))
     }
@@ -157,23 +155,14 @@ impl NamingTable1 {
 impl Record {
     /// Return the IETF-BCP-47 language.
     pub fn language_tag(&self, language_tags: &[Option<String>]) -> Option<String> {
-        if self.language_id < 0x8000 {
-            match self.platform_id {
-                1 => match language::Macintosh::try_from(self.language_id) {
-                    Ok(language) => Some(<&'static str>::from(language).into()),
-                    _ => None,
-                },
-                3 => match language::Windows::try_from(self.language_id) {
-                    Ok(language) => Some(<&'static str>::from(language).into()),
-                    _ => None,
-                },
+        match self.language_id {
+            LanguageID::Unicode => None,
+            LanguageID::Macintosh(value) => Some(<&'static str>::from(value).into()),
+            LanguageID::Windows(value) => Some(<&'static str>::from(value).into()),
+            LanguageID::Other(value) => match language_tags.get(value) {
+                Some(Some(value)) => Some(value.clone()),
                 _ => None,
-            }
-        } else {
-            match language_tags.get((self.language_id - 0x8000) as usize) {
-                Some(Some(language)) => Some(language.clone()),
-                _ => None,
-            }
+            },
         }
     }
 }
@@ -197,9 +186,10 @@ fn decode(
     data: &[u8],
 ) -> Option<String> {
     match platform_id {
-        0 => encoding::unicode::decode(data, encoding_id),
-        1 => encoding::macintosh::decode(data, encoding_id, language_id, language_tag),
-        3 => encoding::windows::decode(data, encoding_id),
-        _ => None,
+        PlatformID::Unicode => encoding::unicode::decode(data, encoding_id),
+        PlatformID::Macintosh => {
+            encoding::macintosh::decode(data, encoding_id, language_id, language_tag)
+        }
+        PlatformID::Windows => encoding::windows::decode(data, encoding_id),
     }
 }
