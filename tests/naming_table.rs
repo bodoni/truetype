@@ -99,6 +99,8 @@ mod open_sans {
 }
 
 mod source_serif {
+    use std::collections::HashMap;
+
     use truetype::naming_table::{NameID, NamingTable};
     use truetype::Value;
 
@@ -107,50 +109,18 @@ mod source_serif {
     #[test]
     fn read() {
         let table = ok!(NamingTable::read(&mut setup!(SourceSerif, "name")));
-        let names = table.decode();
+        let names: HashMap<_, _> = table
+            .decode()
+            .into_iter()
+            .filter(|(_, language_tag, _)| ok!(language_tag.as_deref()) == "en")
+            .map(|(name_id, _, string)| (name_id, ok!(string)))
+            .collect();
         assert_eq!(
-            names
-                .iter()
-                .find(|(name_id, _, _)| *name_id == NameID::UniqueFontID.into())
-                .map(|(name_id, language_tag, string)| (
-                    *name_id,
-                    ok!(language_tag.as_deref()),
-                    ok!(string.as_deref())
-                ))
-                .unwrap(),
-            (
-                NameID::UniqueFontID,
-                "en",
-                "1.017;ADBE;SourceSerifPro-Regular;ADOBE"
-            ),
+            names[&NameID::UniqueFontID],
+            "1.017;ADBE;SourceSerifPro-Regular;ADOBE"
         );
-        assert_eq!(
-            names
-                .iter()
-                .find(|(name_id, _, _)| *name_id == NameID::FontFamilyName)
-                .map(|(name_id, language_tag, string)| (
-                    *name_id,
-                    ok!(language_tag.as_deref()),
-                    ok!(string.as_deref())
-                ))
-                .unwrap(),
-            (NameID::FontFamilyName, "en", "Source Serif Pro"),
-        );
-        assert_eq!(
-            names
-                .iter()
-                .find(|(name_id, _, _)| *name_id == NameID::DesignerName)
-                .map(|(name_id, language_tag, string)| (
-                    *name_id,
-                    ok!(language_tag.as_deref()),
-                    ok!(string.as_deref())
-                ))
-                .unwrap(),
-            (NameID::DesignerName, "en", "Frank Grießhammer"),
-        );
-        assert!(names
-            .iter()
-            .find(|(name_id, _, _)| *name_id == NameID::PostScriptCIDFindFontName)
-            .is_none());
+        assert_eq!(names[&NameID::FontFamilyName], "Source Serif Pro");
+        assert_eq!(names[&NameID::DesignerName], "Frank Grießhammer");
+        assert!(!names.contains_key(&NameID::PostScriptCIDFindFontName));
     }
 }
