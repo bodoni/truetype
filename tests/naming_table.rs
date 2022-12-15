@@ -13,15 +13,30 @@ mod open_sans {
         use truetype::NamingTable;
 
         let table = ok!(NamingTable::read(&mut setup!(OpenSans, "name")));
-        let names = table.get_all();
-        let ids: Vec<_> = names.iter().map(|(id, _)| *id).collect();
-        let strings: Vec<_> = names.into_iter().map(|(_, string)| ok!(string)).collect();
+        let names = table.decode();
+        let name_ids: Vec<_> = names.iter().map(|(name_id, _, _)| *name_id).collect();
+        let language_tags: Vec<_> = names
+            .iter()
+            .map(|(_, language_tag, _)| ok!(language_tag.as_deref()))
+            .collect();
+        let strings: Vec<_> = names
+            .iter()
+            .map(|(_, _, string)| ok!(string.as_deref()))
+            .collect();
         #[rustfmt::skip]
         assert_eq!(
-            ids,
+            name_ids,
             &[
                 0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14,
                 0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14,
+            ],
+        );
+        #[rustfmt::skip]
+        assert_eq!(
+            language_tags,
+            &[
+                "en", "en", "en", "en", "en", "en", "en", "en", "en", "en", "en", "en", "en",
+                "en", "en", "en", "en", "en", "en", "en", "en", "en", "en", "en", "en", "en",
             ],
         );
         assert_eq!(
@@ -69,12 +84,50 @@ mod source_serif {
         use truetype::naming_table::{Name, NamingTable};
 
         let table = ok!(NamingTable::read(&mut setup!(SourceSerif, "name")));
+        let names = table.decode();
         assert_eq!(
-            ok!(table.get(Name::UniqueFontID)),
-            "1.017;ADBE;SourceSerifPro-Regular;ADOBE",
+            names
+                .iter()
+                .find(|(name_id, _, _)| *name_id == Name::UniqueFontID.into())
+                .map(|(name_id, language_tag, string)| (
+                    ok!(Name::try_from(*name_id)),
+                    ok!(language_tag.as_deref()),
+                    ok!(string.as_deref())
+                ))
+                .unwrap(),
+            (
+                Name::UniqueFontID,
+                "en",
+                "1.017;ADBE;SourceSerifPro-Regular;ADOBE"
+            ),
         );
-        assert_eq!(ok!(table.get(Name::FontFamilyName)), "Source Serif Pro",);
-        assert_eq!(ok!(table.get(Name::DesignerName)), "Frank Grießhammer",);
-        assert!(table.get(Name::PostScriptCIDFindFontName).is_none());
+        assert_eq!(
+            names
+                .iter()
+                .find(|(name_id, _, _)| *name_id == Name::FontFamilyName.into())
+                .map(|(name_id, language_tag, string)| (
+                    ok!(Name::try_from(*name_id)),
+                    ok!(language_tag.as_deref()),
+                    ok!(string.as_deref())
+                ))
+                .unwrap(),
+            (Name::FontFamilyName, "en", "Source Serif Pro"),
+        );
+        assert_eq!(
+            names
+                .iter()
+                .find(|(name_id, _, _)| *name_id == Name::DesignerName.into())
+                .map(|(name_id, language_tag, string)| (
+                    ok!(Name::try_from(*name_id)),
+                    ok!(language_tag.as_deref()),
+                    ok!(string.as_deref())
+                ))
+                .unwrap(),
+            (Name::DesignerName, "en", "Frank Grießhammer"),
+        );
+        assert!(names
+            .iter()
+            .find(|(name_id, _, _)| *name_id == Name::PostScriptCIDFindFontName.into())
+            .is_none());
     }
 }

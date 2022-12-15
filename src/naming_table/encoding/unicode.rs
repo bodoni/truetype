@@ -1,5 +1,7 @@
+use crate::naming_table::EncodingID;
+
 #[inline]
-pub fn decode(data: &[u8], encoding_id: u16) -> Option<String> {
+pub fn decode(data: &[u8], encoding_id: EncodingID) -> Option<String> {
     match encoding_id {
         // 0 => Unicode 1.0 semantics—deprecated
         // 1 => Unicode 1.1 semantics—deprecated

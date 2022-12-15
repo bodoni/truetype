@@ -1,7 +1,9 @@
 use super::unicode;
 
+use crate::naming_table::EncodingID;
+
 #[inline]
-pub fn decode(data: &[u8], encoding_id: u16) -> Option<String> {
+pub fn decode(data: &[u8], encoding_id: EncodingID) -> Option<String> {
     match encoding_id {
         // 0 => Symbol
         1 => unicode::decode_utf16(data), // Unicode BMP

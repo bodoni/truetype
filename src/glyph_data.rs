@@ -129,7 +129,7 @@ pub enum Options {
     Matrix(q16, q16, q16, q16),
 }
 
-deref! { GlyphData::0 => [Option<Glyph>] }
+dereference! { GlyphData::0 => [Option<Glyph>] }
 
 impl<'l> Walue<'l> for GlyphData {
     type Parameter = &'l GlyphMapping;

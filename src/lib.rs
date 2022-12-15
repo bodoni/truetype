@@ -1,6 +1,6 @@
 //! Parser for TrueType fonts.
 
-#[macro_use(deref, flags, raise, table)]
+#[macro_use(dereference, enumeration, flags, raise, table)]
 extern crate typeface;
 
 mod number;

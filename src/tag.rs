@@ -6,7 +6,7 @@ use crate::{Result, Tape, Value};
 #[derive(Clone, Copy, Default, Eq, Hash, PartialEq)]
 pub struct Tag(pub [u8; 4]);
 
-deref! { Tag::0 => [u8; 4] }
+dereference! { Tag::0 => [u8; 4] }
 
 impl fmt::Debug for Tag {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {

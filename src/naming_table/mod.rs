@@ -2,25 +2,20 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/name
 
+mod encoding;
+mod name;
+mod platform;
+
+pub mod language;
+
 use std::mem;
 
 use crate::{Result, Tape, Value};
 
-mod encoding;
-
-pub mod language;
-
-/// An encoding identifier.
-pub type EncodingID = u16;
-
-/// A language identifier.
-pub type LanguageID = u16;
-
-/// A name identifier.
-pub type NameID = u16;
-
-/// A platform identifier.
-pub type PlatformID = u16;
+pub use encoding::EncodingID;
+pub use language::LanguageID;
+pub use name::{Name, NameID};
+pub use platform::{Platform, PlatformID};
 
 /// A naming table.
 #[derive(Clone, Debug)]
@@ -59,10 +54,10 @@ table! {
             tape.take_given(this.count as usize)
         },
 
-        language_count (u16), // langTagCount
+        language_tag_count (u16), // langTagCount
 
-        languages (Vec<Language>) |this, tape| { // langTagRecord
-            tape.take_given(this.language_count as usize)
+        language_tags (Vec<LanguageTag>) |this, tape| { // langTagRecord
+            tape.take_given(this.language_tag_count as usize)
         },
 
         data (Vec<u8>) |this, tape| {
@@ -89,66 +84,43 @@ table! {
     #[doc = "A language-tag record of a naming table."]
     #[derive(Copy)]
     #[repr(C)]
-    pub Language { // LangTagRecord
+    pub LanguageTag { // LangTagRecord
         length (u16), // length
         offset (u16), // offset
     }
 }
 
-/// A name.
-#[derive(Clone, Copy, Debug)]
-pub enum Name {
-    CopyrightNotice = 0,
-    FontFamilyName = 1,
-    FontSubfamilyName = 2,
-    UniqueFontID = 3,
-    FullFontName = 4,
-    VersionString = 5,
-    PostScriptFontName = 6,
-    Trademark = 7,
-    ManufacturerName = 8,
-    DesignerName = 9,
-    Description = 10,
-    VendorURL = 11,
-    DesignerURL = 12,
-    LicenseDescription = 13,
-    LicenseURL = 14,
-    // Reserved = 15,
-    TypographicFamilyName = 16,
-    TypographicSubfamilyName = 17,
-    CompatibleFullFontName = 18,
-    SampleText = 19,
-    PostScriptCIDFindFontName = 20,
-    WWSFamilyName = 21,
-    WWSSubfamilyName = 22,
-    LightBackgroundPalette = 23,
-    DarkBackgroundPalette = 24,
-    PostScriptVariationNamePrefix = 25,
-}
-
-/// A platform.
-#[derive(Clone, Copy, Debug)]
-pub enum Platform {
-    Unicode = 0,
-    Macintosh = 1,
-    Windows = 3,
-}
-
 impl NamingTable {
-    /// Search and decode a specific name.
-    pub fn get<T: Into<NameID>>(&self, name_id: T) -> Option<String> {
-        match self {
-            &NamingTable::Format0(ref table) => get(&table.records, &table.data, name_id.into()),
-            &NamingTable::Format1(ref table) => get(&table.records, &table.data, name_id.into()),
-        }
-    }
-
-    /// Decode all names.
-    pub fn get_all(&self) -> Vec<(NameID, Option<String>)> {
-        match self {
-            &NamingTable::Format0(ref table) => get_all(&table.records, &table.data),
-            &NamingTable::Format1(ref table) => get_all(&table.records, &table.data),
-        }
+    /// Decode all records.
+    pub fn decode(&self) -> Vec<(NameID, Option<String>, Option<String>)> {
+        let (records, language_tags, data) = match self {
+            &NamingTable::Format0(ref table) => (&table.records, &[][..], &table.data),
+            &NamingTable::Format1(ref table) => {
+                (&table.records, &table.language_tags[..], &table.data)
+            }
+        };
+        let language_tags: Vec<_> = language_tags
+            .iter()
+            .map(|record| {
+                let (offset, length) = (record.offset as usize, record.length as usize);
+                encoding::unicode::decode_utf16(&data[offset..(offset + length)])
+            })
+            .collect();
+        records
+            .iter()
+            .map(|record| {
+                let language_tag = record.language_tag(&language_tags);
+                let (offset, length) = (record.offset as usize, record.length as usize);
+                let string = decode(
+                    record.platform_id,
+                    record.encoding_id,
+                    record.language_id,
+                    language_tag.as_ref(),
+                    &data[offset..(offset + length)],
+                );
+                (record.name_id, language_tag, string)
+            })
+            .collect()
     }
 }
 
@@ -176,23 +148,33 @@ impl NamingTable1 {
         let current = tape.position()?;
         let above = 4 * 2
             + self.records.len() * mem::size_of::<Record>()
-            + self.languages.len() * mem::size_of::<Language>();
+            + self.language_tags.len() * mem::size_of::<LanguageTag>();
         tape.jump(current - above as u64 + self.offset as u64)?;
         tape.take_bytes(compute_length(&self.records))
     }
 }
 
-impl From<Name> for NameID {
-    #[inline]
-    fn from(name: Name) -> NameID {
-        name as NameID
-    }
-}
-
-impl From<Platform> for PlatformID {
-    #[inline]
-    fn from(platform: Platform) -> PlatformID {
-        platform as PlatformID
+impl Record {
+    /// Return the IETF-BCP-47 language.
+    pub fn language_tag(&self, language_tags: &[Option<String>]) -> Option<String> {
+        if self.language_id < 0x8000 {
+            match self.platform_id {
+                1 => match language::Macintosh::try_from(self.language_id) {
+                    Ok(language) => Some(<&'static str>::from(language).into()),
+                    _ => None,
+                },
+                3 => match language::Windows::try_from(self.language_id) {
+                    Ok(language) => Some(<&'static str>::from(language).into()),
+                    _ => None,
+                },
+                _ => None,
+            }
+        } else {
+            match language_tags.get((self.language_id - 0x8000) as usize) {
+                Some(Some(language)) => Some(language.clone()),
+                _ => None,
+            }
+        }
     }
 }
 
@@ -207,37 +189,17 @@ fn compute_length(records: &[Record]) -> usize {
     length as usize
 }
 
-#[inline]
-fn decode(record: &Record, data: &[u8]) -> Option<String> {
-    match record.platform_id {
-        0 => encoding::unicode::decode(data, record.encoding_id),
-        1 => encoding::macintosh::decode(data, record.encoding_id, record.language_id),
-        3 => encoding::windows::decode(data, record.encoding_id),
+fn decode(
+    platform_id: PlatformID,
+    encoding_id: EncodingID,
+    language_id: LanguageID,
+    language_tag: Option<&String>,
+    data: &[u8],
+) -> Option<String> {
+    match platform_id {
+        0 => encoding::unicode::decode(data, encoding_id),
+        1 => encoding::macintosh::decode(data, encoding_id, language_id, language_tag),
+        3 => encoding::windows::decode(data, encoding_id),
         _ => None,
     }
-}
-
-fn get(records: &[Record], data: &[u8], name_id: NameID) -> Option<String> {
-    for record in records {
-        if record.name_id != name_id {
-            continue;
-        }
-        let (offset, length) = (record.offset as usize, record.length as usize);
-        let string = decode(record, &data[offset..(offset + length)]);
-        if string.is_none() {
-            continue;
-        }
-        return string;
-    }
-    None
-}
-
-fn get_all(records: &[Record], data: &[u8]) -> Vec<(NameID, Option<String>)> {
-    let mut names = vec![];
-    for record in records {
-        let (offset, length) = (record.offset as usize, record.length as usize);
-        let string = decode(record, &data[offset..(offset + length)]);
-        names.push((record.name_id, string));
-    }
-    names
 }
