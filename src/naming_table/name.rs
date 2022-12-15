@@ -1,4 +1,4 @@
-enumeration! {
+choices! {
     #[doc = "A name identifier."]
     pub NameID(u16) {
         0 => CopyrightNotice,

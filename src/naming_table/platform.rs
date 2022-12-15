@@ -1,4 +1,4 @@
-enumeration! {
+choices! {
     #[doc = "A platform identifier."]
     pub PlatformID(u16) {
         0 => Unicode,
