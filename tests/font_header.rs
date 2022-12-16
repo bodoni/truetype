@@ -1,9 +1,9 @@
 extern crate truetype;
 
-use truetype::{FontHeader, Value};
-
 #[macro_use]
 mod common;
+
+use truetype::{FontHeader, Value};
 
 use common::setup;
 

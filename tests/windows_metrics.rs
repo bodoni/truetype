@@ -1,9 +1,9 @@
 extern crate truetype;
 
-use truetype::{Tag, Value};
-
 #[macro_use]
 mod common;
+
+use truetype::{Tag, Value};
 
 use common::setup;
 

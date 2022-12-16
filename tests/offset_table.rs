@@ -1,9 +1,9 @@
 extern crate truetype;
 
-use truetype::{OffsetTable, Value};
-
 #[macro_use]
 mod common;
+
+use truetype::{OffsetTable, Value};
 
 use common::setup;
 
