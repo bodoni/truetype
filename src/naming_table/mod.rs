@@ -90,10 +90,9 @@ table! {
     }
 }
 
-impl NamingTable {
-    /// Decode all records.
-    pub fn decode(&self) -> Vec<(NameID, Option<String>, Option<String>)> {
-        let (records, language_tags, data) = match self {
+impl<'l> From<&'l NamingTable> for Vec<(NameID, Option<String>, Option<String>)> {
+    fn from(naming_table: &'l NamingTable) -> Self {
+        let (records, language_tags, data) = match naming_table {
             &NamingTable::Format0(ref table) => (&table.records, &[][..], &table.data),
             &NamingTable::Format1(ref table) => {
                 (&table.records, &table.language_tags[..], &table.data)
