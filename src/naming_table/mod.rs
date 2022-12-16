@@ -90,9 +90,13 @@ table! {
     }
 }
 
-impl<'l> From<&'l NamingTable> for Vec<(NameID, Option<String>, Option<String>)> {
-    fn from(naming_table: &'l NamingTable) -> Self {
-        let (records, language_tags, data) = match naming_table {
+impl NamingTable {
+    /// Decode all entries.
+    pub fn collect<T>(&self) -> T
+    where
+        T: FromIterator<((NameID, Option<String>), Option<String>)>,
+    {
+        let (records, language_tags, data) = match self {
             &NamingTable::Format0(ref table) => (&table.records, &[][..], &table.data),
             &NamingTable::Format1(ref table) => {
                 (&table.records, &table.language_tags[..], &table.data)
@@ -117,7 +121,7 @@ impl<'l> From<&'l NamingTable> for Vec<(NameID, Option<String>, Option<String>)>
                     language_tag.as_deref(),
                     &data[offset..(offset + length)],
                 );
-                (record.name_id, language_tag, value)
+                ((record.name_id, language_tag), value)
             })
             .collect()
     }
@@ -138,7 +142,7 @@ impl NamingTable0 {
         let current = tape.position()?;
         let above = 3 * 2 + self.records.len() * 6 * 2;
         tape.jump(current - above as u64 + self.offset as u64)?;
-        tape.take_bytes(compute_length(&self.records))
+        tape.take_bytes(size_data(&self.records))
     }
 }
 
@@ -147,7 +151,7 @@ impl NamingTable1 {
         let current = tape.position()?;
         let above = 4 * 2 + self.records.len() * 6 * 2 + self.language_tags.len() * 2 * 2;
         tape.jump(current - above as u64 + self.offset as u64)?;
-        tape.take_bytes(compute_length(&self.records))
+        tape.take_bytes(size_data(&self.records))
     }
 }
 
@@ -166,17 +170,6 @@ impl Record {
     }
 }
 
-fn compute_length(records: &[Record]) -> usize {
-    let mut length = 0;
-    for record in records {
-        let end = record.offset + record.length;
-        if end > length {
-            length = end;
-        }
-    }
-    length as usize
-}
-
 fn decode(
     platform_id: PlatformID,
     encoding_id: EncodingID,
@@ -191,4 +184,15 @@ fn decode(
         }
         PlatformID::Windows => encoding::windows::decode(data, encoding_id),
     }
+}
+
+fn size_data(records: &[Record]) -> usize {
+    let mut length = 0;
+    for record in records {
+        let end = record.offset + record.length;
+        if end > length {
+            length = end;
+        }
+    }
+    length as usize
 }

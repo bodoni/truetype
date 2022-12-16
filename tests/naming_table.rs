@@ -12,15 +12,15 @@ mod open_sans {
     #[test]
     fn read() {
         let table = ok!(NamingTable::read(&mut setup!(OpenSans, "name")));
-        let names: Vec<_> = (&table).into();
-        let name_ids: Vec<_> = names.iter().map(|(name_id, _, _)| *name_id).collect();
+        let names: Vec<_> = table.collect();
+        let name_ids: Vec<_> = names.iter().map(|((name_id, _), _)| *name_id).collect();
         let language_tags: Vec<_> = names
             .iter()
-            .map(|(_, language_tag, _)| ok!(language_tag.as_deref()))
+            .map(|((_, language_tag), _)| ok!(language_tag.as_deref()))
             .collect();
         let strings: Vec<_> = names
             .iter()
-            .map(|(_, _, string)| ok!(string.as_deref()))
+            .map(|(_, string)| ok!(string.as_deref()))
             .collect();
         #[rustfmt::skip]
         assert_eq!(
@@ -109,20 +109,16 @@ mod source_serif {
     #[test]
     fn read() {
         let table = ok!(NamingTable::read(&mut setup!(SourceSerif, "name")));
-        let names: Vec<_> = (&table).into();
-        let names: HashMap<_, _> = names
-            .iter()
-            .filter(|(_, language_tag, _)| language_tag.is_some())
-            .filter(|(_, _, value)| value.is_some())
-            .map(|(name_id, language_tag, value)| {
-                (
-                    *name_id,
-                    language_tag.as_deref().unwrap(),
-                    value.as_deref().unwrap(),
-                )
+        let names: HashMap<_, _> = table
+            .collect::<Vec<_>>()
+            .into_iter()
+            .filter(|((_, language_tag), value)| {
+                value.is_some()
+                    && language_tag
+                        .as_deref()
+                        .map_or(false, |language_tag| language_tag.starts_with("en"))
             })
-            .filter(|(_, language_tag, _)| language_tag.starts_with("en"))
-            .map(|(name_id, _, value)| (name_id, value))
+            .map(|((name_id, _), value)| (name_id, value.unwrap()))
             .collect();
         assert_eq!(
             names[&NameID::UniqueFontID],
