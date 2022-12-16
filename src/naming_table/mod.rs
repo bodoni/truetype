@@ -2,18 +2,18 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/name
 
+pub mod language;
+
 mod encoding;
 mod name;
 mod platform;
-
-pub mod language;
-
-use crate::{Result, Tape, Value};
 
 pub use encoding::EncodingID;
 pub use language::LanguageID;
 pub use name::NameID;
 pub use platform::PlatformID;
+
+use crate::{Result, Tape, Value};
 
 /// A naming table.
 #[derive(Clone, Debug)]

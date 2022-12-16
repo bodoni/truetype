@@ -1,6 +1,6 @@
 use crate::{Result, Tape, Value};
 
-macro_rules! number {
+macro_rules! implement {
     ($(#[$attribute:meta])* pub $name:ident($kind:ty | $fraction:expr)) => {
         $(#[$attribute])*
         #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
@@ -23,13 +23,13 @@ macro_rules! number {
     }
 }
 
-number! {
+implement! {
     #[doc = "A fixed-point number in format Q2.14."]
     #[allow(non_camel_case_types)]
     pub q16(u16 | 14)
 }
 
-number! {
+implement! {
     #[doc = "A fixed-point number in format Q16.16."]
     #[allow(non_camel_case_types)]
     pub q32(u32 | 16)

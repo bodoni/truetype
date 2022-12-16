@@ -3,9 +3,6 @@
 #[macro_use(choices, dereference, flags, raise, table)]
 extern crate typeface;
 
-mod number;
-mod tag;
-
 pub mod char_mapping;
 pub mod font_header;
 pub mod glyph_data;
@@ -17,6 +14,9 @@ pub mod naming_table;
 pub mod offset_table;
 pub mod postscript;
 pub mod windows_metrics;
+
+mod number;
+mod tag;
 
 pub use typeface::{Error, Result, Tape, Value, Walue};
 
