@@ -148,7 +148,7 @@ pub fn decode(
     bytes: &[u8],
     encoding_id: EncodingID,
     language_id: LanguageID,
-    language_tag: Option<&String>,
+    language_tag: Option<&str>,
 ) -> Option<String> {
     let table = match identify(encoding_id, language_id, language_tag) {
         Some(table) => table,
@@ -168,7 +168,7 @@ pub fn decode(
 fn identify(
     encoding_id: EncodingID,
     language_id: LanguageID,
-    _: Option<&String>,
+    _: Option<&str>,
 ) -> Option<&'static [char; 128]> {
     match encoding_id {
         0 => return Some(&MACINTOSH), // Roman

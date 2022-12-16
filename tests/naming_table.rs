@@ -113,16 +113,16 @@ mod source_serif {
         let names: HashMap<_, _> = names
             .iter()
             .filter(|(_, language_tag, _)| language_tag.is_some())
-            .filter(|(_, _, string)| string.is_some())
-            .map(|(name_id, language_tag, string)| {
+            .filter(|(_, _, value)| value.is_some())
+            .map(|(name_id, language_tag, value)| {
                 (
                     *name_id,
                     language_tag.as_deref().unwrap(),
-                    string.as_deref().unwrap(),
+                    value.as_deref().unwrap(),
                 )
             })
             .filter(|(_, language_tag, _)| language_tag.starts_with("en"))
-            .map(|(name_id, _, string)| (name_id, string))
+            .map(|(name_id, _, value)| (name_id, value))
             .collect();
         assert_eq!(
             names[&NameID::UniqueFontID],

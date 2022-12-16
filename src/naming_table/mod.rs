@@ -111,14 +111,14 @@ impl NamingTable {
             .map(|record| {
                 let language_tag = record.language_tag(&language_tags);
                 let (offset, length) = (record.offset as usize, record.length as usize);
-                let string = decode(
+                let value = decode(
                     record.platform_id,
                     record.encoding_id,
                     record.language_id,
-                    language_tag.as_ref(),
+                    language_tag.as_deref(),
                     &data[offset..(offset + length)],
                 );
-                (record.name_id, language_tag, string)
+                (record.name_id, language_tag, value)
             })
             .collect()
     }
@@ -182,7 +182,7 @@ fn decode(
     platform_id: PlatformID,
     encoding_id: EncodingID,
     language_id: LanguageID,
-    language_tag: Option<&String>,
+    language_tag: Option<&str>,
     data: &[u8],
 ) -> Option<String> {
     match platform_id {
