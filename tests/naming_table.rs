@@ -18,7 +18,7 @@ mod open_sans {
             .iter()
             .map(|((_, language_tag), _)| ok!(language_tag.as_deref()))
             .collect();
-        let strings: Vec<_> = names
+        let values: Vec<_> = names
             .iter()
             .map(|(_, string)| ok!(string.as_deref()))
             .collect();
@@ -64,7 +64,7 @@ mod open_sans {
             ],
         );
         assert_eq!(
-            strings,
+            values,
             &[
                 "Digitized data copyright © 2010-2011, Google Corporation.",
                 "Open Sans",
