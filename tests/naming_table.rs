@@ -20,7 +20,7 @@ mod open_sans {
             .collect();
         let values: Vec<_> = names
             .iter()
-            .map(|(_, string)| ok!(string.as_deref()))
+            .map(|(_, value)| ok!(value.as_deref()))
             .collect();
         #[rustfmt::skip]
         assert_eq!(
