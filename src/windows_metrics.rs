@@ -197,13 +197,28 @@ table! {
 flags! {
     #[doc = "Type flags."]
     pub TypeFlags(u16) {
-        0b1111_1100_0000_0000 => is_invalid,
+        0b0000_0000_0000_0010 => is_restricted_license_embedding,
+        0b0000_0000_0000_0100 => is_preview_print_embedding,
+        0b0000_0000_0000_1000 => is_editable_embedding,
+        0b0000_0001_0000_0000 => has_no_subset_embedding,
+        0b0000_0010_0000_0000 => is_bitmap_embedding_only,
+        0b1111_1100_1111_0001 => is_invalid,
     }
 }
 
 flags! {
     #[doc = "Font-selection flags."]
     pub SelectionFlags(u16) {
+        0b0000_0000_0000_0001 => is_italic,
+        0b0000_0000_0000_0010 => is_underscore,
+        0b0000_0000_0000_0100 => is_negative,
+        0b0000_0000_0000_1000 => is_outlined,
+        0b0000_0000_0001_0000 => is_strikeout,
+        0b0000_0000_0010_0000 => is_bold,
+        0b0000_0000_0100_0000 => is_regular,
+        0b0000_0000_1000_0000 => should_use_typographic_metrics,
+        0b0000_0001_0000_0000 => is_wws,
+        0b0000_0010_0000_0000 => is_oblique,
         0b1111_1100_0000_0000 => is_invalid,
     }
 }
