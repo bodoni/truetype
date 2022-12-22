@@ -6,8 +6,8 @@ use std::path::PathBuf;
 macro_rules! ok(($result:expr) => ($result.unwrap()));
 
 macro_rules! setup(
-    ($fixture:ident) => (setup(crate::common::Fixture::$fixture, None));
-    ($fixture:ident, $table:expr) => (setup(crate::common::Fixture::$fixture, Some($table)));
+    ($fixture:ident) => (setup(crate::support::Fixture::$fixture, None));
+    ($fixture:ident, $table:expr) => (setup(crate::support::Fixture::$fixture, Some($table)));
 );
 
 #[allow(dead_code)]

@@ -1,11 +1,11 @@
 extern crate truetype;
 
 #[macro_use]
-mod common;
+mod support;
 
 use truetype::Value;
 
-use common::{setup, Fixture};
+use support::{setup, Fixture};
 
 macro_rules! convert(
     ($mapping:expr) => ({

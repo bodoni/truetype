@@ -1,11 +1,11 @@
 extern crate truetype;
 
 #[macro_use]
-mod common;
+mod support;
 
 use truetype::{Value, Walue};
 
-use common::setup;
+use support::setup;
 
 #[test]
 fn read() {

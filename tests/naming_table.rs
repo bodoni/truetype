@@ -1,13 +1,13 @@
 extern crate truetype;
 
 #[macro_use]
-mod common;
+mod support;
 
 mod open_sans {
     use truetype::naming_table::{NameID, NamingTable};
     use truetype::Value;
 
-    use crate::common::setup;
+    use crate::support::setup;
 
     #[test]
     fn read() {
@@ -104,7 +104,7 @@ mod source_serif {
     use truetype::naming_table::{NameID, NamingTable};
     use truetype::Value;
 
-    use crate::common::setup;
+    use crate::support::setup;
 
     #[test]
     fn read() {

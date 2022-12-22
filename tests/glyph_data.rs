@@ -1,12 +1,12 @@
 extern crate truetype;
 
 #[macro_use]
-mod common;
+mod support;
 
 mod open_sans {
     use truetype::{Value, Walue};
 
-    use crate::common::setup;
+    use crate::support::setup;
 
     #[test]
     fn read() {
@@ -36,7 +36,7 @@ mod open_sans {
 mod ubuntu_condensed {
     use truetype::{Value, Walue};
 
-    use crate::common::setup;
+    use crate::support::setup;
 
     #[test]
     #[cfg_attr(not(feature = "ignore-invalid-flags"), should_panic)]
