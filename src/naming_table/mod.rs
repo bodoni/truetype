@@ -92,10 +92,7 @@ table! {
 
 impl NamingTable {
     /// Decode all entries.
-    pub fn collect<T>(&self) -> T
-    where
-        T: FromIterator<((NameID, Option<String>), Option<String>)>,
-    {
+    pub fn iter(&self) -> impl Iterator<Item = ((NameID, Option<String>), Option<String>)> + '_ {
         let (records, language_tags, data) = match self {
             &NamingTable::Format0(ref table) => (&table.records, &[][..], &table.data),
             &NamingTable::Format1(ref table) => {
@@ -109,21 +106,18 @@ impl NamingTable {
                 encoding::unicode::decode_utf16(&data[offset..(offset + length)])
             })
             .collect();
-        records
-            .iter()
-            .map(|record| {
-                let language_tag = record.language_tag(&language_tags);
-                let (offset, length) = (record.offset as usize, record.length as usize);
-                let value = decode(
-                    record.platform_id,
-                    record.encoding_id,
-                    record.language_id,
-                    language_tag.as_deref(),
-                    &data[offset..(offset + length)],
-                );
-                ((record.name_id, language_tag), value)
-            })
-            .collect()
+        records.iter().map(move |record| {
+            let language_tag = record.language_tag(&language_tags);
+            let (offset, length) = (record.offset as usize, record.length as usize);
+            let value = decode(
+                record.platform_id,
+                record.encoding_id,
+                record.language_id,
+                language_tag.as_deref(),
+                &data[offset..(offset + length)],
+            );
+            ((record.name_id, language_tag), value)
+        })
     }
 }
 

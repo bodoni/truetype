@@ -12,7 +12,7 @@ mod open_sans {
     #[test]
     fn read() {
         let table = ok!(NamingTable::read(&mut setup!(OpenSans, "name")));
-        let names: Vec<_> = table.collect();
+        let names: Vec<_> = table.iter().collect();
         let name_ids: Vec<_> = names.iter().map(|((name_id, _), _)| *name_id).collect();
         let language_tags: Vec<_> = names
             .iter()
@@ -110,8 +110,7 @@ mod source_serif {
     fn read() {
         let table = ok!(NamingTable::read(&mut setup!(SourceSerif, "name")));
         let names: HashMap<_, _> = table
-            .collect::<Vec<_>>()
-            .into_iter()
+            .iter()
             .filter(|((_, language_tag), value)| {
                 value.is_some()
                     && language_tag
