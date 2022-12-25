@@ -111,6 +111,7 @@ mod source_serif {
         let table = ok!(NamingTable::read(&mut setup!(SourceSerif, "name")));
         let names: HashMap<_, _> = table
             .iter()
+            .rev()
             .filter(|((_, language_tag), value)| {
                 value.is_some()
                     && language_tag
