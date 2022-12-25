@@ -91,7 +91,10 @@ table! {
 }
 
 impl NamingTable {
-    /// Decode all entries.
+    /// Iterate over all entires.
+    ///
+    /// Each entry is represented by three quantities: a name ID and a language tag, which are
+    /// given as a tuple, and the corresponding value.
     pub fn iter(&self) -> impl Iterator<Item = ((NameID, Option<String>), Option<String>)> + '_ {
         let (records, language_tags, data) = match self {
             &NamingTable::Format0(ref table) => (&table.records, &[][..], &table.data),
