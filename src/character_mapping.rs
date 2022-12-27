@@ -1,4 +1,4 @@
-//! The [char-to-glyph mapping][1].
+//! The [character-to-glyph mapping][1].
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/cmap
 
@@ -6,15 +6,15 @@ use std::collections::HashMap;
 
 use crate::{GlyphID, Result, Tape, Value};
 
-/// A char-to-glyph mapping.
+/// A character-to-glyph mapping.
 #[derive(Clone, Debug)]
-pub struct CharMapping {
+pub struct CharacterMapping {
     pub header: Header,
     pub records: Vec<Record>,
     pub encodings: Vec<Encoding>,
 }
 
-/// An encoding of a char-to-glyph mapping.
+/// An encoding of a character-to-glyph mapping.
 #[derive(Clone, Debug)]
 pub enum Encoding {
     /// Format 0.
@@ -32,7 +32,7 @@ pub enum Encoding {
 }
 
 table! {
-    #[doc = "The header of a char-to-glyph mapping."]
+    #[doc = "The header of a character-to-glyph mapping."]
     #[derive(Copy)]
     pub Header {
         version     (u16) = { 0 }, // version
@@ -41,7 +41,7 @@ table! {
 }
 
 table! {
-    #[doc = "A record of a char-to-glyph mapping."]
+    #[doc = "A record of a character-to-glyph mapping."]
     #[derive(Copy)]
     pub Record {
         platform_id (u16), // platformID
@@ -51,7 +51,7 @@ table! {
 }
 
 table! {
-    #[doc = "A char-to-glyph encoding in format 0."]
+    #[doc = "A character-to-glyph encoding in format 0."]
     pub Encoding0 {
         format   (u16) = { 0 }, // format
         length   (u16), // length
@@ -64,7 +64,7 @@ table! {
 }
 
 table! {
-    #[doc = "A char-to-glyph encoding in format 4."]
+    #[doc = "A character-to-glyph encoding in format 4."]
     pub Encoding4 {
         format           (u16) = { 4 }, // format
         length           (u16), // length
@@ -99,7 +99,7 @@ table! {
 }
 
 table! {
-    #[doc = "A char-to-glyph encoding in format 6."]
+    #[doc = "A character-to-glyph encoding in format 6."]
     pub Encoding6 {
         format      (u16) = { 6 }, // format
         length      (u16), // length
@@ -114,7 +114,7 @@ table! {
 }
 
 table! {
-    #[doc = "A char-to-glyph encoding in format 12."]
+    #[doc = "A character-to-glyph encoding in format 12."]
     pub Encoding12 {
         format      (u16) = { 12 }, // format
         reserved    (u16) = { 0 }, // reserved
@@ -129,7 +129,7 @@ table! {
 }
 
 table! {
-    #[doc = "A char-to-glyph encoding in format 14."]
+    #[doc = "A character-to-glyph encoding in format 14."]
     pub Encoding14 {
         format         (u16) = { 14 }, // format
         length         (u32), // length
@@ -167,7 +167,7 @@ table! {
     }
 }
 
-impl Value for CharMapping {
+impl Value for CharacterMapping {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         let position = tape.position()?;
         let header = tape.take::<Header>()?;
@@ -187,7 +187,7 @@ impl Value for CharMapping {
                 format => Encoding::Unknown(format),
             });
         }
-        Ok(CharMapping {
+        Ok(CharacterMapping {
             header: header,
             records: records,
             encodings: encodings,
@@ -231,7 +231,7 @@ impl Encoding4 {
     }
 
     fn glyph_id_count(&self) -> Result<usize> {
-        macro_rules! reject(() => (raise!("found a malformed char-to-glyph mapping")));
+        macro_rules! reject(() => (raise!("found a malformed character-to-glyph mapping")));
         let count = self.segment_count();
         if count == 0 {
             reject!();

@@ -3,7 +3,7 @@
 #[macro_use(choices, dereference, flags, raise, table)]
 extern crate typeface;
 
-pub mod char_mapping;
+pub mod character_mapping;
 pub mod font_header;
 pub mod glyph_data;
 pub mod glyph_mapping;
@@ -20,7 +20,7 @@ mod tag;
 
 pub use typeface::{Error, Result, Tape, Value, Walue};
 
-pub use char_mapping::CharMapping;
+pub use character_mapping::CharacterMapping;
 pub use font_header::FontHeader;
 pub use glyph_data::GlyphData;
 pub use glyph_mapping::GlyphMapping;

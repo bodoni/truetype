@@ -19,9 +19,9 @@ macro_rules! convert(
 
 #[test]
 fn header() {
-    use truetype::CharMapping;
+    use truetype::CharacterMapping;
 
-    let table = ok!(CharMapping::read(&mut setup!(SourceSerif, "cmap")));
+    let table = ok!(CharacterMapping::read(&mut setup!(SourceSerif, "cmap")));
     let table = &table.header;
     assert!(table.version == 0);
     assert!(table.table_count == 3);
@@ -29,9 +29,9 @@ fn header() {
 
 #[test]
 fn encoding_format4() {
-    use truetype::char_mapping::{CharMapping, Encoding};
+    use truetype::character_mapping::{CharacterMapping, Encoding};
 
-    let table = ok!(CharMapping::read(&mut setup!(SourceSerif, "cmap")));
+    let table = ok!(CharacterMapping::read(&mut setup!(SourceSerif, "cmap")));
     let tables = &table.encodings;
     assert!(tables.len() == 3);
     match &tables[0] {
@@ -57,9 +57,9 @@ fn encoding_format4() {
 
 #[test]
 fn encoding_format6() {
-    use truetype::char_mapping::{CharMapping, Encoding};
+    use truetype::character_mapping::{CharacterMapping, Encoding};
 
-    let table = ok!(CharMapping::read(&mut setup!(SourceSerif, "cmap")));
+    let table = ok!(CharacterMapping::read(&mut setup!(SourceSerif, "cmap")));
     let tables = &table.encodings;
     assert!(tables.len() == 3);
     match &tables[1] {
@@ -74,10 +74,10 @@ fn encoding_format6() {
 
 #[test]
 fn encoding_formats() {
-    use truetype::char_mapping::{CharMapping, Encoding};
+    use truetype::character_mapping::{CharacterMapping, Encoding};
 
     for fixture in Fixture::all() {
-        let table = ok!(CharMapping::read(&mut setup(*fixture, Some("cmap"))));
+        let table = ok!(CharacterMapping::read(&mut setup(*fixture, Some("cmap"))));
         let expected_mappings = fixture.mappings();
         assert!(table.encodings.len() == expected_mappings.len());
         for (encoding, expected_mapping) in table.encodings.iter().zip(expected_mappings) {
@@ -97,9 +97,9 @@ fn encoding_formats() {
 
 #[test]
 fn records() {
-    use truetype::CharMapping;
+    use truetype::CharacterMapping;
 
-    let table = ok!(CharMapping::read(&mut setup!(SourceSerif, "cmap")));
+    let table = ok!(CharacterMapping::read(&mut setup!(SourceSerif, "cmap")));
     let tables = &table.records;
     assert!(tables.len() == 3);
     assert!(tables[0].platform_id == 0);
