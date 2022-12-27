@@ -287,8 +287,11 @@ impl Encoding12 {
 
 impl Encoding14 {
     /// Return the mapping.
+    ///
+    /// It is not implemented yet.
+    #[inline]
     pub fn mapping(&self) -> HashMap<u32, GlyphID> {
-        unimplemented!();
+        Default::default()
     }
 }
 
