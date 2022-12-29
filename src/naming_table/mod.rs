@@ -90,15 +90,18 @@ table! {
     }
 }
 
+/// A type iterating over name entries.
+pub trait Names:
+    Iterator<Item = ((NameID, Option<String>), Option<String>)> + DoubleEndedIterator
+{
+}
+
 impl NamingTable {
-    /// Iterate over all entires.
+    /// Iterate over all name entires.
     ///
     /// Each entry is represented by three quantities: a name ID and a language tag, which are
     /// given as a tuple, and the corresponding value.
-    pub fn iter(
-        &self,
-    ) -> impl Iterator<Item = ((NameID, Option<String>), Option<String>)> + DoubleEndedIterator + '_
-    {
+    pub fn iter(&self) -> impl Names + '_ {
         let (records, language_tags, data) = match self {
             &NamingTable::Format0(ref table) => (&table.records, &[][..], &table.data),
             &NamingTable::Format1(ref table) => {
@@ -168,6 +171,11 @@ impl Record {
             },
         }
     }
+}
+
+impl<T> Names for T where
+    T: Iterator<Item = ((NameID, Option<String>), Option<String>)> + DoubleEndedIterator
+{
 }
 
 fn decode(
