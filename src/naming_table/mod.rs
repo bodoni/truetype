@@ -169,6 +169,8 @@ impl Record {
                 Some(Some(value)) => Some(value.clone()),
                 _ => None,
             },
+            #[cfg(feature = "ignore-invalid-language-ids")]
+            LanguageID::Invalid(_) => None,
         }
     }
 }

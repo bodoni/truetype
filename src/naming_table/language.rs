@@ -11,6 +11,8 @@ pub enum LanguageID {
     Macintosh(Macintosh),
     Windows(Windows),
     Other(usize),
+    #[cfg(feature = "ignore-invalid-language-ids")]
+    Invalid(usize),
 }
 
 // Reference:
@@ -358,12 +360,20 @@ impl Walue<'static> for LanguageID {
     fn read<T: Tape>(tape: &mut T, platform_id: PlatformID) -> Result<Self> {
         match (platform_id, tape.take::<u16>()?) {
             (PlatformID::Unicode, _) => Ok(LanguageID::Unicode),
-            (PlatformID::Macintosh, value) if value < 0x8000 => {
-                Ok(LanguageID::Macintosh(value.try_into()?))
-            }
-            (PlatformID::Windows, value) if value < 0x8000 => {
-                Ok(LanguageID::Windows(value.try_into()?))
-            }
+            (PlatformID::Macintosh, value) if value < 0x8000 => match value.try_into() {
+                Ok(value) => Ok(LanguageID::Macintosh(value)),
+                #[cfg(feature = "ignore-invalid-language-ids")]
+                Err(_) => Ok(LanguageID::Invalid(value as usize)),
+                #[cfg(not(feature = "ignore-invalid-language-ids"))]
+                Err(error) => Err(error),
+            },
+            (PlatformID::Windows, value) if value < 0x8000 => match value.try_into() {
+                Ok(value) => Ok(LanguageID::Windows(value)),
+                #[cfg(feature = "ignore-invalid-language-ids")]
+                Err(_) => Ok(LanguageID::Invalid(value as usize)),
+                #[cfg(not(feature = "ignore-invalid-language-ids"))]
+                Err(error) => Err(error),
+            },
             (_, value) => Ok(LanguageID::Other(value as usize - 0x8000)),
         }
     }

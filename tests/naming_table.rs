@@ -3,6 +3,20 @@ extern crate truetype;
 #[macro_use]
 mod support;
 
+mod css_test {
+    use truetype::naming_table::NamingTable;
+    use truetype::Value;
+
+    use crate::support::setup;
+
+    #[cfg_attr(not(feature = "ignore-invalid-language-ids"), should_panic)]
+    #[test]
+    fn read() {
+        let table = ok!(NamingTable::read(&mut setup!(CSSTest, "name")));
+        let _: Vec<_> = table.iter().collect();
+    }
+}
+
 mod open_sans {
     use truetype::naming_table::{NameID, NamingTable};
     use truetype::Value;
