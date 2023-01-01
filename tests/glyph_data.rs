@@ -39,7 +39,7 @@ mod ubuntu_condensed {
     use crate::support::setup;
 
     #[test]
-    #[cfg_attr(not(feature = "ignore-invalid-flags"), should_panic)]
+    #[cfg_attr(not(feature = "ignore-invalid-composite-glyph-flags"), should_panic)]
     fn read() {
         use truetype::glyph_data::Description;
         use truetype::{FontHeader, GlyphData, GlyphMapping, MaximumProfile};

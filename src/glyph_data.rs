@@ -89,6 +89,7 @@ flags! {
 }
 
 flags! {
+    @base
     #[doc = "Component flags."]
     pub ComponentFlags(u16) {
         0b0000_0000_0000_0001 => are_arguments_words,
@@ -104,6 +105,17 @@ flags! {
         0b0000_1000_0000_0000 => is_offset_scaled,
         0b0001_0000_0000_0000 => is_offset_unscaled,
         0b1110_0000_0001_0000 => is_invalid,
+    }
+}
+
+#[cfg(not(feature = "ignore-invalid-composite-glyph-flags"))]
+flags!(@read pub ComponentFlags(u16));
+
+#[cfg(feature = "ignore-invalid-composite-glyph-flags")]
+impl crate::Value for ComponentFlags {
+    #[inline]
+    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+        Ok(ComponentFlags(tape.take()?))
     }
 }
 
