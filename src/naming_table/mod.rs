@@ -159,7 +159,7 @@ impl NamingTable1 {
 }
 
 impl Record {
-    /// Return the IETF-BCP-47 language.
+    /// Return the IETF-BCP-47 language tag.
     pub fn language_tag(&self, language_tags: &[Option<String>]) -> Option<String> {
         match self.language_id {
             LanguageID::Unicode => None,
