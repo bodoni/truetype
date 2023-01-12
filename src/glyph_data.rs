@@ -12,7 +12,7 @@ pub struct GlyphData(pub Vec<Option<Glyph>>);
 
 table! {
     #[doc = "A glyph."]
-    pub Glyph {
+    pub Glyph { // Glyph Header
         contour_count (i16), // numberOfContours
         min_x         (i16), // xMin
         min_y         (i16), // yMin
@@ -37,7 +37,7 @@ pub enum Description {
 table! {
     @define
     #[doc = "A simple-glyph description."]
-    pub SimpleDescription {
+    pub SimpleDescription { // Simple Glyph Table
         end_points       (Vec<u16>       ), // endPtsOfContours
         instruction_size (u16            ), // instructionLength
         instructions     (Vec<u8>        ), // instructions
@@ -58,7 +58,7 @@ pub struct CompositeDescription {
 table! {
     #[doc = "A component of a composite glyph."]
     #[derive(Copy)]
-    pub Component {
+    pub Component { // Component Glyph Table
         flags       (ComponentFlags), // flags
         glyph_index (u16           ), // glyphIndex
 
@@ -74,7 +74,7 @@ table! {
 
 flags! {
     #[doc = "Point flags."]
-    pub PointFlags(u8) {
+    pub PointFlags(u8) { // Simple Glyph Flags
         0b0000_0001 => is_on_curve,
         0b0000_0010 => is_x_short,
         0b0000_0100 => is_y_short,
@@ -91,7 +91,7 @@ flags! {
 flags! {
     @base
     #[doc = "Component flags."]
-    pub ComponentFlags(u16) {
+    pub ComponentFlags(u16) { // Component Glyph Flags
         0b0000_0000_0000_0001 => are_arguments_words,
         0b0000_0000_0000_0010 => are_arguments_xy,
         0b0000_0000_0000_0100 => should_round_xy_to_grid,
