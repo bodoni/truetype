@@ -34,3 +34,24 @@ implement! {
     #[allow(non_camel_case_types)]
     pub q32(u32 | 16)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::q16;
+
+    #[test]
+    fn from() {
+        let cases: Vec<(u16, f32)> = vec![
+            (0x7fff, 1.999939),
+            (0x7000, 1.75),
+            (0x0001, 0.000061),
+            (0x0000, 0.0),
+            (0xffff, -0.000061),
+            (0x8000, -2.0),
+        ];
+        for (input, output) in cases.into_iter() {
+            let input: f32 = q16(input).into();
+            assert!((input - output).abs() < 1e-4, "{} != {}", input, output);
+        }
+    }
+}

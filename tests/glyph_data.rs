@@ -99,7 +99,7 @@ mod zen_loop {
                 }
                 match description.components[0].options {
                     Options::Vector(x, y) => {
-                        assert_eq!(3.0f32, x.into());
+                        assert_eq!(-1.0f32, x.into());
                         assert_eq!(1.0f32, y.into());
                     }
                     _ => unreachable!(),
