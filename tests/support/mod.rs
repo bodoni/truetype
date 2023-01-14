@@ -19,6 +19,7 @@ pub enum Fixture {
     SourceSerif,
     UbuntuCondensed,
     VeraMono,
+    ZenLoop,
 }
 
 #[allow(dead_code)]
@@ -40,6 +41,7 @@ impl Fixture {
             Fixture::SourceSerif => "SourceSerifPro-Regular.otf",
             Fixture::UbuntuCondensed => "UbuntuCondensed-Regular.ttf",
             Fixture::VeraMono => "VeraMono-Roman.ttf",
+            Fixture::ZenLoop => "ZenLoop-Regular.ttf",
         }
     }
 
@@ -87,6 +89,13 @@ impl Fixture {
             },
             Fixture::VeraMono => match table {
                 "cmap" => 40360,
+                _ => unreachable!(),
+            },
+            Fixture::ZenLoop => match table {
+                "glyf" => 6404,
+                "head" => 300,
+                "loca" => 5900,
+                "maxp" => 392,
                 _ => unreachable!(),
             },
         }

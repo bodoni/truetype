@@ -66,3 +66,46 @@ mod ubuntu_condensed {
         }
     }
 }
+
+mod zen_loop {
+    use truetype::{Value, Walue};
+
+    use crate::support::setup;
+
+    #[test]
+    fn read() {
+        use truetype::glyph_data::Description;
+        use truetype::glyph_data::{Arguments, GlyphData, Options};
+        use truetype::{FontHeader, GlyphMapping, MaximumProfile};
+
+        let parameter1 = ok!(FontHeader::read(&mut setup!(ZenLoop, "head")));
+        let parameter2 = ok!(MaximumProfile::read(&mut setup!(ZenLoop, "maxp")));
+        let parameter = ok!(GlyphMapping::read(
+            &mut setup!(ZenLoop, "loca"),
+            (&parameter1, &parameter2),
+        ));
+        let table = ok!(GlyphData::read(&mut setup!(ZenLoop, "glyf"), &parameter,));
+        let glyph = ok!(table[72].as_ref());
+        match glyph.description {
+            Description::Composite(ref description) => {
+                assert_eq!(description.components.len(), 1);
+                assert_eq!(description.components[0].glyph_index, 70);
+                match description.components[0].arguments {
+                    Arguments::Offsets(x, y) => {
+                        assert_eq!(x, 298);
+                        assert_eq!(y, 0);
+                    }
+                    _ => unreachable!(),
+                }
+                match description.components[0].options {
+                    Options::Vector(x, y) => {
+                        assert_eq!(3.0f32, x.into());
+                        assert_eq!(1.0f32, y.into());
+                    }
+                    _ => unreachable!(),
+                }
+            }
+            _ => unreachable!(),
+        }
+    }
+}
