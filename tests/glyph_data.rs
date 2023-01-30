@@ -89,7 +89,7 @@ mod zen_loop {
         match glyph.description {
             Description::Composite(ref description) => {
                 assert_eq!(description.components.len(), 1);
-                assert_eq!(description.components[0].glyph_index, 70);
+                assert_eq!(description.components[0].glyph_id, 70);
                 match description.components[0].arguments {
                     Arguments::Offsets(x, y) => {
                         assert_eq!(x, 298);

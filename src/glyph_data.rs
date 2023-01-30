@@ -4,7 +4,7 @@
 
 use crate::glyph_mapping::GlyphMapping;
 use crate::number::q16;
-use crate::{Result, Tape, Walue};
+use crate::{GlyphID, Result, Tape, Walue};
 
 /// Glyph data.
 #[derive(Clone, Debug)]
@@ -59,8 +59,8 @@ table! {
     #[doc = "A component of a composite glyph."]
     #[derive(Copy)]
     pub Component { // Component Glyph Table
-        flags       (ComponentFlags), // flags
-        glyph_index (u16           ), // glyphIndex
+        flags    (ComponentFlags), // flags
+        glyph_id (GlyphID       ), // glyphIndex
 
         arguments (Arguments) |this, tape| { // argument1, argument2
             tape.take_given(this.flags)
