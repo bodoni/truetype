@@ -71,9 +71,10 @@ impl Value for PostScript {
 }
 
 fn read_pascal_strings<T: Tape>(tape: &mut T, indices: &[u16]) -> Result<Vec<String>> {
-    let count = indices
-        .iter()
-        .fold(0, |n, &i| if 258 <= i && i <= 32767 { n + 1 } else { n });
+    let count = indices.iter().fold(
+        0,
+        |n, &i| if (258..=32767).contains(&i) { n + 1 } else { n },
+    );
     let mut names = Vec::with_capacity(count);
     for _ in 0..count {
         let length = tape.take::<u8>()? as usize;

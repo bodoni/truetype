@@ -159,10 +159,10 @@ impl<'l> Walue<'l> for GlyphData {
             );
         );
         let offsets: Vec<_> = match mapping {
-            &GlyphMapping::HalfOffsets(ref offsets) => {
+            GlyphMapping::HalfOffsets(ref offsets) => {
                 offsets.iter().map(|&offset| 2 * (offset as u64)).collect()
             }
-            &GlyphMapping::Offsets(ref offsets) => {
+            GlyphMapping::Offsets(ref offsets) => {
                 offsets.iter().map(|&offset| offset as u64).collect()
             }
         };
@@ -229,9 +229,9 @@ impl Walue<'static> for Description {
         };
         let instructions = tape.take_bytes(instruction_size as usize)?;
         Ok(Description::Composite(CompositeDescription {
-            components: components,
-            instruction_size: instruction_size,
-            instructions: instructions,
+            components,
+            instruction_size,
+            instructions,
         }))
     }
 }
@@ -293,12 +293,12 @@ impl Walue<'static> for SimpleDescription {
         let y = read_coordinates!(is_y_short, is_y_positive, is_y_same);
 
         Ok(SimpleDescription {
-            end_points: end_points,
-            instruction_size: instruction_size,
-            instructions: instructions,
-            flags: flags,
-            x: x,
-            y: y,
+            end_points,
+            instruction_size,
+            instructions,
+            flags,
+            x,
+            y,
         })
     }
 }

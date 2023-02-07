@@ -13,7 +13,7 @@ impl fmt::Debug for Tag {
         use std::str;
 
         match str::from_utf8(&self.0[..]) {
-            Ok(name) => write!(formatter, "Tag({:?})", name),
+            Ok(name) => write!(formatter, "Tag({name:?})"),
             _ => write!(formatter, "Tag({:?})", self.0),
         }
     }
@@ -22,9 +22,7 @@ impl fmt::Debug for Tag {
 impl From<u32> for Tag {
     #[inline(always)]
     fn from(number: u32) -> Self {
-        use std::mem;
-
-        Tag(unsafe { mem::transmute(u32::from_be(number)) })
+        Tag(u32::from_be(number).to_ne_bytes())
     }
 }
 

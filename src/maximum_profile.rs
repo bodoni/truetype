@@ -49,8 +49,8 @@ impl MaximumProfile {
     /// Return the number of glyphs.
     pub fn glyph_count(&self) -> usize {
         match self {
-            &MaximumProfile::Version0(ref profile) => profile.glyph_count as usize,
-            &MaximumProfile::Version1(ref profile) => profile.glyph_count as usize,
+            MaximumProfile::Version0(ref profile) => profile.glyph_count as usize,
+            MaximumProfile::Version1(ref profile) => profile.glyph_count as usize,
         }
     }
 }

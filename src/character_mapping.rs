@@ -188,9 +188,9 @@ impl Value for CharacterMapping {
             });
         }
         Ok(CharacterMapping {
-            header: header,
-            records: records,
-            encodings: encodings,
+            header,
+            records,
+            encodings,
         })
     }
 }

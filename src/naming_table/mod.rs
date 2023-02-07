@@ -103,8 +103,8 @@ impl NamingTable {
     /// given as a tuple, and the corresponding value.
     pub fn iter(&self) -> impl Names + '_ {
         let (records, language_tags, data) = match self {
-            &NamingTable::Format0(ref table) => (&table.records, &[][..], &table.data),
-            &NamingTable::Format1(ref table) => {
+            NamingTable::Format0(ref table) => (&table.records, &[][..], &table.data),
+            NamingTable::Format1(ref table) => {
                 (&table.records, &table.language_tags[..], &table.data)
             }
         };
