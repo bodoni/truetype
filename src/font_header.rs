@@ -21,7 +21,7 @@ table! {
         min_y                (i16           ), // yMin
         max_x                (i16           ), // xMax
         max_y                (i16           ), // yMax
-        mac_style            (MacintoshFlags), // macStyle
+        macintosh_flags      (MacintoshFlags), // macStyle
         lowest_ppem          (u16           ), // lowestRecPPEM
         direction_hint       (i16           ), // fontDirectionHint
         glyph_mapping_format (i16           ), // indexToLocFormat

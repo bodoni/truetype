@@ -210,9 +210,9 @@ flags! {
     #[doc = "Font-selection flags."]
     pub SelectionFlags(u16) {
         0b0000_0000_0000_0001 => is_italic,
-        0b0000_0000_0000_0010 => is_underscore,
+        0b0000_0000_0000_0010 => is_underline,
         0b0000_0000_0000_0100 => is_negative,
-        0b0000_0000_0000_1000 => is_outlined,
+        0b0000_0000_0000_1000 => is_outline,
         0b0000_0000_0001_0000 => is_strikeout,
         0b0000_0000_0010_0000 => is_bold,
         0b0000_0000_0100_0000 => is_regular,
