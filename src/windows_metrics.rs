@@ -30,7 +30,7 @@ table! {
         average_char_width    (i16           ), // xAvgCharWidth
         weight_class          (u16           ), // usWeightClass
         width_class           (u16           ), // usWidthClass
-        type_flags            (TypeFlags     ), // fsType
+        embedding_flags       (EmbeddingFlags), // fsType
         subscript_x_size      (i16           ), // ySubscriptXSize
         subscript_y_size      (i16           ), // ySubscriptYSize
         subscript_x_offset    (i16           ), // ySubscriptXOffset
@@ -67,7 +67,7 @@ table! {
         average_char_width    (i16           ), // xAvgCharWidth
         weight_class          (u16           ), // usWeightClass
         width_class           (u16           ), // usWidthClass
-        type_flags            (TypeFlags     ), // fsType
+        embedding_flags       (EmbeddingFlags), // fsType
         subscript_x_size      (i16           ), // ySubscriptXSize
         subscript_y_size      (i16           ), // ySubscriptYSize
         subscript_x_offset    (i16           ), // ySubscriptXOffset
@@ -106,7 +106,7 @@ table! {
         average_char_width    (i16           ), // xAvgCharWidth
         weight_class          (u16           ), // usWeightClass
         width_class           (u16           ), // usWidthClass
-        type_flags            (TypeFlags     ), // fsType
+        embedding_flags       (EmbeddingFlags), // fsType
         subscript_x_size      (i16           ), // ySubscriptXSize
         subscript_y_size      (i16           ), // ySubscriptYSize
         subscript_x_offset    (i16           ), // ySubscriptXOffset
@@ -156,7 +156,7 @@ table! {
         average_char_width       (i16           ), // xAvgCharWidth
         weight_class             (u16           ), // usWeightClass
         width_class              (u16           ), // usWidthClass
-        type_flags               (TypeFlags     ), // fsType
+        embedding_flags          (EmbeddingFlags), // fsType
         subscript_x_size         (i16           ), // ySubscriptXSize
         subscript_y_size         (i16           ), // ySubscriptYSize
         subscript_x_offset       (i16           ), // ySubscriptXOffset
@@ -195,13 +195,13 @@ table! {
 }
 
 flags! {
-    #[doc = "Type flags."]
-    pub TypeFlags(u16) {
-        0b0000_0000_0000_0010 => is_restricted_license_embedding,
-        0b0000_0000_0000_0100 => is_preview_print_embedding,
-        0b0000_0000_0000_1000 => is_editable_embedding,
-        0b0000_0001_0000_0000 => has_no_subset_embedding,
-        0b0000_0010_0000_0000 => is_bitmap_embedding_only,
+    #[doc = "Embedding licensing-rights flags."]
+    pub EmbeddingFlags(u16) {
+        0b0000_0000_0000_0010 => has_restricted_license,
+        0b0000_0000_0000_0100 => allows_preview_and_print,
+        0b0000_0000_0000_1000 => allows_editable,
+        0b0000_0001_0000_0000 => forbids_subsetting,
+        0b0000_0010_0000_0000 => is_bitmap_only,
         0b1111_1100_1111_0001 => is_invalid,
     }
 }
