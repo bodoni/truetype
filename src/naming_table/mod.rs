@@ -76,7 +76,7 @@ table! {
         },
 
         name_id     (NameID), // nameID
-        length      (u16   ), // length
+        size        (u16   ), // length
         offset      (u16   ), // offset
     }
 }
@@ -85,7 +85,7 @@ table! {
     #[doc = "A language-tag record of a naming table."]
     #[derive(Copy)]
     pub LanguageTag { // LangTagRecord
-        length (u16), // length
+        size   (u16), // length
         offset (u16), // offset
     }
 }
@@ -111,19 +111,19 @@ impl NamingTable {
         let language_tags: Vec<_> = language_tags
             .iter()
             .map(|record| {
-                let (offset, length) = (record.offset as usize, record.length as usize);
-                encoding::unicode::decode_utf16(&data[offset..(offset + length)])
+                let (offset, size) = (record.offset as usize, record.size as usize);
+                encoding::unicode::decode_utf16(&data[offset..(offset + size)])
             })
             .collect();
         records.iter().map(move |record| {
             let language_tag = record.language_tag(&language_tags);
-            let (offset, length) = (record.offset as usize, record.length as usize);
+            let (offset, size) = (record.offset as usize, record.size as usize);
             let value = decode(
                 record.platform_id,
                 record.encoding_id,
                 record.language_id,
                 language_tag.as_deref(),
-                &data[offset..(offset + length)],
+                &data[offset..(offset + size)],
             );
             ((record.name_id, language_tag), value)
         })
@@ -145,7 +145,7 @@ impl NamingTable0 {
         let current = tape.position()?;
         let above = 3 * 2 + self.records.len() * 6 * 2;
         tape.jump(current - above as u64 + self.offset as u64)?;
-        tape.take_bytes(size_data(&self.records))
+        tape.take_bytes(measure(&self.records))
     }
 }
 
@@ -154,7 +154,7 @@ impl NamingTable1 {
         let current = tape.position()?;
         let above = 4 * 2 + self.records.len() * 6 * 2 + self.language_tags.len() * 2 * 2;
         tape.jump(current - above as u64 + self.offset as u64)?;
-        tape.take_bytes(size_data(&self.records))
+        tape.take_bytes(measure(&self.records))
     }
 }
 
@@ -196,13 +196,13 @@ fn decode(
     }
 }
 
-fn size_data(records: &[Record]) -> usize {
-    let mut length = 0;
+fn measure(records: &[Record]) -> usize {
+    let mut size = 0;
     for record in records {
-        let end = record.offset + record.length;
-        if end > length {
-            length = end;
+        let end = record.offset + record.size;
+        if end > size {
+            size = end;
         }
     }
-    length as usize
+    size as usize
 }
