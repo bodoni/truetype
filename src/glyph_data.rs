@@ -129,9 +129,10 @@ pub enum Arguments {
 }
 
 /// Options of a component.
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 pub enum Options {
     /// No options.
+    #[default]
     None,
     /// A scaling coefficient for both coordinates.
     Scalar(q16),
@@ -336,13 +337,6 @@ impl Walue<'static> for Arguments {
                 Ok(Arguments::Indices(i, j))
             }
         }
-    }
-}
-
-impl Default for Options {
-    #[inline]
-    fn default() -> Self {
-        Options::None
     }
 }
 
