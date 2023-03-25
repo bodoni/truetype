@@ -46,7 +46,7 @@ table! {
         tag      (Tag), // tag
         checksum (u32), // checkSum
         offset   (u32), // offset
-        length   (u32), // length
+        size     (u32), // length
     }
 }
 
@@ -54,8 +54,8 @@ impl Record {
     /// Compute the checksum of the corresponding table.
     pub fn checksum<T: Tape>(&self, tape: &mut T) -> Result<u32> {
         let head = self.tag == Tag(*b"head");
-        let count = ((self.length + 4 - 1) & !(4 - 1)) / 4;
-        let excess = 4 * count - self.length;
+        let count = ((self.size + 4 - 1) & !(4 - 1)) / 4;
+        let excess = 4 * count - self.size;
         debug_assert!(excess < 4);
         tape.stay(|tape| {
             tape.jump(self.offset as u64)?;
@@ -84,12 +84,12 @@ mod tests {
     #[test]
     fn record_checksum() {
         macro_rules! checksum(
-            ($length:expr, $checksum:expr, $data:expr,) => ({
+            ($size:expr, $checksum:expr, $data:expr,) => ({
                 let data: &[u8] = $data;
                 let mut reader = Cursor::new(data);
                 let table = Record {
                     tag: Tag(*b"true"),
-                    length: $length,
+                    size: $size,
                     offset: 0,
                     checksum: $checksum,
                 };
