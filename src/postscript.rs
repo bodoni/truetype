@@ -65,7 +65,7 @@ impl Value for PostScript {
             q32(0x00010000) => PostScript::Version1(tape.take()?),
             q32(0x00020000) => PostScript::Version2(tape.take()?),
             q32(0x00030000) => PostScript::Version3(tape.take()?),
-            _ => raise!("found an unknown format of the PostScript information"),
+            _ => raise!("found an unknown version of the PostScript information"),
         })
     }
 }

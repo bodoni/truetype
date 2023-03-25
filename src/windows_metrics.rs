@@ -232,7 +232,7 @@ impl Value for WindowsMetrics {
             3 => WindowsMetrics::Version3(tape.take()?),
             4 => WindowsMetrics::Version4(tape.take()?),
             5 => WindowsMetrics::Version5(tape.take()?),
-            _ => raise!("found an unknown format of the OS/2 and Windows metrics"),
+            _ => raise!("found an unknown version of the OS/2 and Windows metrics"),
         })
     }
 }
