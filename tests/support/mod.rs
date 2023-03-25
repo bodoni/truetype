@@ -1,13 +1,17 @@
 use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::{BufRead, BufReader};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 macro_rules! ok(($result:expr) => ($result.unwrap()));
 
 macro_rules! setup(
-    ($fixture:ident) => (setup(crate::support::Fixture::$fixture, None));
-    ($fixture:ident, $table:expr) => (setup(crate::support::Fixture::$fixture, Some($table)));
+    ($fixture:ident) => (
+        crate::support::setup(crate::support::Fixture::$fixture, None)
+    );
+    ($fixture:ident, $table:expr) => (
+        crate::support::setup(crate::support::Fixture::$fixture, Some($table))
+    );
 );
 
 #[allow(dead_code)]
@@ -46,7 +50,9 @@ impl Fixture {
     }
 
     pub fn path(&self) -> PathBuf {
-        format!("tests/fixtures/{}", self.file_name()).into()
+        PathBuf::from("tests")
+            .join("fixtures")
+            .join(self.file_name())
     }
 
     pub fn offset(&self, table: &str) -> u64 {
@@ -102,14 +108,17 @@ impl Fixture {
     }
 
     pub fn mappings(&self) -> Vec<HashMap<u32, u32>> {
-        let path = format!("tests/fixtures/char_mappings/{}", self.file_name());
+        let path = PathBuf::from("tests")
+            .join("fixtures")
+            .join("char_mappings")
+            .join(self.file_name());
         let mut file_names = ok!(fs::read_dir(&path))
             .map(|entry| ok!(ok!(entry).file_name().into_string()))
             .collect::<Vec<_>>();
         file_names.sort();
         file_names
             .iter()
-            .map(|file_name| read_mapping(&format!("{}/{}", path, file_name)))
+            .map(|file_name| read_mapping(&path.join(file_name)))
             .collect::<Vec<_>>()
     }
 }
@@ -124,7 +133,7 @@ pub fn setup(fixture: Fixture, table: Option<&str>) -> File {
     file
 }
 
-fn read_mapping(path: &str) -> HashMap<u32, u32> {
+fn read_mapping(path: &Path) -> HashMap<u32, u32> {
     let reader = BufReader::new(ok!(File::open(path)));
     let mut mapping = HashMap::new();
     for line in reader.lines().map(|line| ok!(line)) {

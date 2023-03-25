@@ -5,8 +5,6 @@ mod support;
 
 use truetype::{Tag, Value};
 
-use support::setup;
-
 #[test]
 fn read() {
     use truetype::WindowsMetrics;

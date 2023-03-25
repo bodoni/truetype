@@ -5,8 +5,6 @@ mod support;
 
 use truetype::{FontHeader, Value};
 
-use support::setup;
-
 #[test]
 fn read() {
     let table = ok!(FontHeader::read(&mut setup!(SourceSerif, "head")));

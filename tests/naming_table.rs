@@ -7,8 +7,6 @@ mod css_test {
     use truetype::naming_table::NamingTable;
     use truetype::Value;
 
-    use crate::support::setup;
-
     #[cfg_attr(not(feature = "ignore-invalid-language-ids"), should_panic)]
     #[test]
     fn read() {
@@ -20,8 +18,6 @@ mod css_test {
 mod open_sans {
     use truetype::naming_table::{NameID, NamingTable};
     use truetype::Value;
-
-    use crate::support::setup;
 
     #[test]
     fn read() {
@@ -117,8 +113,6 @@ mod source_serif {
 
     use truetype::naming_table::{NameID, NamingTable};
     use truetype::Value;
-
-    use crate::support::setup;
 
     #[test]
     fn read() {

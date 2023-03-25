@@ -5,8 +5,6 @@ mod support;
 
 use truetype::Value;
 
-use support::setup;
-
 #[test]
 fn read() {
     use truetype::MaximumProfile;

@@ -5,7 +5,7 @@ mod support;
 
 use truetype::Value;
 
-use support::{setup, Fixture};
+use support::Fixture;
 
 macro_rules! convert(
     ($mapping:expr) => ({
@@ -77,7 +77,10 @@ fn encoding_formats() {
     use truetype::character_mapping::{CharacterMapping, Encoding};
 
     for fixture in Fixture::all() {
-        let table = ok!(CharacterMapping::read(&mut setup(*fixture, Some("cmap"))));
+        let table = ok!(CharacterMapping::read(&mut support::setup(
+            *fixture,
+            Some("cmap"),
+        )));
         let expected_mappings = fixture.mappings();
         assert!(table.encodings.len() == expected_mappings.len());
         for (encoding, expected_mapping) in table.encodings.iter().zip(expected_mappings) {

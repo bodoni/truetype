@@ -5,8 +5,6 @@ mod support;
 
 use truetype::{OffsetTable, Value};
 
-use support::setup;
-
 #[test]
 fn read() {
     let mut file = setup!(SourceSerif);

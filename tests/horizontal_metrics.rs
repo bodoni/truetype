@@ -5,8 +5,6 @@ mod support;
 
 use truetype::{Value, Walue};
 
-use support::setup;
-
 #[test]
 fn read() {
     use truetype::{HorizontalHeader, HorizontalMetrics, MaximumProfile};
