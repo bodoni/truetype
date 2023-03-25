@@ -77,8 +77,8 @@ fn read_pascal_strings<T: Tape>(tape: &mut T, indices: &[u16]) -> Result<Vec<Str
     );
     let mut names = Vec::with_capacity(count);
     for _ in 0..count {
-        let length = tape.take::<u8>()? as usize;
-        match String::from_utf8(tape.take_bytes(length)?) {
+        let size = tape.take::<u8>()? as usize;
+        match String::from_utf8(tape.take_bytes(size)?) {
             Ok(name) => names.push(name),
             _ => names.push("<malformed>".into()),
         }
