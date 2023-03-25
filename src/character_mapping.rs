@@ -54,7 +54,7 @@ table! {
     #[doc = "A character-to-glyph encoding in format 0."]
     pub Encoding0 {
         format   (u16) = { 0 }, // format
-        length   (u16), // length
+        size     (u16), // length
         language (u16), // language
 
         glyph_ids (Vec<u8>) |_, tape| { // glyphIdArray
@@ -67,7 +67,7 @@ table! {
     #[doc = "A character-to-glyph encoding in format 4."]
     pub Encoding4 {
         format           (u16) = { 4 }, // format
-        length           (u16), // length
+        size             (u16), // length
         language         (u16), // language
         segment_count_x2 (u16), // segCountX2
         search_range     (u16), // searchRange
@@ -102,7 +102,7 @@ table! {
     #[doc = "A character-to-glyph encoding in format 6."]
     pub Encoding6 {
         format      (u16) = { 6 }, // format
-        length      (u16), // length
+        size        (u16), // length
         language    (u16), // language
         first_code  (u16), // firstCode
         entry_count (u16), // entryCount
@@ -118,7 +118,7 @@ table! {
     pub Encoding12 {
         format      (u16) = { 12 }, // format
         reserved    (u16) = { 0 }, // reserved
-        length      (u32), // length
+        size        (u32), // length
         language    (u32), // language
         group_count (u32), // numGroups
 
@@ -132,7 +132,7 @@ table! {
     #[doc = "A character-to-glyph encoding in format 14."]
     pub Encoding14 {
         format         (u16) = { 14 }, // format
-        length         (u32), // length
+        size           (u32), // length
         selector_count (u32), // numVarSelectorRecords
 
         selectors (Vec<VariationSelector>) |this, tape| { // varSelector
@@ -211,15 +211,16 @@ impl Encoding4 {
     pub fn mapping(&self) -> HashMap<u16, GlyphID> {
         use std::num::Wrapping;
 
-        let count = self.segment_count();
+        let segment_count = self.segment_count();
         let mut mapping = HashMap::new();
-        for i in 0..(count - 1) {
+        for i in 0..(segment_count - 1) {
             let start_code = self.start_codes[i];
             let id_delta = self.id_deltas[i];
             let id_range_offset = self.id_range_offsets[i];
             for j in start_code..(self.end_codes[i] + 1) {
                 let id = if id_range_offset > 0 {
-                    let offset = (id_range_offset / 2 + (j - start_code)) - (count - i) as u16;
+                    let offset =
+                        (id_range_offset / 2 + (j - start_code)) - (segment_count - i) as u16;
                     self.glyph_ids[offset as usize]
                 } else {
                     (Wrapping(id_delta) + Wrapping(j as i16)).0 as u16
@@ -232,27 +233,30 @@ impl Encoding4 {
 
     fn glyph_id_count(&self) -> Result<usize> {
         macro_rules! reject(() => (raise!("found a malformed character-to-glyph mapping")));
-        let count = self.segment_count();
-        if count == 0 {
+        let segment_count = self.segment_count();
+        if segment_count == 0 {
             reject!();
         }
-        if self.start_codes[count - 1] != 0xffff || self.end_codes[count - 1] != 0xffff {
+        if self.start_codes[segment_count - 1] != 0xffff
+            || self.end_codes[segment_count - 1] != 0xffff
+        {
             reject!();
         }
-        let mut length = 0;
-        for i in 0..(count - 1) {
+        let mut count = 0;
+        for i in 0..(segment_count - 1) {
             let start_code = self.start_codes[i];
             let id_range_offset = self.id_range_offsets[i];
             for j in start_code..(self.end_codes[i] + 1) {
                 if id_range_offset > 0 {
-                    let end = (id_range_offset / 2 + (j - start_code)) - (count - i) as u16 + 1;
-                    if end > length {
-                        length = end;
+                    let end =
+                        (id_range_offset / 2 + (j - start_code)) - (segment_count - i) as u16 + 1;
+                    if end > count {
+                        count = end;
                     }
                 }
             }
         }
-        Ok(length as usize)
+        Ok(count as usize)
     }
 
     #[inline]
