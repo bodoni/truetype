@@ -7,10 +7,10 @@ use crate::{Result, Tape, Value};
 pub struct Tag(pub [u8; 4]);
 
 impl Tag {
-    /// Convert into a string if it is alphanumeric.
+    /// Convert into a string.
     pub fn as_str(&self) -> Option<&str> {
         match std::str::from_utf8(&self.0[..]) {
-            Ok(value) if value.chars().all(char::is_alphanumeric) => Some(value),
+            Ok(value) if !value.chars().any(char::is_control) => Some(value),
             _ => None,
         }
     }
@@ -57,6 +57,8 @@ mod tests {
 
     #[test]
     fn as_str() {
+        assert_eq!(Tag(*b"CFF ").as_str(), Some("CFF "));
+        assert_eq!(Tag(*b"OS/2").as_str(), Some("OS/2"));
         assert_eq!(Tag(*b"true").as_str(), Some("true"));
         assert_eq!(Tag([0, 1, 0, 0]).as_str(), None);
     }
