@@ -7,7 +7,7 @@ use crate::{Result, Tape, Value};
 pub struct Tag(pub [u8; 4]);
 
 impl Tag {
-    /// Convert the tag into a string if it is alphanumeric.
+    /// Convert into a string if it is alphanumeric.
     pub fn as_str(&self) -> Option<&str> {
         match std::str::from_utf8(&self.0[..]) {
             Ok(value) if value.chars().all(char::is_alphanumeric) => Some(value),
