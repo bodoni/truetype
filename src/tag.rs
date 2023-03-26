@@ -13,16 +13,25 @@ impl fmt::Debug for Tag {
         use std::str;
 
         match str::from_utf8(&self.0[..]) {
-            Ok(name) => write!(formatter, "Tag({name:?})"),
-            _ => write!(formatter, "Tag({:?})", self.0),
+            Ok(value) if value.chars().all(char::is_alphanumeric) => {
+                write!(formatter, "Tag({value})")
+            }
+            _ => write!(formatter, "Tag(0x{:08X})", u32::from(*self)),
         }
     }
 }
 
 impl From<u32> for Tag {
     #[inline(always)]
-    fn from(number: u32) -> Self {
-        Tag(u32::from_be(number).to_ne_bytes())
+    fn from(value: u32) -> Self {
+        Tag(u32::from_be(value).to_ne_bytes())
+    }
+}
+
+impl From<Tag> for u32 {
+    #[inline(always)]
+    fn from(tag: Tag) -> Self {
+        u32::from_be_bytes(tag.0)
     }
 }
 
@@ -42,17 +51,23 @@ mod tests {
 
     #[test]
     fn debug() {
-        assert!(format!("{:?}", Tag(*b"true")) == r#"Tag("true")"#);
+        assert_eq!(format!("{:?}", Tag(*b"true")), r#"Tag(true)"#);
+        assert_eq!(format!("{:?}", Tag([0, 1, 0, 0])), r#"Tag(0x00010000)"#);
     }
 
     #[test]
     fn from() {
-        assert!(Tag(*b"true") == Tag::from(0x74727565));
+        assert_eq!(Tag(*b"true"), Tag::from(0x74727565));
+    }
+
+    #[test]
+    fn into() {
+        assert_eq!(u32::from(Tag(*b"true")), 0x74727565);
     }
 
     #[test]
     fn read() {
         let mut tape = Cursor::new(b"true".to_vec());
-        assert!(Tag::read(&mut tape).unwrap() == Tag(*b"true"));
+        assert_eq!(Tag::read(&mut tape).unwrap(), Tag(*b"true"));
     }
 }
