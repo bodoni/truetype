@@ -49,7 +49,7 @@ table! {
 impl Record {
     /// Compute the checksum of the corresponding table.
     pub fn checksum<T: Tape>(&self, tape: &mut T) -> Result<u32> {
-        let head = self.tag == Tag(*b"head");
+        let head = self.tag.0 == *b"head";
         let count = ((self.size + 4 - 1) & !(4 - 1)) / 4;
         let excess = 4 * count - self.size;
         debug_assert!(excess < 4);
