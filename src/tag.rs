@@ -6,16 +6,22 @@ use crate::{Result, Tape, Value};
 #[derive(Clone, Copy, Default, Eq, Hash, PartialEq)]
 pub struct Tag(pub [u8; 4]);
 
+impl Tag {
+    /// Convert the tag into a string if it is alphanumeric.
+    pub fn as_str(&self) -> Option<&str> {
+        match std::str::from_utf8(&self.0[..]) {
+            Ok(value) if value.chars().all(char::is_alphanumeric) => Some(value),
+            _ => None,
+        }
+    }
+}
+
 dereference! { Tag::0 => [u8; 4] }
 
 impl fmt::Debug for Tag {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        use std::str;
-
-        match str::from_utf8(&self.0[..]) {
-            Ok(value) if value.chars().all(char::is_alphanumeric) => {
-                write!(formatter, "Tag({value})")
-            }
+        match self.as_str() {
+            Some(value) => write!(formatter, "Tag({value})"),
             _ => write!(formatter, "Tag(0x{:08X})", u32::from(*self)),
         }
     }
@@ -50,9 +56,15 @@ mod tests {
     use crate::Value;
 
     #[test]
+    fn as_str() {
+        assert_eq!(Tag(*b"true").as_str(), Some("true"));
+        assert_eq!(Tag([0, 1, 0, 0]).as_str(), None);
+    }
+
+    #[test]
     fn debug() {
-        assert_eq!(format!("{:?}", Tag(*b"true")), r#"Tag(true)"#);
-        assert_eq!(format!("{:?}", Tag([0, 1, 0, 0])), r#"Tag(0x00010000)"#);
+        assert_eq!(format!("{:?}", Tag(*b"true")), "Tag(true)");
+        assert_eq!(format!("{:?}", Tag([0, 1, 0, 0])), "Tag(0x00010000)");
     }
 
     #[test]
