@@ -22,14 +22,10 @@ table! {
     pub Header {
         version (u32) |_, tape| { // version
             let value = tape.take()?;
-            match value {
-                0x00010000 => {},
-                value => match &*Tag::from(value) {
-                    b"OTTO" | b"true" | b"typ1" => {},
-                    _ => raise!("found an unknown font format"),
-                },
+            match &*Tag::from(value) {
+                [0, 1, 0, 0] | b"OTTO" | b"true" | b"typ1" => Ok(value),
+                _ => raise!("found an unknown font format"),
             }
-            Ok(value)
         },
 
         table_count    (u16), // numTables
