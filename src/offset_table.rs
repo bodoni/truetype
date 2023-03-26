@@ -46,6 +46,8 @@ table! {
     }
 }
 
+dereference! { OffsetTable::records => [Record] }
+
 impl Record {
     /// Compute the checksum of the corresponding table.
     pub fn checksum<T: Tape>(&self, tape: &mut T) -> Result<u32> {
