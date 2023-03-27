@@ -28,15 +28,6 @@ pub enum Fixture {
 
 #[allow(dead_code)]
 impl Fixture {
-    pub fn all() -> &'static [Fixture] {
-        &[
-            Fixture::MPlus2P,
-            Fixture::OpenSans,
-            Fixture::SourceSerif,
-            Fixture::VeraMono,
-        ]
-    }
-
     pub fn file_name(&self) -> &'static str {
         match *self {
             Fixture::CSSTest => "csstest-basic-regular.ttf",

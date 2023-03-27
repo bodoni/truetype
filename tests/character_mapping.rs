@@ -76,7 +76,13 @@ fn encoding_format6() {
 fn encoding_formats() {
     use truetype::character_mapping::{CharacterMapping, Encoding};
 
-    for fixture in Fixture::all() {
+    let fixtures = &[
+        Fixture::MPlus2P,
+        Fixture::OpenSans,
+        Fixture::SourceSerif,
+        Fixture::VeraMono,
+    ];
+    for fixture in fixtures {
         let table = ok!(CharacterMapping::read(&mut support::setup(
             *fixture,
             Some("cmap"),
