@@ -36,3 +36,9 @@ pub use windows_metrics::WindowsMetrics;
 
 /// A glyph identifier.
 pub type GlyphID = u16;
+
+/// Check if a tag is recognized.
+#[inline]
+pub fn accept(tag: &Tag) -> bool {
+    offset_table::Header::accept(tag)
+}

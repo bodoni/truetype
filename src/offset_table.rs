@@ -22,10 +22,10 @@ table! {
     pub Header {
         version (u32) |_, tape| { // version
             let value = tape.take()?;
-            match &*Tag::from(value) {
-                [0, 1, 0, 0] | b"OTTO" | b"true" | b"typ1" => Ok(value),
-                _ => raise!("found an unknown font format"),
+            if !Header::accept(&value) {
+                raise!("found an unknown font format");
             }
+            Ok(value.into())
         },
 
         table_count    (u16), // numTables
@@ -47,6 +47,14 @@ table! {
 }
 
 dereference! { OffsetTable::records => [Record] }
+
+impl Header {
+    /// Check if a tag is recognized.
+    #[inline]
+    pub fn accept(tag: &Tag) -> bool {
+        matches!(&tag.0, [0, 1, 0, 0] | b"OTTO" | b"true" | b"typ1")
+    }
+}
 
 impl Record {
     /// Compute the checksum of the corresponding table.
