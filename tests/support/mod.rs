@@ -98,7 +98,7 @@ impl Fixture {
         }
     }
 
-    pub fn mappings(&self) -> Vec<HashMap<u32, u32>> {
+    pub fn mappings(&self) -> Vec<HashMap<u32, u16>> {
         let path = PathBuf::from("tests")
             .join("fixtures")
             .join("char_mappings")
@@ -124,7 +124,7 @@ pub fn setup(fixture: Fixture, table: Option<&str>) -> File {
     file
 }
 
-fn read_mapping(path: &Path) -> HashMap<u32, u32> {
+fn read_mapping(path: &Path) -> HashMap<u32, u16> {
     let reader = BufReader::new(ok!(File::open(path)));
     let mut mapping = HashMap::new();
     for line in reader.lines().map(|line| ok!(line)) {

@@ -2,7 +2,9 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/cmap
 
+use std::cmp::Eq;
 use std::collections::HashMap;
+use std::hash::Hash;
 
 use crate::{GlyphID, Result, Tape, Value};
 
@@ -196,23 +198,43 @@ impl Value for CharacterMapping {
 }
 
 impl Encoding0 {
+    /// Return the characters.
+    #[inline]
+    pub fn characters<T: From<u8>>(&self) -> Vec<(T, T)> {
+        vec![(T::from(0), T::from(255))]
+    }
+
     /// Return the mapping.
-    pub fn mapping(&self) -> HashMap<u8, GlyphID> {
-        let mut mapping = HashMap::new();
+    pub fn mapping<T: From<u8> + Eq + Hash>(&self) -> HashMap<T, GlyphID> {
+        let mut result = HashMap::new();
         for (i, glyph_id) in self.glyph_ids.iter().enumerate() {
-            mapping.insert(i as u8, *glyph_id as GlyphID);
+            result.insert(T::from(i as u8), *glyph_id as GlyphID);
         }
-        mapping
+        result
     }
 }
 
 impl Encoding4 {
+    /// Return the characters.
+    pub fn characters<T: From<u16>>(&self) -> Vec<(T, T)> {
+        let segment_count = self.segment_count();
+        if segment_count == 0 {
+            return Default::default();
+        }
+        (0..(segment_count - 1))
+            .map(|i| (T::from(self.start_codes[i]), T::from(self.end_codes[i])))
+            .collect()
+    }
+
     /// Return the mapping.
-    pub fn mapping(&self) -> HashMap<u16, GlyphID> {
+    pub fn mapping<T: From<u16> + Eq + Hash>(&self) -> HashMap<T, GlyphID> {
         use std::num::Wrapping;
 
         let segment_count = self.segment_count();
-        let mut mapping = HashMap::new();
+        if segment_count == 0 {
+            return Default::default();
+        }
+        let mut result = HashMap::new();
         for i in 0..(segment_count - 1) {
             let start_code = self.start_codes[i];
             let id_delta = self.id_deltas[i];
@@ -225,17 +247,17 @@ impl Encoding4 {
                 } else {
                     (Wrapping(id_delta) + Wrapping(j as i16)).0 as u16
                 };
-                mapping.insert(j, id);
+                result.insert(T::from(j), id);
             }
         }
-        mapping
+        result
     }
 
     fn glyph_id_count(&self) -> Result<usize> {
         macro_rules! reject(() => (raise!("found a malformed character-to-glyph mapping")));
         let segment_count = self.segment_count();
         if segment_count == 0 {
-            reject!();
+            return Ok(0);
         }
         if self.start_codes[segment_count - 1] != 0xffff
             || self.end_codes[segment_count - 1] != 0xffff
@@ -266,35 +288,62 @@ impl Encoding4 {
 }
 
 impl Encoding6 {
-    /// Return the mapping.
-    pub fn mapping(&self) -> HashMap<u16, GlyphID> {
-        let mut mapping = HashMap::new();
-        for (i, glyph_id) in self.glyph_ids.iter().enumerate() {
-            mapping.insert(self.first_code + i as u16, *glyph_id);
+    /// Return the characters.
+    pub fn characters<T: From<u16>>(&self) -> Vec<(T, T)> {
+        if self.entry_count == 0 {
+            return Default::default();
         }
-        mapping
+        vec![(
+            T::from(self.first_code),
+            T::from(self.first_code + self.entry_count - 1),
+        )]
+    }
+
+    /// Return the mapping.
+    pub fn mapping<T: From<u16> + Eq + Hash>(&self) -> HashMap<T, GlyphID> {
+        let mut result = HashMap::new();
+        for (i, glyph_id) in self.glyph_ids.iter().enumerate() {
+            result.insert(T::from(self.first_code + i as u16), *glyph_id);
+        }
+        result
     }
 }
 
 impl Encoding12 {
+    /// Return the characters.
+    pub fn characters<T: From<u32>>(&self) -> Vec<(T, T)> {
+        Default::default()
+    }
+
     /// Return the mapping.
-    pub fn mapping(&self) -> HashMap<u32, GlyphID> {
-        let mut mapping = HashMap::new();
+    pub fn mapping<T: From<u32> + Eq + Hash>(&self) -> HashMap<T, GlyphID> {
+        let mut result = HashMap::new();
         for group in &self.groups {
             for i in 0..(group.end_code - group.start_code + 1) {
-                mapping.insert(group.start_code + i, group.start_glyph_id as u16 + i as u16);
+                result.insert(
+                    T::from(group.start_code + i),
+                    group.start_glyph_id as u16 + i as u16,
+                );
             }
         }
-        mapping
+        result
     }
 }
 
 impl Encoding14 {
+    /// Return the characters.
+    ///
+    /// It is not implemented yet.
+    #[inline]
+    pub fn characters<T: From<u32>>(&self) -> Vec<(T, T)> {
+        Default::default()
+    }
+
     /// Return the mapping.
     ///
     /// It is not implemented yet.
     #[inline]
-    pub fn mapping(&self) -> HashMap<u32, GlyphID> {
+    pub fn mapping<T: From<u32> + Eq + Hash>(&self) -> HashMap<T, GlyphID> {
         Default::default()
     }
 }

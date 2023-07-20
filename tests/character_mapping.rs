@@ -7,16 +7,6 @@ use truetype::Value;
 
 use support::Fixture;
 
-macro_rules! convert(
-    ($mapping:expr) => ({
-        let mut mapping = std::collections::HashMap::new();
-        for (key, value) in $mapping {
-            mapping.insert(key as u32, value as u32);
-        }
-        mapping
-    });
-);
-
 #[test]
 fn header() {
     use truetype::CharacterMapping;
@@ -43,7 +33,7 @@ fn encoding_format4() {
             assert!(table.id_deltas.len() == 103);
             assert!(table.id_range_offsets.len() == 103);
             assert!(table.glyph_ids.len() == 353);
-            assert!(convert!(table.mapping()) == Fixture::SourceSerif.mappings()[0]);
+            assert!(table.mapping::<u32>() == Fixture::SourceSerif.mappings()[0]);
         }
         _ => unreachable!(),
     }
@@ -91,10 +81,10 @@ fn encoding_formats() {
         assert!(table.encodings.len() == expected_mappings.len());
         for (encoding, expected_mapping) in table.encodings.iter().zip(expected_mappings) {
             let mut mapping = match encoding {
-                &Encoding::Format0(ref encoding) => convert!(encoding.mapping()),
-                &Encoding::Format4(ref encoding) => convert!(encoding.mapping()),
-                &Encoding::Format6(ref encoding) => convert!(encoding.mapping()),
-                &Encoding::Format12(ref encoding) => convert!(encoding.mapping()),
+                &Encoding::Format0(ref encoding) => encoding.mapping::<u32>(),
+                &Encoding::Format4(ref encoding) => encoding.mapping::<u32>(),
+                &Encoding::Format6(ref encoding) => encoding.mapping::<u32>(),
+                &Encoding::Format12(ref encoding) => encoding.mapping::<u32>(),
                 &Encoding::Format14(_) => continue,
                 _ => unreachable!(),
             };
