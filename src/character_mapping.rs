@@ -330,24 +330,6 @@ impl Encoding12 {
     }
 }
 
-impl Encoding14 {
-    /// Return the characters.
-    ///
-    /// It is not implemented yet.
-    #[inline]
-    pub fn characters<T: From<u32>>(&self) -> Vec<(T, T)> {
-        Default::default()
-    }
-
-    /// Return the mapping.
-    ///
-    /// It is not implemented yet.
-    #[inline]
-    pub fn mapping<T: From<u32> + Eq + Hash>(&self) -> HashMap<T, GlyphID> {
-        Default::default()
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use std::io::Cursor;
