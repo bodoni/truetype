@@ -337,14 +337,16 @@ mod tests {
     use super::VariationSelector;
     use crate::Tape;
 
+    macro_rules! ok(($result:expr) => ($result.unwrap()));
+
     #[test]
     fn variation_selector_record() {
         let mut tape = Cursor::new(vec![
             0x02u8, 0x01, 0xFF, 0x00, 0x02, 0x01, 0xFF, 0xAA, 0x02, 0x01, 0xFF,
         ]);
-        let record = tape.take::<VariationSelector>().unwrap();
-        assert!(record.character == 0x000201FF);
-        assert!(record.default_uvs_offset == 0x000201FF);
-        assert!(record.non_default_uvs_offset == 0xAA0201FF);
+        let record = ok!(tape.take::<VariationSelector>());
+        assert_eq!(record.character, 0x000201FF);
+        assert_eq!(record.default_uvs_offset, 0x000201FF);
+        assert_eq!(record.non_default_uvs_offset, 0xAA0201FF);
     }
 }
