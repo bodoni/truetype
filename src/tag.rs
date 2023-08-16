@@ -7,11 +7,21 @@ use crate::{Result, Tape, Value};
 pub struct Tag(pub [u8; 4]);
 
 impl Tag {
-    /// Convert into a string.
+    /// Create an instance from a string if possible.
+    pub fn from_str(value: &str) -> Option<Self> {
+        if let Ok(value) = value.as_bytes().try_into() {
+            Some(Self(value))
+        } else {
+            None
+        }
+    }
+
+    /// Convert into a string if possible.
     pub fn as_str(&self) -> Option<&str> {
-        match std::str::from_utf8(&self.0[..]) {
-            Ok(value) if !value.chars().any(char::is_control) => Some(value),
-            _ => None,
+        if !self.0.iter().any(u8::is_ascii_control) {
+            std::str::from_utf8(&self.0[..]).ok()
+        } else {
+            None
         }
     }
 }
@@ -54,6 +64,13 @@ mod tests {
 
     use super::Tag;
     use crate::Value;
+
+    macro_rules! ok(($result:expr) => ($result.unwrap()));
+
+    #[test]
+    fn from_str() {
+        assert_eq!(ok!(Tag::from_str("true")), Tag(*b"true"));
+    }
 
     #[test]
     fn as_str() {
