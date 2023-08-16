@@ -8,6 +8,7 @@ pub struct Tag(pub [u8; 4]);
 
 impl Tag {
     /// Create an instance from a string if possible.
+    #[allow(clippy::should_implement_trait)]
     pub fn from_str(value: &str) -> Option<Self> {
         if let Ok(value) = value.as_bytes().try_into() {
             Some(Self(value))
