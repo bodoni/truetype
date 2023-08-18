@@ -1,6 +1,6 @@
 //! Parser for TrueType fonts.
 
-#[macro_use(choices, dereference, flags, raise, table)]
+#[macro_use(choices, dereference, flags, jump_take, raise, table)]
 extern crate typeface;
 
 pub mod character_mapping;

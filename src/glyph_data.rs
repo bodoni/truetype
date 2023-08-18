@@ -181,8 +181,7 @@ impl<'l> Walue<'l> for GlyphData {
                 glyphs.push(None);
                 continue;
             }
-            tape.jump(position + offsets[i])?;
-            match tape.take() {
+            match jump_take!(tape, position, offsets[i]) {
                 Ok(glyph) => glyphs.push(Some(glyph)),
                 Err(error) => reject!(i, error),
             }
