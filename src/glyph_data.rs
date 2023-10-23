@@ -108,10 +108,10 @@ flags! {
     }
 }
 
-#[cfg(not(feature = "ignore-invalid-composite-glyph-flags"))]
+#[cfg(not(feature = "ignore-invalid-component-flags"))]
 flags!(@read pub ComponentFlags(u16));
 
-#[cfg(feature = "ignore-invalid-composite-glyph-flags")]
+#[cfg(feature = "ignore-invalid-component-flags")]
 impl crate::Value for ComponentFlags {
     #[inline]
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {

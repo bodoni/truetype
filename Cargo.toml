@@ -1,6 +1,6 @@
 [package]
 name = "truetype"
-version = "0.43.2"
+version = "0.43.3"
 edition = "2021"
 license = "Apache-2.0/MIT"
 authors = [
@@ -22,7 +22,7 @@ typeface = "0.3.0"
 
 [features]
 # https://github.com/google/fonts/issues/5551
-ignore-invalid-composite-glyph-flags = []
+ignore-invalid-component-flags = []
 # https://github.com/google/fonts/issues/5805
 # https://github.com/web-platform-tests/wpt/issues/37713
 ignore-invalid-language-ids = []

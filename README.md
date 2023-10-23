@@ -12,7 +12,7 @@ will be licensed according to the terms given in [LICENSE.md](LICENSE.md).
 
 [opentype]: https://github.com/bodoni/opentype
 
-[build-img]: https://github.com/bodoni/truetype/workflows/build/badge.svg
+[build-img]: https://github.com/bodoni/truetype/actions/workflows/build.yml/badge.svg
 [build-url]: https://github.com/bodoni/truetype/actions/workflows/build.yml
 [documentation-img]: https://docs.rs/truetype/badge.svg
 [documentation-url]: https://docs.rs/truetype

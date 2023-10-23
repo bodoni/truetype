@@ -35,7 +35,7 @@ mod ubuntu_condensed {
     use truetype::{Value, Walue};
 
     #[test]
-    #[cfg_attr(not(feature = "ignore-invalid-composite-glyph-flags"), should_panic)]
+    #[cfg_attr(not(feature = "ignore-invalid-component-flags"), should_panic)]
     fn read() {
         use truetype::glyph_data::Description;
         use truetype::{FontHeader, GlyphData, GlyphMapping, MaximumProfile};
