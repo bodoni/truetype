@@ -115,7 +115,7 @@ flags!(@read pub ComponentFlags(u16));
 impl crate::Value for ComponentFlags {
     #[inline]
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
-        Ok(ComponentFlags(tape.take()?))
+        Ok(Self(tape.take()?))
     }
 }
 

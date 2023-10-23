@@ -1,5 +1,3 @@
-extern crate truetype;
-
 #[macro_use]
 mod support;
 

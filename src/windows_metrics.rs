@@ -195,6 +195,7 @@ table! {
 }
 
 flags! {
+    @base
     #[doc = "Embedding licensing-rights flags."]
     pub EmbeddingFlags(u16) {
         0b0000_0000_0000_0010 => has_restricted_license,
@@ -203,6 +204,17 @@ flags! {
         0b0000_0001_0000_0000 => forbids_subsetting,
         0b0000_0010_0000_0000 => is_bitmap_only,
         0b1111_1100_1111_0001 => is_invalid,
+    }
+}
+
+#[cfg(not(feature = "ignore-invalid-embedding-flags"))]
+flags!(@read pub EmbeddingFlags(u16));
+
+#[cfg(feature = "ignore-invalid-embedding-flags")]
+impl crate::Value for EmbeddingFlags {
+    #[inline]
+    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+        Ok(Self(tape.take()?))
     }
 }
 

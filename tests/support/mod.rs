@@ -17,6 +17,7 @@ macro_rules! setup(
 #[allow(dead_code)]
 #[derive(Clone, Copy, Debug)]
 pub enum Fixture {
+    BungeeColor,
     CSSTest,
     MPlus2P,
     OpenSans,
@@ -30,6 +31,7 @@ pub enum Fixture {
 impl Fixture {
     pub fn file_name(&self) -> &'static str {
         match *self {
+            Fixture::BungeeColor => "BungeeColor-Regular.ttf",
             Fixture::CSSTest => "csstest-basic-regular.ttf",
             Fixture::MPlus2P => "MPlus2P-Regular.ttf",
             Fixture::OpenSans => "OpenSans-Italic.ttf",
@@ -48,6 +50,10 @@ impl Fixture {
 
     pub fn offset(&self, table: &str) -> u64 {
         match *self {
+            Fixture::BungeeColor => match table {
+                "OS/2" => 376,
+                _ => unreachable!(),
+            },
             Fixture::CSSTest => match table {
                 "name" => 101988,
                 _ => unreachable!(),
