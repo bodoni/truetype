@@ -1,6 +1,6 @@
 [package]
 name = "truetype"
-version = "0.43.4"
+version = "0.43.5"
 edition = "2021"
 license = "Apache-2.0/MIT"
 authors = [

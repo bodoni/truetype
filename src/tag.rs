@@ -3,7 +3,7 @@ use std::fmt;
 use crate::{Result, Tape, Value};
 
 /// A tag.
-#[derive(Clone, Copy, Default, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct Tag(pub [u8; 4]);
 
 impl Tag {
