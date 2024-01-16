@@ -7,7 +7,7 @@ use crate::{Result, Tape};
 
 table! {
     #[doc = "An offset table."]
-    pub OffsetTable {
+    pub Offsets {
         header (Header),
 
         records (Vec<Record>) |this, tape| {
@@ -46,7 +46,7 @@ table! {
     }
 }
 
-dereference! { OffsetTable::records => [Record] }
+dereference! { Offsets::records => [Record] }
 
 impl Header {
     /// Check if a tag is recognized.

@@ -6,8 +6,8 @@ mod open_sans {
 
     #[test]
     fn read() {
-        use truetype::glyph_data::Description;
-        use truetype::{FontHeader, GlyphData, GlyphMapping, MaximumProfile};
+        use truetype::tables::glyph_data::Description;
+        use truetype::tables::{FontHeader, GlyphData, GlyphMapping, MaximumProfile};
 
         let parameter1 = ok!(FontHeader::read(&mut setup!(OpenSans, "head")));
         let parameter2 = ok!(MaximumProfile::read(&mut setup!(OpenSans, "maxp")));
@@ -35,8 +35,8 @@ mod ubuntu_condensed {
     #[test]
     #[cfg_attr(not(feature = "ignore-invalid-component-flags"), should_panic)]
     fn read() {
-        use truetype::glyph_data::Description;
-        use truetype::{FontHeader, GlyphData, GlyphMapping, MaximumProfile};
+        use truetype::tables::glyph_data::Description;
+        use truetype::tables::{FontHeader, GlyphData, GlyphMapping, MaximumProfile};
 
         let parameter1 = ok!(FontHeader::read(&mut setup!(UbuntuCondensed, "head")));
         let parameter2 = ok!(MaximumProfile::read(&mut setup!(UbuntuCondensed, "maxp")));
@@ -66,9 +66,9 @@ mod zen_loop {
 
     #[test]
     fn read() {
-        use truetype::glyph_data::Description;
-        use truetype::glyph_data::{Arguments, GlyphData, Options};
-        use truetype::{FontHeader, GlyphMapping, MaximumProfile};
+        use truetype::tables::glyph_data::Description;
+        use truetype::tables::glyph_data::{Arguments, GlyphData, Options};
+        use truetype::tables::{FontHeader, GlyphMapping, MaximumProfile};
 
         let parameter1 = ok!(FontHeader::read(&mut setup!(ZenLoop, "head")));
         let parameter2 = ok!(MaximumProfile::read(&mut setup!(ZenLoop, "maxp")));

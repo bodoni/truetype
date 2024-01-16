@@ -1,6 +1,6 @@
 //! The languages.
 
-use crate::naming_table::platform::PlatformID;
+use crate::tables::names::platform::PlatformID;
 use crate::{Result, Tape, Walue};
 
 /// A language identifier.

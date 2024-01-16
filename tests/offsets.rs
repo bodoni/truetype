@@ -1,12 +1,13 @@
 #[macro_use]
 mod support;
 
-use truetype::{OffsetTable, Value};
+use truetype::tables::Offsets;
+use truetype::Value;
 
 #[test]
 fn read() {
     let mut file = setup!(SourceSerif);
-    let OffsetTable { header, records } = ok!(OffsetTable::read(&mut file));
+    let Offsets { header, records } = ok!(Offsets::read(&mut file));
     assert_eq!(header.table_count, 12);
     assert_eq!(header.search_range, 8 * 16);
     assert_eq!(header.entry_selector, 3);

@@ -2,8 +2,8 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/hmtx
 
-use crate::horizontal_header::HorizontalHeader;
-use crate::maximum_profile::MaximumProfile;
+use crate::tables::horizontal_header::HorizontalHeader;
+use crate::tables::maximum_profile::MaximumProfile;
 use crate::{GlyphID, Result, Tape, Walue};
 
 table! {

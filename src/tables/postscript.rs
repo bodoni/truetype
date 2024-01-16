@@ -5,7 +5,7 @@
 use crate::number::q32;
 use crate::{Result, Tape, Value};
 
-/// PostScript table.
+/// PostScript.
 #[derive(Clone, Debug)]
 pub enum PostScript {
     /// Version 1.
@@ -17,7 +17,7 @@ pub enum PostScript {
 }
 
 table! {
-    #[doc = "PostScript table of version 1."]
+    #[doc = "A PostScript table of version 1."]
     #[derive(Copy)]
     pub PostScript1 {
         version             (q32), // version
@@ -33,7 +33,7 @@ table! {
 }
 
 table! {
-    #[doc = "PostScript table of version 2."]
+    #[doc = "A PostScript table of version 2."]
     pub PostScript2 {
         version             (q32), // version
         italic_angle        (q32), // italicAngle
@@ -56,7 +56,7 @@ table! {
     }
 }
 
-/// PostScript table of version 3.
+/// PostScript of version 3.
 pub type PostScript3 = PostScript1;
 
 impl Value for PostScript {

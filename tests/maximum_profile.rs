@@ -5,7 +5,7 @@ use truetype::Value;
 
 #[test]
 fn read() {
-    use truetype::MaximumProfile;
+    use truetype::tables::MaximumProfile;
 
     match ok!(MaximumProfile::read(&mut setup!(SourceSerif, "maxp"))) {
         MaximumProfile::Version0(ref table) => {

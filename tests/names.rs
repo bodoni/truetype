@@ -2,24 +2,24 @@
 mod support;
 
 mod css_test {
-    use truetype::naming_table::NamingTable;
+    use truetype::tables::names::Names;
     use truetype::Value;
 
     #[cfg_attr(not(feature = "ignore-invalid-language-ids"), should_panic)]
     #[test]
     fn read() {
-        let table = ok!(NamingTable::read(&mut setup!(CSSTest, "name")));
+        let table = ok!(Names::read(&mut setup!(CSSTest, "name")));
         let _: Vec<_> = table.iter().collect();
     }
 }
 
 mod open_sans {
-    use truetype::naming_table::{NameID, NamingTable};
+    use truetype::tables::names::{NameID, Names};
     use truetype::Value;
 
     #[test]
     fn read() {
-        let table = ok!(NamingTable::read(&mut setup!(OpenSans, "name")));
+        let table = ok!(Names::read(&mut setup!(OpenSans, "name")));
         let names: Vec<_> = table.iter().collect();
         let name_ids: Vec<_> = names.iter().map(|((name_id, _), _)| *name_id).collect();
         let language_tags: Vec<_> = names
@@ -109,12 +109,12 @@ mod open_sans {
 mod source_serif {
     use std::collections::HashMap;
 
-    use truetype::naming_table::{NameID, NamingTable};
+    use truetype::tables::names::{NameID, Names};
     use truetype::Value;
 
     #[test]
     fn read() {
-        let table = ok!(NamingTable::read(&mut setup!(SourceSerif, "name")));
+        let table = ok!(Names::read(&mut setup!(SourceSerif, "name")));
         let names: HashMap<_, _> = table
             .iter()
             .rev()

@@ -1,4 +1,4 @@
-use crate::naming_table::encoding::EncodingID;
+use crate::tables::names::encoding::EncodingID;
 
 #[inline]
 pub fn decode(data: &[u8], encoding_id: EncodingID) -> Option<String> {

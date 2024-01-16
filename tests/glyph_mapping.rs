@@ -5,7 +5,7 @@ use truetype::{Value, Walue};
 
 #[test]
 fn read() {
-    use truetype::{FontHeader, GlyphMapping, MaximumProfile};
+    use truetype::tables::{FontHeader, GlyphMapping, MaximumProfile};
 
     let parameter1 = ok!(FontHeader::read(&mut setup!(OpenSans, "head")));
     let parameter2 = ok!(MaximumProfile::read(&mut setup!(OpenSans, "maxp")));

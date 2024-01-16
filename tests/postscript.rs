@@ -5,7 +5,7 @@ use truetype::Value;
 
 #[test]
 fn read() {
-    use truetype::PostScript;
+    use truetype::tables::PostScript;
 
     match ok!(PostScript::read(&mut setup!(OpenSans, "post"))) {
         PostScript::Version2(ref table) => {

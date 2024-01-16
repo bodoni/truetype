@@ -17,16 +17,16 @@ use crate::{Result, Tape, Value};
 
 /// A naming table.
 #[derive(Clone, Debug)]
-pub enum NamingTable {
+pub enum Names {
     /// Format 0.
-    Format0(NamingTable0),
+    Format0(Names0),
     /// Format 1.
-    Format1(NamingTable1),
+    Format1(Names1),
 }
 
 table! {
     #[doc = "A naming table in format 0."]
-    pub NamingTable0 {
+    pub Names0 {
         format (u16), // format
         count  (u16), // count
         offset (u16), // stringOffset
@@ -43,7 +43,7 @@ table! {
 
 table! {
     #[doc = "A naming table in format 1."]
-    pub NamingTable1 {
+    pub Names1 {
         format (u16), // format
         count  (u16), // count
         offset (u16), // stringOffset
@@ -82,7 +82,7 @@ table! {
 }
 
 table! {
-    #[doc = "A language-tag record of a naming table."]
+    #[doc = "A language tag."]
     #[derive(Copy)]
     pub LanguageTag { // LangTagRecord
         size   (u16), // length
@@ -91,22 +91,20 @@ table! {
 }
 
 /// A type iterating over name entries.
-pub trait Names:
+pub trait Entries:
     Iterator<Item = ((NameID, Option<String>), Option<String>)> + DoubleEndedIterator
 {
 }
 
-impl NamingTable {
+impl Names {
     /// Iterate over all name entires.
     ///
     /// Each entry is represented by three quantities: a name ID and a language tag, which are
     /// given as a tuple, and the corresponding value.
-    pub fn iter(&self) -> impl Names + '_ {
+    pub fn iter(&self) -> impl Entries + '_ {
         let (records, language_tags, data) = match self {
-            NamingTable::Format0(ref table) => (&table.records, &[][..], &table.data),
-            NamingTable::Format1(ref table) => {
-                (&table.records, &table.language_tags[..], &table.data)
-            }
+            Names::Format0(ref table) => (&table.records, &[][..], &table.data),
+            Names::Format1(ref table) => (&table.records, &table.language_tags[..], &table.data),
         };
         let language_tags: Vec<_> = language_tags
             .iter()
@@ -130,17 +128,17 @@ impl NamingTable {
     }
 }
 
-impl Value for NamingTable {
+impl Value for Names {
     fn read<T: Tape>(tape: &mut T) -> Result<Self> {
         Ok(match tape.peek::<u16>()? {
-            0 => NamingTable::Format0(tape.take()?),
-            1 => NamingTable::Format1(tape.take()?),
+            0 => Names::Format0(tape.take()?),
+            1 => Names::Format1(tape.take()?),
             _ => raise!("found an unknown format of the naming table"),
         })
     }
 }
 
-impl NamingTable0 {
+impl Names0 {
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = tape.position()?;
         let above = 3 * 2 + self.records.len() * 6 * 2;
@@ -149,7 +147,7 @@ impl NamingTable0 {
     }
 }
 
-impl NamingTable1 {
+impl Names1 {
     fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = tape.position()?;
         let above = 4 * 2 + self.records.len() * 6 * 2 + self.language_tags.len() * 2 * 2;
@@ -175,7 +173,7 @@ impl Record {
     }
 }
 
-impl<T> Names for T where
+impl<T> Entries for T where
     T: Iterator<Item = ((NameID, Option<String>), Option<String>)> + DoubleEndedIterator
 {
 }

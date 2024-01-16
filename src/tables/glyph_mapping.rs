@@ -2,8 +2,8 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/loca
 
-use crate::font_header::FontHeader;
-use crate::maximum_profile::MaximumProfile;
+use crate::tables::font_header::FontHeader;
+use crate::tables::maximum_profile::MaximumProfile;
 use crate::{Result, Tape, Walue};
 
 /// A glyph-to-location mapping.

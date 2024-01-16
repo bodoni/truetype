@@ -1,8 +1,8 @@
 // Reference:
 // https://github.com/opentypejs/opentype.js/blob/c37fcdfbd89c1bd0aac1cecb2b287dfb7d00cee0/src/types.js#L463-L482
 
-use crate::naming_table::encoding::EncodingID;
-use crate::naming_table::language::{LanguageID, Macintosh};
+use crate::tables::names::encoding::EncodingID;
+use crate::tables::names::language::{LanguageID, Macintosh};
 
 #[rustfmt::skip]
 const MACINTOSH: [char; 128] = [

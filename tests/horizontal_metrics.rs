@@ -5,7 +5,7 @@ use truetype::{Value, Walue};
 
 #[test]
 fn read() {
-    use truetype::{HorizontalHeader, HorizontalMetrics, MaximumProfile};
+    use truetype::tables::{HorizontalHeader, HorizontalMetrics, MaximumProfile};
 
     let parameter1 = ok!(HorizontalHeader::read(&mut setup!(SourceSerif, "hhea")));
     let parameter2 = ok!(MaximumProfile::read(&mut setup!(SourceSerif, "maxp")));

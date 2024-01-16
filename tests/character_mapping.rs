@@ -7,7 +7,7 @@ use support::Fixture;
 
 #[test]
 fn header() {
-    use truetype::CharacterMapping;
+    use truetype::tables::CharacterMapping;
 
     let table = ok!(CharacterMapping::read(&mut setup!(SourceSerif, "cmap")));
     let table = &table.header;
@@ -17,7 +17,7 @@ fn header() {
 
 #[test]
 fn encoding_format4() {
-    use truetype::character_mapping::{CharacterMapping, Encoding};
+    use truetype::tables::character_mapping::{CharacterMapping, Encoding};
 
     let table = ok!(CharacterMapping::read(&mut setup!(SourceSerif, "cmap")));
     let tables = &table.encodings;
@@ -45,7 +45,7 @@ fn encoding_format4() {
 
 #[test]
 fn encoding_format6() {
-    use truetype::character_mapping::{CharacterMapping, Encoding};
+    use truetype::tables::character_mapping::{CharacterMapping, Encoding};
 
     let table = ok!(CharacterMapping::read(&mut setup!(SourceSerif, "cmap")));
     let tables = &table.encodings;
@@ -62,7 +62,7 @@ fn encoding_format6() {
 
 #[test]
 fn encoding_formats() {
-    use truetype::character_mapping::{CharacterMapping, Encoding};
+    use truetype::tables::character_mapping::{CharacterMapping, Encoding};
 
     let fixtures = &[
         Fixture::MPlus2P,
@@ -94,7 +94,7 @@ fn encoding_formats() {
 
 #[test]
 fn records() {
-    use truetype::CharacterMapping;
+    use truetype::tables::CharacterMapping;
 
     let table = ok!(CharacterMapping::read(&mut setup!(SourceSerif, "cmap")));
     let tables = &table.records;

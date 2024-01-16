@@ -5,7 +5,7 @@ use truetype::Value;
 
 #[test]
 fn read() {
-    use truetype::HorizontalHeader;
+    use truetype::tables::HorizontalHeader;
 
     let table = ok!(HorizontalHeader::read(&mut setup!(SourceSerif, "hhea")));
     assert!(table.ascender == 918);

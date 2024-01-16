@@ -1,7 +1,8 @@
 #[macro_use]
 mod support;
 
-use truetype::{FontHeader, Value};
+use truetype::tables::FontHeader;
+use truetype::Value;
 
 #[test]
 fn read() {
