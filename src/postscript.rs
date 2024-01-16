@@ -1,11 +1,11 @@
-//! The [PostScript information][1].
+//! The [PostScript table][1].
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/post
 
 use crate::number::q32;
 use crate::{Result, Tape, Value};
 
-/// PostScript information.
+/// PostScript table.
 #[derive(Clone, Debug)]
 pub enum PostScript {
     /// Version 1.
@@ -17,7 +17,7 @@ pub enum PostScript {
 }
 
 table! {
-    #[doc = "PostScript information of version 1."]
+    #[doc = "PostScript table of version 1."]
     #[derive(Copy)]
     pub PostScript1 {
         version             (q32), // version
@@ -33,7 +33,7 @@ table! {
 }
 
 table! {
-    #[doc = "PostScript information of version 2."]
+    #[doc = "PostScript table of version 2."]
     pub PostScript2 {
         version             (q32), // version
         italic_angle        (q32), // italicAngle
@@ -56,7 +56,7 @@ table! {
     }
 }
 
-/// PostScript information of version 3.
+/// PostScript table of version 3.
 pub type PostScript3 = PostScript1;
 
 impl Value for PostScript {
@@ -65,7 +65,7 @@ impl Value for PostScript {
             q32(0x00010000) => PostScript::Version1(tape.take()?),
             q32(0x00020000) => PostScript::Version2(tape.take()?),
             q32(0x00030000) => PostScript::Version3(tape.take()?),
-            _ => raise!("found an unknown version of the PostScript information"),
+            _ => raise!("found an unknown version of the PostScript table"),
         })
     }
 }
