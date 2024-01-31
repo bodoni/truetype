@@ -10,9 +10,9 @@ pub enum LanguageID {
     Unicode,
     Macintosh(Macintosh),
     Windows(Windows),
-    Other(usize),
+    Other(u16),
     #[cfg(feature = "ignore-invalid-language-ids")]
-    Invalid(usize),
+    Invalid(u16),
 }
 
 // Reference:
@@ -359,22 +359,35 @@ impl crate::walue::Read<'static> for LanguageID {
 
     fn read<T: crate::tape::Read>(tape: &mut T, platform_id: PlatformID) -> Result<Self> {
         match (platform_id, tape.take::<u16>()?) {
-            (PlatformID::Unicode, _) => Ok(LanguageID::Unicode),
+            (PlatformID::Unicode, _) => Ok(Self::Unicode),
             (PlatformID::Macintosh, value) if value < 0x8000 => match value.try_into() {
-                Ok(value) => Ok(LanguageID::Macintosh(value)),
+                Ok(value) => Ok(Self::Macintosh(value)),
                 #[cfg(feature = "ignore-invalid-language-ids")]
-                Err(_) => Ok(LanguageID::Invalid(value as usize)),
+                Err(_) => Ok(Self::Invalid(value)),
                 #[cfg(not(feature = "ignore-invalid-language-ids"))]
                 Err(error) => Err(error),
             },
             (PlatformID::Windows, value) if value < 0x8000 => match value.try_into() {
-                Ok(value) => Ok(LanguageID::Windows(value)),
+                Ok(value) => Ok(Self::Windows(value)),
                 #[cfg(feature = "ignore-invalid-language-ids")]
-                Err(_) => Ok(LanguageID::Invalid(value as usize)),
+                Err(_) => Ok(Self::Invalid(value)),
                 #[cfg(not(feature = "ignore-invalid-language-ids"))]
                 Err(error) => Err(error),
             },
-            (_, value) => Ok(LanguageID::Other(value as usize - 0x8000)),
+            (_, value) => Ok(Self::Other(value - 0x8000)),
+        }
+    }
+}
+
+impl crate::value::Write for LanguageID {
+    fn write<T: crate::tape::Write>(&self, tape: &mut T) -> Result<()> {
+        match self {
+            Self::Unicode => tape.give(&0u16),
+            Self::Macintosh(value) => tape.give(value),
+            Self::Windows(value) => tape.give(value),
+            Self::Other(value) => tape.give(&(value + 0x8000)),
+            #[cfg(feature = "ignore-invalid-language-ids")]
+            Self::Invalid(value) => tape.give(value),
         }
     }
 }

@@ -82,6 +82,7 @@ table! {
 }
 
 table! {
+    @write
     #[doc = "A language tag."]
     #[derive(Copy)]
     pub LanguageTag { // LangTagRecord
@@ -163,7 +164,7 @@ impl Record {
             LanguageID::Unicode => None,
             LanguageID::Macintosh(value) => Some(<&'static str>::from(value).into()),
             LanguageID::Windows(value) => Some(<&'static str>::from(value).into()),
-            LanguageID::Other(value) => match language_tags.get(value) {
+            LanguageID::Other(value) => match language_tags.get(value as usize) {
                 Some(Some(value)) => Some(value.clone()),
                 _ => None,
             },
