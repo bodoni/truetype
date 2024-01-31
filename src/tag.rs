@@ -39,23 +39,30 @@ impl fmt::Debug for Tag {
 }
 
 impl From<u32> for Tag {
-    #[inline(always)]
+    #[inline]
     fn from(value: u32) -> Self {
         Tag(u32::from_be(value).to_ne_bytes())
     }
 }
 
 impl From<Tag> for u32 {
-    #[inline(always)]
+    #[inline]
     fn from(tag: Tag) -> Self {
         u32::from_be_bytes(tag.0)
     }
 }
 
 impl crate::value::Read for Tag {
-    #[inline(always)]
+    #[inline]
     fn read<T: crate::tape::Read>(tape: &mut T) -> Result<Self> {
         Ok(Tag(tape.take()?))
+    }
+}
+
+impl crate::value::Write for Tag {
+    #[inline]
+    fn write<T: crate::tape::Write>(&self, tape: &mut T) -> Result<()> {
+        tape.give(&self.0)
     }
 }
 
