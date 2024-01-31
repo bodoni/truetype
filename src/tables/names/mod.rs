@@ -25,6 +25,7 @@ pub enum Names {
 }
 
 table! {
+    @write
     #[doc = "A naming table in format 0."]
     pub Names0 {
         format (u16), // format
@@ -42,6 +43,7 @@ table! {
 }
 
 table! {
+    @write
     #[doc = "A naming table in format 1."]
     pub Names1 {
         format (u16), // format
@@ -65,6 +67,7 @@ table! {
 }
 
 table! {
+    @write
     #[doc = "A record of a naming table."]
     #[derive(Copy)]
     pub Record { // NameRecord
@@ -104,8 +107,8 @@ impl Names {
     /// given as a tuple, and the corresponding value.
     pub fn iter(&self) -> impl Entries + '_ {
         let (records, language_tags, data) = match self {
-            Names::Format0(ref table) => (&table.records, &[][..], &table.data),
-            Names::Format1(ref table) => (&table.records, &table.language_tags[..], &table.data),
+            Self::Format0(ref table) => (&table.records, &[][..], &table.data),
+            Self::Format1(ref table) => (&table.records, &table.language_tags[..], &table.data),
         };
         let language_tags: Vec<_> = language_tags
             .iter()
@@ -132,10 +135,19 @@ impl Names {
 impl crate::value::Read for Names {
     fn read<T: crate::tape::Read>(tape: &mut T) -> Result<Self> {
         Ok(match tape.peek::<u16>()? {
-            0 => Names::Format0(tape.take()?),
-            1 => Names::Format1(tape.take()?),
+            0 => Self::Format0(tape.take()?),
+            1 => Self::Format1(tape.take()?),
             _ => raise!("found an unknown format of the naming table"),
         })
+    }
+}
+
+impl crate::value::Write for Names {
+    fn write<T: crate::tape::Write>(&self, tape: &mut T) -> Result<()> {
+        match self {
+            Self::Format0(value) => tape.give(value),
+            Self::Format1(value) => tape.give(value),
+        }
     }
 }
 
