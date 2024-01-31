@@ -8,7 +8,7 @@ authors = [
     "Ivan Ukhov <ivan.ukhov@gmail.com>",
     "Vladimir Vukicevic <vladimir@pobox.com>",
 ]
-description = "The package provides a parser for TrueType fonts."
+description = "The package provides a builder and parser of TrueType fonts."
 documentation = "https://docs.rs/truetype"
 homepage = "https://github.com/bodoni/truetype"
 repository = "https://github.com/bodoni/truetype"

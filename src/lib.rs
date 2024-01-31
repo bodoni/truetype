@@ -1,4 +1,4 @@
-//! Parser for TrueType fonts.
+//! Builder and parser of TrueType fonts.
 
 #[macro_use(choices, dereference, flags, jump_take, raise, table)]
 extern crate typeface;
