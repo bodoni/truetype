@@ -1,6 +1,6 @@
 [package]
 name = "truetype"
-version = "0.44.1"
+version = "0.45.0"
 edition = "2021"
 license = "Apache-2.0/MIT"
 authors = [
@@ -18,7 +18,7 @@ keywords = ["font", "truetype", "typeface", "typography"]
 exclude = ["tests/fixtures/*"]
 
 [dependencies]
-typeface = "0.3.0"
+typeface = "0.4.0"
 
 [features]
 # https://github.com/google/fonts/issues/5551
