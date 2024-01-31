@@ -3,7 +3,7 @@ mod support;
 
 mod bungee_color {
     use truetype::tables::WindowsMetrics;
-    use truetype::Value;
+    use truetype::value::Read;
 
     #[test]
     #[cfg_attr(not(feature = "ignore-invalid-component-flags"), should_panic)]
@@ -17,7 +17,8 @@ mod bungee_color {
 
 mod source_serif {
     use truetype::tables::WindowsMetrics;
-    use truetype::{Tag, Value};
+    use truetype::value::Read;
+    use truetype::Tag;
 
     #[test]
     fn read() {

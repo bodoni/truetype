@@ -2,7 +2,8 @@
 mod support;
 
 mod open_sans {
-    use truetype::{Value, Walue};
+    use truetype::value::Read as ValueRead;
+    use truetype::walue::Read as WalueRead;
 
     #[test]
     fn read() {
@@ -30,7 +31,8 @@ mod open_sans {
 }
 
 mod ubuntu_condensed {
-    use truetype::{Value, Walue};
+    use truetype::value::Read as ValueRead;
+    use truetype::walue::Read as WalueRead;
 
     #[test]
     #[cfg_attr(not(feature = "ignore-invalid-component-flags"), should_panic)]
@@ -62,7 +64,8 @@ mod ubuntu_condensed {
 }
 
 mod zen_loop {
-    use truetype::{Value, Walue};
+    use truetype::value::Read as ValueRead;
+    use truetype::walue::Read as WalueRead;
 
     #[test]
     fn read() {

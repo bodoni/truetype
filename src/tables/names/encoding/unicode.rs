@@ -1,4 +1,7 @@
+use std::io::Cursor;
+
 use crate::tables::names::encoding::EncodingID;
+use crate::tape::Read;
 
 #[inline]
 pub fn decode(data: &[u8], encoding_id: EncodingID) -> Option<String> {
@@ -13,9 +16,6 @@ pub fn decode(data: &[u8], encoding_id: EncodingID) -> Option<String> {
 }
 
 pub fn decode_utf16(data: &[u8]) -> Option<String> {
-    use std::io::Cursor;
-    use typeface::Tape;
-
     let mut tape = Cursor::new(data);
     match tape.take_given::<Vec<_>>(data.len() / 2) {
         Ok(data) => match String::from_utf16(&data) {

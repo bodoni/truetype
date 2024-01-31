@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{Result, Tape, Value};
+use crate::Result;
 
 /// A tag.
 #[derive(Clone, Copy, Default, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -52,9 +52,9 @@ impl From<Tag> for u32 {
     }
 }
 
-impl Value for Tag {
+impl crate::value::Read for Tag {
     #[inline(always)]
-    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+    fn read<T: crate::tape::Read>(tape: &mut T) -> Result<Self> {
         Ok(Tag(tape.take()?))
     }
 }
@@ -64,7 +64,7 @@ mod tests {
     use std::io::Cursor;
 
     use super::Tag;
-    use crate::Value;
+    use crate::value::Read;
 
     macro_rules! ok(($result:expr) => ($result.unwrap()));
 

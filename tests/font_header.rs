@@ -2,7 +2,7 @@
 mod support;
 
 use truetype::tables::FontHeader;
-use truetype::Value;
+use truetype::value::Read;
 
 #[test]
 fn read() {

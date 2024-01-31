@@ -3,7 +3,7 @@
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/otff
 
 use crate::tag::Tag;
-use crate::{Result, Tape};
+use crate::Result;
 
 table! {
     #[doc = "An offset table."]
@@ -58,7 +58,7 @@ impl Header {
 
 impl Record {
     /// Compute the checksum of the corresponding table.
-    pub fn checksum<T: Tape>(&self, tape: &mut T) -> Result<u32> {
+    pub fn checksum<T: crate::tape::Read>(&self, tape: &mut T) -> Result<u32> {
         let head = self.tag.0 == *b"head";
         let count = ((self.size + 4 - 1) & !(4 - 1)) / 4;
         let excess = 4 * count - self.size;

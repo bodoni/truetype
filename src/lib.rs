@@ -8,7 +8,7 @@ pub mod tables;
 mod number;
 mod tag;
 
-pub use typeface::{Error, Result, Tape, Value, Walue};
+pub use typeface::{tape, value, walue, Error, Result};
 
 pub use number::{q16, q32};
 pub use tag::Tag;

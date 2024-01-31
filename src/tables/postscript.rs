@@ -3,7 +3,7 @@
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/post
 
 use crate::number::q32;
-use crate::{Result, Tape, Value};
+use crate::Result;
 
 /// A PostScript table.
 #[derive(Clone, Debug)]
@@ -59,8 +59,8 @@ table! {
 /// A PostScript table of version 3.
 pub type PostScript3 = PostScript1;
 
-impl Value for PostScript {
-    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+impl crate::value::Read for PostScript {
+    fn read<T: crate::tape::Read>(tape: &mut T) -> Result<Self> {
         Ok(match tape.peek::<q32>()? {
             q32(0x00010000) => PostScript::Version1(tape.take()?),
             q32(0x00020000) => PostScript::Version2(tape.take()?),
@@ -70,7 +70,7 @@ impl Value for PostScript {
     }
 }
 
-fn read_pascal_strings<T: Tape>(tape: &mut T, indices: &[u16]) -> Result<Vec<String>> {
+fn read_pascal_strings<T: crate::tape::Read>(tape: &mut T, indices: &[u16]) -> Result<Vec<String>> {
     let count = indices.iter().fold(
         0,
         |n, &i| if (258..=32767).contains(&i) { n + 1 } else { n },

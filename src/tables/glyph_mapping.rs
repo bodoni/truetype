@@ -4,7 +4,7 @@
 
 use crate::tables::font_header::FontHeader;
 use crate::tables::maximum_profile::MaximumProfile;
-use crate::{Result, Tape, Walue};
+use crate::Result;
 
 /// A glyph-to-location mapping.
 #[derive(Clone, Debug)]
@@ -15,10 +15,13 @@ pub enum GlyphMapping {
     Offsets(Vec<u32>),
 }
 
-impl<'l> Walue<'l> for GlyphMapping {
+impl<'l> crate::walue::Read<'l> for GlyphMapping {
     type Parameter = (&'l FontHeader, &'l MaximumProfile);
 
-    fn read<T: Tape>(tape: &mut T, (header, profile): Self::Parameter) -> Result<Self> {
+    fn read<T: crate::tape::Read>(
+        tape: &mut T,
+        (header, profile): Self::Parameter,
+    ) -> Result<Self> {
         let glyph_count = profile.glyph_count();
         match header.glyph_mapping_format {
             0 => Ok(GlyphMapping::HalfOffsets(tape.take_given(glyph_count + 1)?)),

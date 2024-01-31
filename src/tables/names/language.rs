@@ -1,7 +1,7 @@
 //! The languages.
 
 use crate::tables::names::platform::PlatformID;
-use crate::{Result, Tape, Walue};
+use crate::Result;
 
 /// A language identifier.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
@@ -354,10 +354,10 @@ choices! {
     }
 }
 
-impl Walue<'static> for LanguageID {
+impl crate::walue::Read<'static> for LanguageID {
     type Parameter = PlatformID;
 
-    fn read<T: Tape>(tape: &mut T, platform_id: PlatformID) -> Result<Self> {
+    fn read<T: crate::tape::Read>(tape: &mut T, platform_id: PlatformID) -> Result<Self> {
         match (platform_id, tape.take::<u16>()?) {
             (PlatformID::Unicode, _) => Ok(LanguageID::Unicode),
             (PlatformID::Macintosh, value) if value < 0x8000 => match value.try_into() {

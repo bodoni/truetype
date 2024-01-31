@@ -4,7 +4,7 @@
 
 use crate::number::q16;
 use crate::tables::glyph_mapping::GlyphMapping;
-use crate::{GlyphID, Result, Tape, Walue};
+use crate::{GlyphID, Result};
 
 /// Glyph data.
 #[derive(Clone, Debug)]
@@ -89,7 +89,7 @@ flags! {
 }
 
 flags! {
-    @base
+    @define
     #[doc = "Component flags."]
     pub ComponentFlags(u16) { // Component Glyph Flags
         0b0000_0000_0000_0001 => are_arguments_words,
@@ -112,9 +112,9 @@ flags! {
 flags!(@read pub ComponentFlags(u16));
 
 #[cfg(feature = "ignore-invalid-component-flags")]
-impl crate::Value for ComponentFlags {
+impl crate::value::Read for ComponentFlags {
     #[inline]
-    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+    fn read<T: crate::tape::Read>(tape: &mut T) -> Result<Self> {
         Ok(Self(tape.take()?))
     }
 }
@@ -144,10 +144,10 @@ pub enum Options {
 
 dereference! { GlyphData::0 => [Option<Glyph>] }
 
-impl<'l> Walue<'l> for GlyphData {
+impl<'l> crate::walue::Read<'l> for GlyphData {
     type Parameter = &'l GlyphMapping;
 
-    fn read<T: Tape>(tape: &mut T, mapping: &GlyphMapping) -> Result<Self> {
+    fn read<T: crate::tape::Read>(tape: &mut T, mapping: &GlyphMapping) -> Result<Self> {
         macro_rules! reject(
             () => (
                 raise!("found a malformed glyph-to-location mapping")
@@ -200,10 +200,10 @@ impl Default for Description {
     }
 }
 
-impl Walue<'static> for Description {
+impl crate::walue::Read<'static> for Description {
     type Parameter = i16;
 
-    fn read<T: Tape>(tape: &mut T, contour_count: i16) -> Result<Self> {
+    fn read<T: crate::tape::Read>(tape: &mut T, contour_count: i16) -> Result<Self> {
         if contour_count < -1 {
             raise!("found a malformed glyph");
         }
@@ -236,10 +236,10 @@ impl Walue<'static> for Description {
     }
 }
 
-impl Walue<'static> for SimpleDescription {
+impl crate::walue::Read<'static> for SimpleDescription {
     type Parameter = usize;
 
-    fn read<T: Tape>(tape: &mut T, contour_count: usize) -> Result<Self> {
+    fn read<T: crate::tape::Read>(tape: &mut T, contour_count: usize) -> Result<Self> {
         macro_rules! reject(() => (raise!("found a malformed glyph description")));
 
         let end_points = tape.take_given::<Vec<u16>>(contour_count)?;
@@ -310,10 +310,10 @@ impl Default for Arguments {
     }
 }
 
-impl Walue<'static> for Arguments {
+impl crate::walue::Read<'static> for Arguments {
     type Parameter = ComponentFlags;
 
-    fn read<T: Tape>(tape: &mut T, flags: ComponentFlags) -> Result<Self> {
+    fn read<T: crate::tape::Read>(tape: &mut T, flags: ComponentFlags) -> Result<Self> {
         match (flags.are_arguments_words(), flags.are_arguments_xy()) {
             (true, true) => {
                 let x = tape.take::<i16>()?;
@@ -339,10 +339,10 @@ impl Walue<'static> for Arguments {
     }
 }
 
-impl Walue<'static> for Options {
+impl crate::walue::Read<'static> for Options {
     type Parameter = ComponentFlags;
 
-    fn read<T: Tape>(tape: &mut T, flags: ComponentFlags) -> Result<Self> {
+    fn read<T: crate::tape::Read>(tape: &mut T, flags: ComponentFlags) -> Result<Self> {
         if flags.has_scalar_scale() {
             Ok(Options::Scalar(tape.take()?))
         } else if flags.has_vector_scale() {

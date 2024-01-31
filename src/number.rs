@@ -1,5 +1,3 @@
-use crate::{Result, Tape, Value};
-
 macro_rules! implement {
     ($(#[$attribute:meta])* pub $name:ident($kind:ty | $fraction:literal)) => {
         $(#[$attribute])*
@@ -14,9 +12,9 @@ macro_rules! implement {
             }
         }
 
-        impl Value for $name {
+        impl crate::value::Read for $name {
             #[inline]
-            fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+            fn read<T: crate::tape::Read>(tape: &mut T) -> $crate::Result<Self> {
                 Ok($name(tape.take()?))
             }
         }

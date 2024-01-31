@@ -3,7 +3,7 @@
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/os2
 
 use crate::tag::Tag;
-use crate::{Result, Tape, Value};
+use crate::Result;
 
 /// OS/2 and Windows metrics.
 #[derive(Clone, Copy, Debug)]
@@ -195,7 +195,7 @@ table! {
 }
 
 flags! {
-    @base
+    @define
     #[doc = "Embedding licensing-rights flags."]
     pub EmbeddingFlags(u16) {
         0b0000_0000_0000_0010 => has_restricted_license,
@@ -211,9 +211,9 @@ flags! {
 flags!(@read pub EmbeddingFlags(u16));
 
 #[cfg(feature = "ignore-invalid-embedding-flags")]
-impl crate::Value for EmbeddingFlags {
+impl crate::value::Read for EmbeddingFlags {
     #[inline]
-    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+    fn read<T: crate::tape::Read>(tape: &mut T) -> Result<Self> {
         Ok(Self(tape.take()?))
     }
 }
@@ -235,8 +235,8 @@ flags! {
     }
 }
 
-impl Value for WindowsMetrics {
-    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+impl crate::value::Read for WindowsMetrics {
+    fn read<T: crate::tape::Read>(tape: &mut T) -> Result<Self> {
         Ok(match tape.peek::<u16>()? {
             0 => WindowsMetrics::Version0(tape.take()?),
             1 => WindowsMetrics::Version1(tape.take()?),

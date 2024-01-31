@@ -2,7 +2,7 @@
 mod support;
 
 use truetype::tables::Offsets;
-use truetype::Value;
+use truetype::value::Read;
 
 #[test]
 fn read() {

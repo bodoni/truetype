@@ -4,7 +4,7 @@
 
 use crate::tables::horizontal_header::HorizontalHeader;
 use crate::tables::maximum_profile::MaximumProfile;
-use crate::{GlyphID, Result, Tape, Walue};
+use crate::{GlyphID, Result};
 
 table! {
     @define
@@ -52,10 +52,13 @@ impl HorizontalMetrics {
     }
 }
 
-impl<'l> Walue<'l> for HorizontalMetrics {
+impl<'l> crate::walue::Read<'l> for HorizontalMetrics {
     type Parameter = (&'l HorizontalHeader, &'l MaximumProfile);
 
-    fn read<T: Tape>(tape: &mut T, (header, profile): Self::Parameter) -> Result<Self> {
+    fn read<T: crate::tape::Read>(
+        tape: &mut T,
+        (header, profile): Self::Parameter,
+    ) -> Result<Self> {
         let metric_count = header.horizontal_metric_count as usize;
         let glyph_count = profile.glyph_count();
         if metric_count == 0 || metric_count > glyph_count {

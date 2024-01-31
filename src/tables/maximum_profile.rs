@@ -3,7 +3,7 @@
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/maxp
 
 use crate::number::q32;
-use crate::{Result, Tape, Value};
+use crate::Result;
 
 /// A maximum profile.
 #[derive(Clone, Debug)]
@@ -55,8 +55,8 @@ impl MaximumProfile {
     }
 }
 
-impl Value for MaximumProfile {
-    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+impl crate::value::Read for MaximumProfile {
+    fn read<T: crate::tape::Read>(tape: &mut T) -> Result<Self> {
         Ok(match tape.peek::<q32>()? {
             q32(0x00005000) => MaximumProfile::Version0(tape.take()?),
             q32(0x00010000) => MaximumProfile::Version1(tape.take()?),

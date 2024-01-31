@@ -3,7 +3,7 @@ mod support;
 
 mod css_test {
     use truetype::tables::names::Names;
-    use truetype::Value;
+    use truetype::value::Read;
 
     #[cfg_attr(not(feature = "ignore-invalid-language-ids"), should_panic)]
     #[test]
@@ -15,7 +15,7 @@ mod css_test {
 
 mod open_sans {
     use truetype::tables::names::{NameID, Names};
-    use truetype::Value;
+    use truetype::value::Read;
 
     #[test]
     fn read() {
@@ -110,7 +110,7 @@ mod source_serif {
     use std::collections::HashMap;
 
     use truetype::tables::names::{NameID, Names};
-    use truetype::Value;
+    use truetype::value::Read;
 
     #[test]
     fn read() {

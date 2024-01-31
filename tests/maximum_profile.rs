@@ -1,7 +1,7 @@
 #[macro_use]
 mod support;
 
-use truetype::Value;
+use truetype::value::Read;
 
 #[test]
 fn read() {

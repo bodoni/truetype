@@ -13,7 +13,7 @@ pub use language::LanguageID;
 pub use name::NameID;
 pub use platform::PlatformID;
 
-use crate::{Result, Tape, Value};
+use crate::Result;
 
 /// A naming table.
 #[derive(Clone, Debug)]
@@ -128,8 +128,8 @@ impl Names {
     }
 }
 
-impl Value for Names {
-    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+impl crate::value::Read for Names {
+    fn read<T: crate::tape::Read>(tape: &mut T) -> Result<Self> {
         Ok(match tape.peek::<u16>()? {
             0 => Names::Format0(tape.take()?),
             1 => Names::Format1(tape.take()?),
@@ -139,7 +139,7 @@ impl Value for Names {
 }
 
 impl Names0 {
-    fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
+    fn read_data<T: crate::tape::Read>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = tape.position()?;
         let above = 3 * 2 + self.records.len() * 6 * 2;
         tape.jump(current - above as u64 + self.offset as u64)?;
@@ -148,7 +148,7 @@ impl Names0 {
 }
 
 impl Names1 {
-    fn read_data<T: Tape>(&self, tape: &mut T) -> Result<Vec<u8>> {
+    fn read_data<T: crate::tape::Read>(&self, tape: &mut T) -> Result<Vec<u8>> {
         let current = tape.position()?;
         let above = 4 * 2 + self.records.len() * 6 * 2 + self.language_tags.len() * 2 * 2;
         tape.jump(current - above as u64 + self.offset as u64)?;

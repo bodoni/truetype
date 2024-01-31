@@ -6,7 +6,7 @@ use std::cmp::Eq;
 use std::collections::HashMap;
 use std::hash::Hash;
 
-use crate::{GlyphID, Result, Tape, Value};
+use crate::{GlyphID, Result};
 
 /// A character-to-glyph mapping.
 #[derive(Clone, Debug)]
@@ -169,8 +169,8 @@ table! {
     }
 }
 
-impl Value for CharacterMapping {
-    fn read<T: Tape>(tape: &mut T) -> Result<Self> {
+impl crate::value::Read for CharacterMapping {
+    fn read<T: crate::tape::Read>(tape: &mut T) -> Result<Self> {
         let position = tape.position()?;
         let header = tape.take::<Header>()?;
         let mut records = vec![];
@@ -335,7 +335,7 @@ mod tests {
     use std::io::Cursor;
 
     use super::VariationSelector;
-    use crate::Tape;
+    use crate::tape::Read;
 
     macro_rules! ok(($result:expr) => ($result.unwrap()));
 

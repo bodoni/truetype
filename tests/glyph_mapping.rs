@@ -1,7 +1,8 @@
 #[macro_use]
 mod support;
 
-use truetype::{Value, Walue};
+use truetype::value::Read as ValueRead;
+use truetype::walue::Read as WalueRead;
 
 #[test]
 fn read() {
