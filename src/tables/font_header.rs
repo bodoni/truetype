@@ -5,6 +5,7 @@
 use crate::number::q32;
 
 table! {
+    @write
     #[doc = "A font header."]
     #[derive(Copy)]
     pub FontHeader {

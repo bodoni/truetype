@@ -18,6 +18,13 @@ macro_rules! implement {
                 Ok($name(tape.take()?))
             }
         }
+
+        impl crate::value::Write for $name {
+            #[inline]
+            fn write<T: crate::tape::Write>(&self, tape: &mut T) -> $crate::Result<()> {
+                tape.give(&self.0)
+            }
+        }
     }
 }
 
