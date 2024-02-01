@@ -1,9 +1,16 @@
 // Reference:
 // https://github.com/opentypejs/opentype.js/blob/c37fcdfbd89c1bd0aac1cecb2b287dfb7d00cee0/src/types.js#L463-L482
 
+use std::collections::HashMap;
+
 use crate::tables::names::encoding::EncodingID;
 use crate::tables::names::language::{LanguageID, Macintosh};
 use crate::Result;
+
+#[derive(Default)]
+pub struct Context {
+    mapping: HashMap<(u16, u16), HashMap<char, u8>>,
+}
 
 #[rustfmt::skip]
 const MACINTOSH: [char; 128] = [
@@ -145,23 +152,53 @@ const X_MAC_TURKISH: [char; 128] = [
     '', 'ˆ', '˜', '¯', '˘', '˙', '˚', '¸', '˝', '˛', 'ˇ',
 ];
 
-pub fn decode(bytes: &[u8], encoding_id: EncodingID, language_id: LanguageID) -> Option<String> {
+pub fn decode(data: &[u8], encoding_id: EncodingID, language_id: LanguageID) -> Option<String> {
     let table = match identify(encoding_id, language_id) {
         Some(table) => table,
         _ => return None,
     };
-    let mut string = String::new();
-    for &byte in bytes {
+    let mut value = String::new();
+    for &byte in data {
         if byte <= 0x7F {
-            string.push(byte as char);
+            value.push(byte as char);
         } else {
-            string.push(table[(byte & 0x7F) as usize]);
+            value.push(table[(byte & 0x7F) as usize]);
         }
     }
-    Some(string)
+    Some(value)
 }
 
-pub fn encode(_: &str, _: EncodingID, _: LanguageID, _: &mut Vec<u8>) -> Result<()> {
+pub fn encode(
+    value: &str,
+    encoding_id: EncodingID,
+    language_id: LanguageID,
+    data: &mut Vec<u8>,
+    context: &mut Context,
+) -> Result<()> {
+    let key = (encoding_id, language_id.into());
+    let mapping = match context.mapping.get(&key) {
+        Some(value) => value,
+        _ => {
+            let table = match identify(encoding_id, language_id) {
+                Some(value) => value,
+                _ => raise!("found an unknown Macintosh encoding ({encoding_id})"),
+            };
+            context.mapping.entry(key).or_insert(
+                table
+                    .iter()
+                    .enumerate()
+                    .map(|(index, character)| (*character, index as u8))
+                    .collect(),
+            )
+        }
+    };
+    for character in value.chars() {
+        if let Some(value) = mapping.get(&character) {
+            data.push(*value);
+        } else {
+            raise!("found an unknown Macintosh character ({character})")
+        }
+    }
     Ok(())
 }
 

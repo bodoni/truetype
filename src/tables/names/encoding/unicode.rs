@@ -15,7 +15,7 @@ pub fn decode(data: &[u8], encoding_id: EncodingID) -> Option<String> {
 
 pub fn decode_utf16(data: &[u8]) -> Option<String> {
     if data.len() % 2 != 0 {
-        return None
+        return None;
     }
     let data = data
         .chunks_exact(2)
@@ -27,7 +27,15 @@ pub fn decode_utf16(data: &[u8]) -> Option<String> {
     String::from_utf16(&data).ok()
 }
 
-pub fn encode(_: &str, _: EncodingID, _: &mut Vec<u8>) -> Result<()> {
+pub fn encode(value: &str, encoding_id: EncodingID, data: &mut Vec<u8>) -> Result<()> {
+    match encoding_id {
+        // 0 => Unicode 1.0 semantics—deprecated
+        // 1 => Unicode 1.1 semantics—deprecated
+        // 2 => ISO/IEC 10646 semantics—deprecated
+        3 => encode_utf16(value, data), // Unicode 2.0 and onwards semantics, Unicode BMP only
+        4 => encode_utf16(value, data), // Unicode 2.0 and onwards semantics, Unicode full repertoire
+        _ => raise!("found an unknown Unicode encoding ({encoding_id})"),
+    }
     Ok(())
 }
 

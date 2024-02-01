@@ -98,8 +98,11 @@ table! {
     }
 }
 
+/// An encoding context.
+pub type Context = encoding::macintosh::Context;
+
 impl Names {
-    /// Iterate over name entires.
+    /// Iterate over name records.
     pub fn iter(
         &self,
     ) -> impl Iterator<Item = ((PlatformID, EncodingID, LanguageID, NameID), Option<String>)>
@@ -130,7 +133,11 @@ impl Names {
     }
 
     /// Create an instance from an iterator over name records.
-    pub fn from_iter<T, U, V, W>(entries: T, language_tags: U) -> Result<Self>
+    pub fn from_iter<T, U, V, W>(
+        records: T,
+        language_tags: U,
+        context: &mut Context,
+    ) -> Result<Self>
     where
         T: IntoIterator<Item = ((PlatformID, EncodingID, LanguageID, NameID), V)>,
         U: IntoIterator<Item = W>,
@@ -138,7 +145,7 @@ impl Names {
         W: AsRef<str>,
     {
         let mut data = vec![];
-        let records = entries
+        let records = records
             .into_iter()
             .map(
                 |((platform_id, encoding_id, language_id, name_id), value)| {
@@ -149,6 +156,7 @@ impl Names {
                         language_id,
                         value.as_ref(),
                         &mut data,
+                        context,
                     )?;
                     Ok(Record {
                         platform_id,
@@ -235,10 +243,13 @@ fn encode(
     language_id: LanguageID,
     value: &str,
     data: &mut Vec<u8>,
+    context: &mut encoding::macintosh::Context,
 ) -> Result<()> {
     match platform_id {
         PlatformID::Unicode => encoding::unicode::encode(value, encoding_id, data),
-        PlatformID::Macintosh => encoding::macintosh::encode(value, encoding_id, language_id, data),
+        PlatformID::Macintosh => {
+            encoding::macintosh::encode(value, encoding_id, language_id, data, context)
+        }
         PlatformID::Windows => encoding::windows::encode(value, encoding_id, data),
     }
 }

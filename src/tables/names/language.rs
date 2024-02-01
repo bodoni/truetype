@@ -400,14 +400,21 @@ impl crate::walue::Read<'static> for LanguageID {
 }
 
 impl crate::value::Write for LanguageID {
+    #[inline]
     fn write<T: crate::tape::Write>(&self, tape: &mut T) -> Result<()> {
-        match self {
-            Self::Unicode => tape.give(&0u16),
-            Self::Macintosh(value) => tape.give(value),
-            Self::Windows(value) => tape.give(value),
-            Self::Other(value) => tape.give(&(value + 0x8000)),
+        tape.give(&u16::from(*self))
+    }
+}
+
+impl From<LanguageID> for u16 {
+    fn from(value: LanguageID) -> Self {
+        match value {
+            LanguageID::Unicode => 0,
+            LanguageID::Macintosh(value) => value.into(),
+            LanguageID::Windows(value) => value.into(),
+            LanguageID::Other(value) => value + 0x8000,
             #[cfg(feature = "ignore-invalid-language-ids")]
-            Self::Invalid(value) => tape.give(value),
+            LanguageID::Invalid(value) => value,
         }
     }
 }
