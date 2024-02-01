@@ -20,6 +20,23 @@ mod open_sans {
     #[test]
     fn read() {
         let table = ok!(Names::read(&mut setup!(OpenSans, "name")));
+        test(&table);
+    }
+
+    #[test]
+    fn write() {
+        let table = ok!(Names::read(&mut setup!(OpenSans, "name")));
+        let records = table.iter().map(|(ids, value)| (ids, ok!(value)));
+        let language_tags = table.language_tags().map(Option::unwrap);
+        let table = ok!(Names::from_iter(
+            records,
+            language_tags,
+            &mut Default::default(),
+        ));
+        test(&table);
+    }
+
+    fn test(table: &Names) {
         let records = table.iter().collect::<Vec<_>>();
         let name_ids = records
             .iter()

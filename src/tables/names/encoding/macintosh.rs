@@ -193,8 +193,10 @@ pub fn encode(
         }
     };
     for character in value.chars() {
-        if let Some(value) = mapping.get(&character) {
-            data.push(*value);
+        if character as u16 <= 0x7F {
+            data.push(character as u8);
+        } else if let Some(value) = mapping.get(&character) {
+            data.push(*value | 0x80);
         } else {
             raise!("found an unknown Macintosh character ({character})")
         }
