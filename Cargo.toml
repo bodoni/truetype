@@ -18,7 +18,7 @@ keywords = ["font", "truetype", "typeface", "typography"]
 exclude = ["tests/fixtures/*"]
 
 [dependencies]
-typeface = "0.4.0"
+typeface = "0.4.1"
 
 [features]
 # https://github.com/google/fonts/issues/5551

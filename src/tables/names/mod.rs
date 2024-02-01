@@ -25,6 +25,7 @@ pub enum Names {
 }
 
 table! {
+    @position
     @write
     #[doc = "A naming table in format 0."]
     pub Names0 {
@@ -32,17 +33,19 @@ table! {
         count  (u16), // count
         offset (u16), // stringOffset
 
-        records (Vec<Record>) |this, tape| { // nameRecord
+        records (Vec<Record>) |this, tape, _| { // nameRecord
             tape.take_given(this.count as usize)
         },
 
-        data (Vec<u8>) |this, tape| {
-            this.read_data(tape)
+        data (Vec<u8>) |this, tape, position| {
+            tape.jump(position + this.offset as u64)?;
+            tape.take_bytes(measure(&this.records))
         },
     }
 }
 
 table! {
+    @position
     @write
     #[doc = "A naming table in format 1."]
     pub Names1 {
@@ -50,18 +53,19 @@ table! {
         count  (u16), // count
         offset (u16), // stringOffset
 
-        records (Vec<Record>) |this, tape| { // nameRecord
+        records (Vec<Record>) |this, tape, _| { // nameRecord
             tape.take_given(this.count as usize)
         },
 
         language_tag_count (u16), // langTagCount
 
-        language_tags (Vec<LanguageTag>) |this, tape| { // langTagRecord
+        language_tags (Vec<LanguageTag>) |this, tape, _| { // langTagRecord
             tape.take_given(this.language_tag_count as usize)
         },
 
-        data (Vec<u8>) |this, tape| {
-            this.read_data(tape)
+        data (Vec<u8>) |this, tape, position| {
+            tape.jump(position + this.offset as u64)?;
+            tape.take_bytes(measure(&this.records))
         },
     }
 }
@@ -148,24 +152,6 @@ impl crate::value::Write for Names {
             Self::Format0(value) => tape.give(value),
             Self::Format1(value) => tape.give(value),
         }
-    }
-}
-
-impl Names0 {
-    fn read_data<T: crate::tape::Read>(&self, tape: &mut T) -> Result<Vec<u8>> {
-        let current = tape.position()?;
-        let above = 3 * 2 + self.records.len() * 6 * 2;
-        tape.jump(current - above as u64 + self.offset as u64)?;
-        tape.take_bytes(measure(&self.records))
-    }
-}
-
-impl Names1 {
-    fn read_data<T: crate::tape::Read>(&self, tape: &mut T) -> Result<Vec<u8>> {
-        let current = tape.position()?;
-        let above = 4 * 2 + self.records.len() * 6 * 2 + self.language_tags.len() * 2 * 2;
-        tape.jump(current - above as u64 + self.offset as u64)?;
-        tape.take_bytes(measure(&self.records))
     }
 }
 
