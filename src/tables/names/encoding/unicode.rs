@@ -1,7 +1,4 @@
-use std::io::Cursor;
-
 use crate::tables::names::encoding::EncodingID;
-use crate::tape::Read;
 
 #[inline]
 pub fn decode(data: &[u8], encoding_id: EncodingID) -> Option<String> {
@@ -16,22 +13,24 @@ pub fn decode(data: &[u8], encoding_id: EncodingID) -> Option<String> {
 }
 
 pub fn decode_utf16(data: &[u8]) -> Option<String> {
-    let mut tape = Cursor::new(data);
-    match tape.take_given::<Vec<_>>(data.len() / 2) {
-        Ok(data) => match String::from_utf16(&data) {
-            Ok(string) => Some(string),
-            _ => None,
-        },
-        _ => None,
-    }
+    let data = data
+        .chunks(2)
+        .map(TryInto::try_into)
+        .map(Result::ok)
+        .map(Option::unwrap)
+        .map(u16::from_be_bytes)
+        .collect::<Vec<_>>();
+    String::from_utf16(&data).ok()
 }
 
 #[cfg(test)]
 mod tests {
+    macro_rules! ok(($result:expr) => ($result.unwrap()));
+
     #[test]
     fn decode_utf16() {
         assert_eq!(
-            super::decode_utf16(&[0xD8, 0x52, 0xDF, 0x62]).unwrap(),
+            ok!(super::decode_utf16(&[0xD8, 0x52, 0xDF, 0x62])),
             "\u{24B62}",
         );
     }
