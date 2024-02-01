@@ -14,7 +14,7 @@ pub fn decode(data: &[u8], encoding_id: EncodingID) -> Option<String> {
 
 pub fn decode_utf16(data: &[u8]) -> Option<String> {
     let data = data
-        .chunks(2)
+        .chunks_exact(2)
         .map(TryInto::try_into)
         .map(Result::ok)
         .map(Option::unwrap)
