@@ -3,6 +3,7 @@
 
 use crate::tables::names::encoding::EncodingID;
 use crate::tables::names::language::{LanguageID, Macintosh};
+use crate::Result;
 
 #[rustfmt::skip]
 const MACINTOSH: [char; 128] = [
@@ -158,6 +159,10 @@ pub fn decode(bytes: &[u8], encoding_id: EncodingID, language_id: LanguageID) ->
         }
     }
     Some(string)
+}
+
+pub fn encode(_: &str, _: EncodingID, _: LanguageID, _: &mut Vec<u8>) -> Result<()> {
+    Ok(())
 }
 
 fn identify(encoding_id: EncodingID, language_id: LanguageID) -> Option<&'static [char; 128]> {

@@ -1,5 +1,6 @@
 use crate::tables::names::encoding::unicode;
 use crate::tables::names::encoding::EncodingID;
+use crate::Result;
 
 #[inline]
 pub fn decode(data: &[u8], encoding_id: EncodingID) -> Option<String> {
@@ -17,4 +18,8 @@ pub fn decode(data: &[u8], encoding_id: EncodingID) -> Option<String> {
         10 => unicode::decode_utf16(data), // Unicode full repertoire
         _ => None,
     }
+}
+
+pub fn encode(_: &str, _: EncodingID, _: &mut Vec<u8>) -> Result<()> {
+    Ok(())
 }

@@ -129,6 +129,60 @@ impl Names {
         })
     }
 
+    /// Create an instance from an iterator over name records.
+    pub fn from_iter<T, U, V, W>(entries: T, language_tags: U) -> Result<Self>
+    where
+        T: IntoIterator<Item = ((PlatformID, EncodingID, LanguageID, NameID), V)>,
+        U: IntoIterator<Item = W>,
+        V: AsRef<str>,
+        W: AsRef<str>,
+    {
+        let mut data = vec![];
+        let records = entries
+            .into_iter()
+            .map(
+                |((platform_id, encoding_id, language_id, name_id), value)| {
+                    let offset = data.len();
+                    encode(
+                        platform_id,
+                        encoding_id,
+                        language_id,
+                        value.as_ref(),
+                        &mut data,
+                    )?;
+                    Ok(Record {
+                        platform_id,
+                        encoding_id,
+                        language_id,
+                        name_id,
+                        size: (data.len() - offset) as _,
+                        offset: offset as _,
+                    })
+                },
+            )
+            .collect::<Result<Vec<_>>>()?;
+        let language_tags = language_tags
+            .into_iter()
+            .map(|value| {
+                let offset = data.len();
+                encoding::unicode::encode_utf16(value.as_ref(), &mut data);
+                LanguageTag {
+                    size: (data.len() - offset) as _,
+                    offset: offset as _,
+                }
+            })
+            .collect::<Vec<_>>();
+        Ok(Self::Format1(Names1 {
+            format: 1,
+            count: records.len() as _,
+            offset: (2 * (3 + records.len() * 6 + 1 + language_tags.len() * 2)) as _,
+            records,
+            language_tag_count: language_tags.len() as _,
+            language_tags,
+            data,
+        }))
+    }
+
     /// Iterate over the language tags.
     pub fn language_tags(&self) -> impl Iterator<Item = Option<String>> + DoubleEndedIterator + '_ {
         let (records, data) = match self {
@@ -172,6 +226,20 @@ fn decode(
         PlatformID::Unicode => encoding::unicode::decode(data, encoding_id),
         PlatformID::Macintosh => encoding::macintosh::decode(data, encoding_id, language_id),
         PlatformID::Windows => encoding::windows::decode(data, encoding_id),
+    }
+}
+
+fn encode(
+    platform_id: PlatformID,
+    encoding_id: EncodingID,
+    language_id: LanguageID,
+    value: &str,
+    data: &mut Vec<u8>,
+) -> Result<()> {
+    match platform_id {
+        PlatformID::Unicode => encoding::unicode::encode(value, encoding_id, data),
+        PlatformID::Macintosh => encoding::macintosh::encode(value, encoding_id, language_id, data),
+        PlatformID::Windows => encoding::windows::encode(value, encoding_id, data),
     }
 }
 
