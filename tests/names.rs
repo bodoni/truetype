@@ -20,16 +20,20 @@ mod open_sans {
     #[test]
     fn read() {
         let table = ok!(Names::read(&mut setup!(OpenSans, "name")));
-        let names: Vec<_> = table.iter().collect();
-        let name_ids: Vec<_> = names.iter().map(|((name_id, _), _)| *name_id).collect();
-        let language_tags: Vec<_> = names
+        let records = table.iter().collect::<Vec<_>>();
+        let name_ids = records
             .iter()
-            .map(|((_, language_tag), _)| ok!(language_tag.as_deref()))
-            .collect();
-        let values: Vec<_> = names
+            .map(|((_, _, _, name_id), _)| *name_id)
+            .collect::<Vec<_>>();
+        let language_tags = table.language_tags().collect::<Vec<_>>();
+        let language_tags = records
+            .iter()
+            .map(|((_, _, language_id, _), _)| ok!(language_id.tag(&language_tags)))
+            .collect::<Vec<_>>();
+        let values = records
             .iter()
             .map(|(_, value)| ok!(value.as_deref()))
-            .collect();
+            .collect::<Vec<_>>();
         #[rustfmt::skip]
         assert_eq!(
             name_ids,
@@ -115,23 +119,24 @@ mod source_serif {
     #[test]
     fn read() {
         let table = ok!(Names::read(&mut setup!(SourceSerif, "name")));
-        let names: HashMap<_, _> = table
+        let language_tags = table.language_tags().collect::<Vec<_>>();
+        let records = table
             .iter()
             .rev()
-            .filter(|((_, language_tag), value)| {
+            .filter(|((_, _, language_id, _), value)| {
                 value.is_some()
-                    && language_tag
-                        .as_deref()
-                        .map_or(false, |language_tag| language_tag.starts_with("en"))
+                    && language_id
+                        .tag(&language_tags)
+                        .map_or(false, |tag| tag.starts_with("en"))
             })
-            .map(|((name_id, _), value)| (name_id, value.unwrap()))
-            .collect();
+            .map(|((_, _, _, name_id), value)| (name_id, ok!(value)))
+            .collect::<HashMap<_, _>>();
         assert_eq!(
-            names[&NameID::UniqueFontID],
+            records[&NameID::UniqueFontID],
             "1.017;ADBE;SourceSerifPro-Regular;ADOBE",
         );
-        assert_eq!(names[&NameID::FontFamilyName], "Source Serif Pro");
-        assert_eq!(names[&NameID::DesignerName], "Frank Grießhammer");
-        assert!(!names.contains_key(&NameID::PostScriptCIDFindFontName));
+        assert_eq!(records[&NameID::FontFamilyName], "Source Serif Pro");
+        assert_eq!(records[&NameID::DesignerName], "Frank Grießhammer");
+        assert!(!records.contains_key(&NameID::PostScriptCIDFindFontName));
     }
 }

@@ -98,40 +98,47 @@ table! {
     }
 }
 
-/// A type iterating over name entries.
-pub trait Entries:
-    Iterator<Item = ((NameID, Option<String>), Option<String>)> + DoubleEndedIterator
-{
-}
-
 impl Names {
-    /// Iterate over all name entires.
-    ///
-    /// Each entry is represented by three quantities: a name ID and a language tag, which are
-    /// given as a tuple, and the corresponding value.
-    pub fn iter(&self) -> impl Entries + '_ {
-        let (records, language_tags, data) = match self {
-            Self::Format0(ref table) => (&table.records, &[][..], &table.data),
-            Self::Format1(ref table) => (&table.records, &table.language_tags[..], &table.data),
+    /// Iterate over name entires.
+    pub fn iter(
+        &self,
+    ) -> impl Iterator<Item = ((PlatformID, EncodingID, LanguageID, NameID), Option<String>)>
+           + DoubleEndedIterator
+           + '_ {
+        let (records, data) = match self {
+            Self::Format0(ref table) => (&table.records, &table.data),
+            Self::Format1(ref table) => (&table.records, &table.data),
         };
-        let language_tags: Vec<_> = language_tags
-            .iter()
-            .map(|record| {
-                let (offset, size) = (record.offset as usize, record.size as usize);
-                encoding::unicode::decode_utf16(&data[offset..(offset + size)])
-            })
-            .collect();
         records.iter().map(move |record| {
-            let language_tag = record.language_tag(&language_tags);
-            let (offset, size) = (record.offset as usize, record.size as usize);
-            let value = decode(
-                record.platform_id,
-                record.encoding_id,
-                record.language_id,
-                language_tag.as_deref(),
-                &data[offset..(offset + size)],
-            );
-            ((record.name_id, language_tag), value)
+            let offset = record.offset as usize;
+            let size = record.size as usize;
+            (
+                (
+                    record.platform_id,
+                    record.encoding_id,
+                    record.language_id,
+                    record.name_id,
+                ),
+                decode(
+                    record.platform_id,
+                    record.encoding_id,
+                    record.language_id,
+                    &data[offset..(offset + size)],
+                ),
+            )
+        })
+    }
+
+    /// Iterate over the language tags.
+    pub fn language_tags(&self) -> impl Iterator<Item = Option<String>> + DoubleEndedIterator + '_ {
+        let (records, data) = match self {
+            Self::Format0(ref table) => (&[][..], &table.data),
+            Self::Format1(ref table) => (&table.language_tags[..], &table.data),
+        };
+        records.iter().map(|record| {
+            let offset = record.offset as usize;
+            let size = record.size as usize;
+            encoding::unicode::decode_utf16(&data[offset..(offset + size)])
         })
     }
 }
@@ -155,40 +162,15 @@ impl crate::value::Write for Names {
     }
 }
 
-impl Record {
-    /// Return the IETF-BCP-47 language tag.
-    pub fn language_tag(&self, language_tags: &[Option<String>]) -> Option<String> {
-        match self.language_id {
-            LanguageID::Unicode => None,
-            LanguageID::Macintosh(value) => Some(<&'static str>::from(value).into()),
-            LanguageID::Windows(value) => Some(<&'static str>::from(value).into()),
-            LanguageID::Other(value) => match language_tags.get(value as usize) {
-                Some(Some(value)) => Some(value.clone()),
-                _ => None,
-            },
-            #[cfg(feature = "ignore-invalid-language-ids")]
-            LanguageID::Invalid(_) => None,
-        }
-    }
-}
-
-impl<T> Entries for T where
-    T: Iterator<Item = ((NameID, Option<String>), Option<String>)> + DoubleEndedIterator
-{
-}
-
 fn decode(
     platform_id: PlatformID,
     encoding_id: EncodingID,
     language_id: LanguageID,
-    language_tag: Option<&str>,
     data: &[u8],
 ) -> Option<String> {
     match platform_id {
         PlatformID::Unicode => encoding::unicode::decode(data, encoding_id),
-        PlatformID::Macintosh => {
-            encoding::macintosh::decode(data, encoding_id, language_id, language_tag)
-        }
+        PlatformID::Macintosh => encoding::macintosh::decode(data, encoding_id, language_id),
         PlatformID::Windows => encoding::windows::decode(data, encoding_id),
     }
 }

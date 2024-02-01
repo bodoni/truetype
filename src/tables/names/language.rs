@@ -354,6 +354,26 @@ choices! {
     }
 }
 
+impl LanguageID {
+    /// Return the IETF-BCP-47 language tag.
+    pub fn tag<'l, T>(&self, language_tags: &'l [Option<T>]) -> Option<&'l str>
+    where
+        T: AsRef<str>,
+    {
+        match self {
+            Self::Unicode => None,
+            Self::Macintosh(value) => Some(<&'static str>::from(*value)),
+            Self::Windows(value) => Some(<&'static str>::from(*value)),
+            Self::Other(value) => match language_tags.get(*value as usize) {
+                Some(Some(value)) => Some(value.as_ref()),
+                _ => None,
+            },
+            #[cfg(feature = "ignore-invalid-language-ids")]
+            Self::Invalid(_) => None,
+        }
+    }
+}
+
 impl crate::walue::Read<'static> for LanguageID {
     type Parameter = PlatformID;
 

@@ -144,13 +144,8 @@ const X_MAC_TURKISH: [char; 128] = [
     '', 'ˆ', '˜', '¯', '˘', '˙', '˚', '¸', '˝', '˛', 'ˇ',
 ];
 
-pub fn decode(
-    bytes: &[u8],
-    encoding_id: EncodingID,
-    language_id: LanguageID,
-    language_tag: Option<&str>,
-) -> Option<String> {
-    let table = match identify(encoding_id, language_id, language_tag) {
+pub fn decode(bytes: &[u8], encoding_id: EncodingID, language_id: LanguageID) -> Option<String> {
+    let table = match identify(encoding_id, language_id) {
         Some(table) => table,
         _ => return None,
     };
@@ -165,11 +160,7 @@ pub fn decode(
     Some(string)
 }
 
-fn identify(
-    encoding_id: EncodingID,
-    language_id: LanguageID,
-    _: Option<&str>,
-) -> Option<&'static [char; 128]> {
+fn identify(encoding_id: EncodingID, language_id: LanguageID) -> Option<&'static [char; 128]> {
     match encoding_id {
         0 => return Some(&MACINTOSH), // Roman
         // 1 => Japanese
