@@ -63,7 +63,7 @@ impl FontHeader {
         let mut data = vec![];
         tape.read_to_end(&mut data)?;
         if data.len() % 4 != 0 {
-            raise!("found a malformed layout");
+            raise!("found a malformed table layout");
         }
         let sum = data
             .chunks_exact(4)
