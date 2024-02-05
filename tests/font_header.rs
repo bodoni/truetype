@@ -4,17 +4,13 @@ mod support;
 use std::fs::File;
 
 use truetype::tables::FontHeader;
-use truetype::tape::Read as TapeRead;
-use truetype::value::Read as ValueRead;
+use truetype::value::Read;
 
 #[test]
 fn checksum() {
     let path = support::Fixture::SourceSerif.path();
     let mut file = ok!(File::open(path));
-    ok!(file.jump(support::Fixture::SourceSerif.offset("head")));
-    let table = ok!(FontHeader::read(&mut file));
-    ok!(file.jump(0));
-    assert_eq!(ok!(table.checksum(&mut file)), 0);
+    assert_eq!(ok!(FontHeader::checksum(&mut file)), 0);
 }
 
 #[test]

@@ -59,7 +59,7 @@ impl FontHeader {
     pub const CHECKSUM_ADJUSTMENT: u32 = 0xB1B0AFBA;
 
     /// Compute the checksum.
-    pub fn checksum<T: crate::tape::Read>(&self, tape: &mut T) -> Result<u32> {
+    pub fn checksum<T: crate::tape::Read>(tape: &mut T) -> Result<u32> {
         let mut data = vec![];
         tape.read_to_end(&mut data)?;
         if data.len() % 4 != 0 {
