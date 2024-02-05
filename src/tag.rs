@@ -107,6 +107,6 @@ mod tests {
     #[test]
     fn read() {
         let mut tape = Cursor::new(b"true".to_vec());
-        assert_eq!(Tag::read(&mut tape).unwrap(), Tag(*b"true"));
+        assert_eq!(ok!(Tag::read(&mut tape)), Tag(*b"true"));
     }
 }

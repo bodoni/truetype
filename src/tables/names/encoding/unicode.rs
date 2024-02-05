@@ -20,8 +20,7 @@ pub fn decode_utf16(data: &[u8]) -> Option<String> {
     let data = data
         .chunks_exact(2)
         .map(TryInto::try_into)
-        .map(std::result::Result::ok)
-        .map(Option::unwrap)
+        .map(std::result::Result::unwrap)
         .map(u16::from_be_bytes)
         .collect::<Vec<_>>();
     String::from_utf16(&data).ok()

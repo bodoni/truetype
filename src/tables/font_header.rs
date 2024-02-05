@@ -3,6 +3,7 @@
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/head
 
 use crate::number::q32;
+use crate::Result;
 
 table! {
     @write
@@ -50,5 +51,24 @@ flags! {
         0b0000_0000_0010_0000 => is_condensed,
         0b0000_0000_0100_0000 => is_extended,
         0b1111_1111_1000_0000 => is_invalid,
+    }
+}
+
+impl FontHeader {
+    /// Compute the checksum.
+    pub fn checksum<T: crate::tape::Read>(&self, tape: &mut T) -> Result<u32> {
+        const MAGIC: u32 = 0xB1B0AFBA;
+        let mut data = vec![];
+        tape.read_to_end(&mut data)?;
+        if data.len() % 4 != 0 {
+            raise!("found a malformed layout");
+        }
+        let sum = data
+            .chunks_exact(4)
+            .map(TryInto::try_into)
+            .map(std::result::Result::unwrap)
+            .map(u32::from_be_bytes)
+            .fold(0u32, |sum, value| sum.wrapping_add(value));
+        Ok(MAGIC.wrapping_sub(sum))
     }
 }

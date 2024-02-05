@@ -66,20 +66,18 @@ impl Record {
         let count = ((self.size + 4 - 1) & !(4 - 1)) / 4;
         let excess = 4 * count - self.size;
         debug_assert!(excess < 4);
-        tape.stay(|tape| {
-            tape.jump(self.offset as u64)?;
-            let mut total: u32 = 0;
-            for i in 0..count {
-                let mut value: u32 = tape.take()?;
-                if i + 1 == count {
-                    value &= !((1u32 << (8 * excess)) - 1);
-                }
-                if !head || i != 2 {
-                    total = total.wrapping_add(value);
-                }
+        tape.jump(self.offset as u64)?;
+        let mut total: u32 = 0;
+        for i in 0..count {
+            let mut value: u32 = tape.take()?;
+            if i + 1 == count {
+                value &= !((1u32 << (8 * excess)) - 1);
             }
-            Ok(total)
-        })
+            if !head || i != 2 {
+                total = total.wrapping_add(value);
+            }
+        }
+        Ok(total)
     }
 }
 
@@ -89,6 +87,8 @@ mod tests {
 
     use super::Record;
     use crate::Tag;
+
+    macro_rules! ok(($result:expr) => ($result.unwrap()));
 
     #[test]
     fn record_checksum() {
@@ -102,7 +102,7 @@ mod tests {
                     offset: 0,
                     checksum: $checksum,
                 };
-                table.checksum == table.checksum(&mut reader).unwrap()
+                table.checksum == ok!(table.checksum(&mut reader))
             })
         );
         assert!(!checksum!(
