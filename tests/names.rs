@@ -14,8 +14,13 @@ mod css_test {
 }
 
 mod open_sans {
+    use std::fs::File;
+    use std::io::Cursor;
+
     use truetype::tables::names::{NameID, Names};
-    use truetype::value::Read;
+    use truetype::tape::Read as TapeRead;
+    use truetype::tape::Write;
+    use truetype::value::Read as ValueRead;
 
     #[test]
     fn read() {
@@ -25,15 +30,32 @@ mod open_sans {
 
     #[test]
     fn write() {
-        let table = ok!(Names::read(&mut setup!(OpenSans, "name")));
-        let records = table.iter().map(|(ids, value)| (ids, ok!(value)));
-        let language_tags = table.language_tags().map(Option::unwrap);
-        let table = ok!(Names::from_iter(
+        let path = crate::support::Fixture::OpenSans.path();
+        let offset = crate::support::Fixture::OpenSans.offset("name");
+        let mut file = ok!(File::open(path));
+
+        ok!(file.jump(offset));
+        let one = ok!(Names::read(&mut file));
+        let size = (ok!(file.position()) - offset) as usize;
+
+        let records = one.iter().map(|(ids, value)| (ids, ok!(value)));
+        let language_tags = one.language_tags().map(Option::unwrap);
+        let other = ok!(Names::from_iter(
             records,
             language_tags,
             &mut Default::default(),
         ));
-        test(&table);
+        test(&other);
+        match (&one, &other) {
+            (Names::Format0(one), Names::Format1(other)) => {
+                assert_eq!(one.data.len(), other.data.len() - 48);
+            }
+            _ => unreachable!(),
+        }
+
+        let mut cursor = Cursor::new(vec![]);
+        ok!(cursor.give(&other));
+        assert_eq!(size, cursor.into_inner().len() - 48 - 2);
     }
 
     fn test(table: &Names) {
