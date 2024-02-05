@@ -55,9 +55,11 @@ flags! {
 }
 
 impl FontHeader {
+    /// The magic number for computing the checksum adjustment.
+    pub const CHECKSUM_ADJUSTMENT: u32 = 0xB1B0AFBA;
+
     /// Compute the checksum.
     pub fn checksum<T: crate::tape::Read>(&self, tape: &mut T) -> Result<u32> {
-        const MAGIC: u32 = 0xB1B0AFBA;
         let mut data = vec![];
         tape.read_to_end(&mut data)?;
         if data.len() % 4 != 0 {
@@ -69,6 +71,6 @@ impl FontHeader {
             .map(std::result::Result::unwrap)
             .map(u32::from_be_bytes)
             .fold(0u32, |sum, value| sum.wrapping_add(value));
-        Ok(MAGIC.wrapping_sub(sum))
+        Ok(Self::CHECKSUM_ADJUSTMENT.wrapping_sub(sum))
     }
 }
