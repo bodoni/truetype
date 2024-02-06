@@ -9,8 +9,8 @@ use std::path::PathBuf;
 use test::{black_box, Bencher};
 use truetype::tables::Names;
 use truetype::tape::Read as TapeRead;
-use truetype::tape::Write;
 use truetype::value::Read as ValueRead;
+use truetype::value::Write;
 
 macro_rules! ok(($result:expr) => ($result.unwrap()));
 
@@ -36,6 +36,6 @@ fn write(bencher: &mut Bencher) {
     let table = ok!(Names::read(&mut file));
     bencher.iter(|| {
         let mut cursor = Cursor::new(vec![]);
-        black_box(ok!(cursor.give(&table)));
+        black_box(ok!(table.write(&mut cursor)));
     });
 }
