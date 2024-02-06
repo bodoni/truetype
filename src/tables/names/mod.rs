@@ -180,15 +180,26 @@ impl Names {
                 }
             })
             .collect::<Vec<_>>();
-        Ok(Self::Format1(Names1 {
-            format: 1,
-            count: records.len() as _,
-            offset: (2 * (3 + records.len() * 6 + 1 + language_tags.len() * 2)) as _,
-            records,
-            language_tag_count: language_tags.len() as _,
-            language_tags,
-            data,
-        }))
+        let table = if language_tags.is_empty() {
+            Self::Format0(Names0 {
+                format: 0,
+                count: records.len() as _,
+                offset: (2 * (3 + records.len() * 6)) as _,
+                records,
+                data,
+            })
+        } else {
+            Self::Format1(Names1 {
+                format: 1,
+                count: records.len() as _,
+                offset: (2 * (3 + records.len() * 6 + 1 + language_tags.len() * 2)) as _,
+                records,
+                language_tag_count: language_tags.len() as _,
+                language_tags,
+                data,
+            })
+        };
+        Ok(table)
     }
 
     /// Iterate over the language tags.

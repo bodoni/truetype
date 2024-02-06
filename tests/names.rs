@@ -47,7 +47,7 @@ mod open_sans {
         ));
         test(&other);
         match (&one, &other) {
-            (Names::Format0(one), Names::Format1(other)) => {
+            (Names::Format0(one), Names::Format0(other)) => {
                 assert_eq!(one.data.len(), other.data.len() - 48);
             }
             _ => unreachable!(),
@@ -55,7 +55,7 @@ mod open_sans {
 
         let mut cursor = Cursor::new(vec![]);
         ok!(cursor.give(&other));
-        assert_eq!(size, cursor.into_inner().len() - 48 - 2);
+        assert_eq!(size, cursor.into_inner().len() - 48);
     }
 
     fn test(table: &Names) {
