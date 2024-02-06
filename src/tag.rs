@@ -1,5 +1,3 @@
-use std::fmt;
-
 use crate::Result;
 
 /// A tag.
@@ -29,12 +27,26 @@ impl Tag {
 
 dereference! { Tag::0 => [u8; 4] }
 
-impl fmt::Debug for Tag {
-    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+impl std::fmt::Debug for Tag {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
         match self.as_str() {
             Some(value) => write!(formatter, "Tag({value})"),
             _ => write!(formatter, "Tag(0x{:08X})", u32::from(*self)),
         }
+    }
+}
+
+impl std::cmp::PartialEq<[u8; 4]> for Tag {
+    #[inline]
+    fn eq(&self, other: &[u8; 4]) -> bool {
+        self.0.eq(other)
+    }
+}
+
+impl std::cmp::PartialEq<&[u8; 4]> for Tag {
+    #[inline]
+    fn eq(&self, other: &&[u8; 4]) -> bool {
+        self.0.eq(*other)
     }
 }
 
@@ -76,11 +88,6 @@ mod tests {
     macro_rules! ok(($result:expr) => ($result.unwrap()));
 
     #[test]
-    fn from_str() {
-        assert_eq!(ok!(Tag::from_str("true")), Tag(*b"true"));
-    }
-
-    #[test]
     fn as_str() {
         assert_eq!(Tag(*b"CFF ").as_str(), Some("CFF "));
         assert_eq!(Tag(*b"OS/2").as_str(), Some("OS/2"));
@@ -95,8 +102,24 @@ mod tests {
     }
 
     #[test]
+    fn equal() {
+        let tag = Tag(*b"true");
+        assert!(tag == b"true");
+        assert_eq!(tag, b"true");
+
+        let tag = &tag;
+        assert!(tag == b"true");
+        assert_eq!(tag, b"true");
+    }
+
+    #[test]
     fn from() {
         assert_eq!(Tag(*b"true"), Tag::from(0x74727565));
+    }
+
+    #[test]
+    fn from_str() {
+        assert_eq!(ok!(Tag::from_str("true")), Tag(*b"true"));
     }
 
     #[test]
