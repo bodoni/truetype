@@ -161,7 +161,6 @@ mod source_serif {
         let language_tags = table.language_tags().collect::<Vec<_>>();
         let records = table
             .iter()
-            .rev()
             .filter(|((_, _, language_id, _), value)| {
                 value.is_some()
                     && language_id
