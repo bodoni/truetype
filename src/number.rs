@@ -46,15 +46,13 @@ mod tests {
 
     #[test]
     fn from() {
-        use std::mem::transmute;
-
         let cases: Vec<(i16, f32)> = vec![
-            (unsafe { transmute::<u16, i16>(0x7fff) }, 1.999939),
-            (unsafe { transmute::<u16, i16>(0x7000) }, 1.75),
-            (unsafe { transmute::<u16, i16>(0x0001) }, 0.000061),
-            (unsafe { transmute::<u16, i16>(0x0000) }, 0.0),
-            (unsafe { transmute::<u16, i16>(0xffff) }, -0.000061),
-            (unsafe { transmute::<u16, i16>(0x8000) }, -2.0),
+            (0x7fff as i16, 1.999939),
+            (0x7000 as i16, 1.75),
+            (0x0001 as i16, 0.000061),
+            (0x0000 as i16, 0.0),
+            (-0x0001 as i16, -0.000061),
+            (-0x8000 as i16, -2.0),
         ];
         for (input, output) in cases.into_iter() {
             let input: f32 = q16(input).into();
