@@ -105,9 +105,9 @@ impl Names {
     /// Iterate over name records.
     pub fn iter(
         &self,
-    ) -> impl Iterator<Item = ((PlatformID, EncodingID, LanguageID, NameID), Option<String>)>
-           + DoubleEndedIterator
-           + '_ {
+    ) -> impl DoubleEndedIterator<
+        Item = ((PlatformID, EncodingID, LanguageID, NameID), Option<String>),
+    > + '_ {
         let (records, data) = match self {
             Self::Format0(ref table) => (&table.records, &table.data),
             Self::Format1(ref table) => (&table.records, &table.data),
@@ -203,7 +203,7 @@ impl Names {
     }
 
     /// Iterate over the language tags.
-    pub fn language_tags(&self) -> impl Iterator<Item = Option<String>> + DoubleEndedIterator + '_ {
+    pub fn language_tags(&self) -> impl DoubleEndedIterator<Item = Option<String>> + '_ {
         let (records, data) = match self {
             Self::Format0(ref table) => (&[][..], &table.data),
             Self::Format1(ref table) => (&table.language_tags[..], &table.data),
