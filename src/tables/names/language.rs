@@ -18,7 +18,7 @@ pub enum LanguageID {
 // Reference:
 // https://github.com/opentypejs/opentype.js/blob/c37fcdfbd89c1bd0aac1cecb2b287dfb7d00cee0/src/tables/name.js#L35-L155
 choices! {
-    #[doc = "A Macintosh language."]
+    /// A Macintosh language.
     pub Macintosh(u16) {
         0 => English("en"), // English
         1 => French("fr"), // French
@@ -144,7 +144,7 @@ choices! {
 // Reference:
 // https://github.com/opentypejs/opentype.js/blob/c37fcdfbd89c1bd0aac1cecb2b287dfb7d00cee0/src/tables/name.js#L307-L522
 choices! {
-    #[doc = "A Windows language."]
+    /// A Windows language.
     pub Windows(u16) {
         0x0436 => AfrikaansSouthAfrica("af"), // Afrikaans, South Africa
         0x041C => AlbanianAlbania("sq"), // Albanian, Albania

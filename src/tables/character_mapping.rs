@@ -34,7 +34,7 @@ pub enum Encoding {
 }
 
 table! {
-    #[doc = "The header of a character-to-glyph mapping."]
+    /// The header of a character-to-glyph mapping.
     #[derive(Copy)]
     pub Header {
         version     (u16) = { 0 }, // version
@@ -43,7 +43,7 @@ table! {
 }
 
 table! {
-    #[doc = "A record of a character-to-glyph mapping."]
+    /// A record of a character-to-glyph mapping.
     #[derive(Copy)]
     pub Record {
         platform_id (u16), // platformID
@@ -53,7 +53,7 @@ table! {
 }
 
 table! {
-    #[doc = "A character-to-glyph encoding in format 0."]
+    /// A character-to-glyph encoding in format 0.
     pub Encoding0 {
         format   (u16) = { 0 }, // format
         size     (u16), // length
@@ -66,7 +66,7 @@ table! {
 }
 
 table! {
-    #[doc = "A character-to-glyph encoding in format 4."]
+    /// A character-to-glyph encoding in format 4.
     pub Encoding4 {
         format           (u16) = { 4 }, // format
         size             (u16), // length
@@ -101,7 +101,7 @@ table! {
 }
 
 table! {
-    #[doc = "A character-to-glyph encoding in format 6."]
+    /// A character-to-glyph encoding in format 6.
     pub Encoding6 {
         format      (u16) = { 6 }, // format
         size        (u16), // length
@@ -116,7 +116,7 @@ table! {
 }
 
 table! {
-    #[doc = "A character-to-glyph encoding in format 12."]
+    /// A character-to-glyph encoding in format 12.
     pub Encoding12 {
         format      (u16) = { 12 }, // format
         reserved    (u16) = { 0 }, // reserved
@@ -131,7 +131,7 @@ table! {
 }
 
 table! {
-    #[doc = "A character-to-glyph encoding in format 14."]
+    /// A character-to-glyph encoding in format 14.
     pub Encoding14 {
         format         (u16) = { 14 }, // format
         size           (u32), // length
@@ -144,7 +144,7 @@ table! {
 }
 
 table! {
-    #[doc = "A sequential mapping group."]
+    /// A sequential mapping group.
     pub SequentialGroup {
         start_code     (u32), // startCharCode
         end_code       (u32), // endCharCode
@@ -153,7 +153,7 @@ table! {
 }
 
 table! {
-    #[doc = "A variation selector."]
+    /// A variation selector.
     pub VariationSelector {
         character (u32) |_, tape| { // varSelector
             let buffer: [u8; 3] = tape.take()?;

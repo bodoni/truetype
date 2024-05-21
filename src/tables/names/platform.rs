@@ -1,5 +1,5 @@
 choices! {
-    #[doc = "A platform identifier."]
+    /// A platform identifier.
     pub PlatformID(u16) {
         0 => Unicode,
         1 => Macintosh,

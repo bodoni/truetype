@@ -11,7 +11,7 @@ use crate::{GlyphID, Result};
 pub struct GlyphData(pub Vec<Option<Glyph>>);
 
 table! {
-    #[doc = "A glyph."]
+    /// A glyph.
     pub Glyph { // Glyph Header
         contour_count (i16), // numberOfContours
         min_x         (i16), // xMin
@@ -36,7 +36,7 @@ pub enum Description {
 
 table! {
     @define
-    #[doc = "A simple-glyph description."]
+    /// A simple-glyph description.
     pub SimpleDescription { // Simple Glyph Table
         end_points       (Vec<u16>       ), // endPtsOfContours
         instruction_size (u16            ), // instructionLength
@@ -56,7 +56,7 @@ pub struct CompositeDescription {
 }
 
 table! {
-    #[doc = "A component of a composite glyph."]
+    /// A component of a composite glyph.
     #[derive(Copy)]
     pub Component { // Component Glyph Table
         flags    (ComponentFlags), // flags
@@ -73,7 +73,7 @@ table! {
 }
 
 flags! {
-    #[doc = "Point flags."]
+    /// Point flags.
     pub PointFlags(u8) { // Simple Glyph Flags
         0b0000_0001 => is_on_curve,
         0b0000_0010 => is_x_short,
@@ -90,7 +90,7 @@ flags! {
 
 flags! {
     @define
-    #[doc = "Component flags."]
+    /// Component flags.
     pub ComponentFlags(u16) { // Component Glyph Flags
         0b0000_0000_0000_0001 => are_arguments_words,
         0b0000_0000_0000_0010 => are_arguments_xy,

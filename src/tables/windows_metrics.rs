@@ -23,7 +23,7 @@ pub enum WindowsMetrics {
 }
 
 table! {
-    #[doc = "OS/2 and Windows metrics of version 0."]
+    /// OS/2 and Windows metrics of version 0.
     #[derive(Copy)]
     pub WindowsMetrics0 {
         version               (u16           ), // version
@@ -60,7 +60,7 @@ table! {
 }
 
 table! {
-    #[doc = "OS/2 and Windows metrics of version 1."]
+    /// OS/2 and Windows metrics of version 1.
     #[derive(Copy)]
     pub WindowsMetrics1 {
         version               (u16           ), // version
@@ -99,7 +99,7 @@ table! {
 }
 
 table! {
-    #[doc = "OS/2 and Windows metrics of version 2."]
+    /// OS/2 and Windows metrics of version 2.
     #[derive(Copy)]
     pub WindowsMetrics2 {
         version               (u16           ), // version
@@ -149,7 +149,7 @@ pub type WindowsMetrics3 = WindowsMetrics2;
 pub type WindowsMetrics4 = WindowsMetrics2;
 
 table! {
-    #[doc = "OS/2 and Windows metrics of version 5."]
+    /// OS/2 and Windows metrics of version 5.
     #[derive(Copy)]
     pub WindowsMetrics5 {
         version                  (u16           ), // version
@@ -196,7 +196,7 @@ table! {
 
 flags! {
     @define
-    #[doc = "Embedding licensing-rights flags."]
+    /// Embedding licensing-rights flags.
     pub EmbeddingFlags(u16) {
         0b0000_0000_0000_0010 => has_restricted_license,
         0b0000_0000_0000_0100 => allows_preview_and_print,
@@ -219,7 +219,7 @@ impl crate::value::Read for EmbeddingFlags {
 }
 
 flags! {
-    #[doc = "Font-selection flags."]
+    /// Font-selection flags.
     pub SelectionFlags(u16) {
         0b0000_0000_0000_0001 => is_italic,
         0b0000_0000_0000_0010 => is_underline,

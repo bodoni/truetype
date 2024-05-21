@@ -7,7 +7,7 @@ use crate::Result;
 
 table! {
     @write
-    #[doc = "A font header."]
+    /// A font header.
     #[derive(Copy)]
     pub FontHeader {
         major_version        (u16           ) = { 1 }, // majorVersion
@@ -32,7 +32,7 @@ table! {
 }
 
 flags! {
-    #[doc = "Font-header flags."]
+    /// Font-header flags.
     pub Flags(u16) {
         0b0000_0000_0000_0001 => is_baseline_at_0,
         0b0000_0000_0000_0010 => is_left_side_bearing_at_0,
@@ -41,7 +41,7 @@ flags! {
 }
 
 flags! {
-    #[doc = "Macintosh style flags."]
+    /// Macintosh style flags.
     pub MacintoshFlags(u16) {
         0b0000_0000_0000_0001 => is_bold,
         0b0000_0000_0000_0010 => is_italic,

@@ -27,7 +27,7 @@ pub enum Names {
 table! {
     @position
     @write
-    #[doc = "A naming table in format 0."]
+    /// A naming table in format 0.
     pub Names0 {
         format (u16), // format
         count  (u16), // count
@@ -47,7 +47,7 @@ table! {
 table! {
     @position
     @write
-    #[doc = "A naming table in format 1."]
+    /// A naming table in format 1.
     pub Names1 {
         format (u16), // format
         count  (u16), // count
@@ -72,7 +72,7 @@ table! {
 
 table! {
     @write
-    #[doc = "A record of a naming table."]
+    /// A record of a naming table.
     #[derive(Copy)]
     pub Record { // NameRecord
         platform_id (PlatformID), // platformID
@@ -90,7 +90,7 @@ table! {
 
 table! {
     @write
-    #[doc = "A language tag."]
+    /// A language tag.
     #[derive(Copy)]
     pub LanguageTag { // LangTagRecord
         size   (u16), // length

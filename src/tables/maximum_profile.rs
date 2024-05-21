@@ -15,7 +15,7 @@ pub enum MaximumProfile {
 }
 
 table! {
-    #[doc = "A maximum profile of version 0.5."]
+    /// A maximum profile of version 0.5.
     #[derive(Copy)]
     pub MaximumProfile0 {
         version     (q32), // version
@@ -24,7 +24,7 @@ table! {
 }
 
 table! {
-    #[doc = "A maximum profile of version 1."]
+    /// A maximum profile of version 1.
     #[derive(Copy)]
     pub MaximumProfile1 {
         version                     (q32), // version

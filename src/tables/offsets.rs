@@ -7,7 +7,7 @@ use crate::Result;
 
 table! {
     @write
-    #[doc = "An offset table."]
+    /// An offset table.
     pub Offsets {
         header (Header),
 
@@ -19,7 +19,7 @@ table! {
 
 table! {
     @write
-    #[doc = "The header of an offset table."]
+    /// The header of an offset table.
     #[derive(Copy)]
     pub Header {
         version (u32) |_, tape| { // version
@@ -39,7 +39,7 @@ table! {
 
 table! {
     @write
-    #[doc = "A record of an offset table."]
+    /// A record of an offset table.
     #[derive(Copy)]
     pub Record {
         tag      (Tag), // tag

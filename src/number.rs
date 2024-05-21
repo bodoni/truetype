@@ -29,13 +29,13 @@ macro_rules! implement {
 }
 
 implement! {
-    #[doc = "A fixed-point number in format Q2.14."]
+    /// A fixed-point number in format Q2.14.
     #[allow(non_camel_case_types)]
     pub q16(i16 | 14)
 }
 
 implement! {
-    #[doc = "A fixed-point number in format Q16.16."]
+    /// A fixed-point number in format Q16.16.
     #[allow(non_camel_case_types)]
     pub q32(i32 | 16)
 }

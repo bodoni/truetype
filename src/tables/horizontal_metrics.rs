@@ -8,7 +8,7 @@ use crate::{GlyphID, Result};
 
 table! {
     @define
-    #[doc = "Horizontal metrics."]
+    /// Horizontal metrics.
     pub HorizontalMetrics {
         records            (Vec<Record>), // hMetrics
         left_side_bearings (Vec<i16>   ), // leftSideBearing
@@ -16,7 +16,7 @@ table! {
 }
 
 table! {
-    #[doc = "A record of horizontal metrics."]
+    /// A record of horizontal metrics.
     #[derive(Copy)]
     pub Record { // longHorMetric
         advance_width     (u16), // advanceWidth

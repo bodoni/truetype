@@ -17,7 +17,7 @@ pub enum PostScript {
 }
 
 table! {
-    #[doc = "A PostScript table of version 1."]
+    /// A PostScript table of version 1.
     #[derive(Copy)]
     pub PostScript1 {
         version             (q32), // version
@@ -33,7 +33,7 @@ table! {
 }
 
 table! {
-    #[doc = "A PostScript table of version 2."]
+    /// A PostScript table of version 2.
     pub PostScript2 {
         version             (q32), // version
         italic_angle        (q32), // italicAngle

@@ -1,5 +1,5 @@
 choices! {
-    #[doc = "A name identifier."]
+    /// A name identifier.
     pub NameID(u16) {
         0 => CopyrightNotice,
         1 => FontFamilyName,

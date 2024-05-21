@@ -3,7 +3,7 @@
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/hhea
 
 table! {
-    #[doc = "A horizontal header."]
+    /// A horizontal header.
     #[derive(Copy)]
     pub HorizontalHeader {
         major_version           (u16) = { 1 }, // majorVersion
