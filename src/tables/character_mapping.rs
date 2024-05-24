@@ -311,6 +311,7 @@ impl Encoding6 {
 
 impl Encoding12 {
     /// Return the characters.
+    #[inline]
     pub fn characters<T: From<u32>>(&self) -> Vec<(T, T)> {
         Default::default()
     }
