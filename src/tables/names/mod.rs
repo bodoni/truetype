@@ -122,12 +122,25 @@ impl Names {
                     record.language_id,
                     record.name_id,
                 ),
-                decode(
-                    record.platform_id,
-                    record.encoding_id,
-                    record.language_id,
-                    &data[offset..(offset + size)],
-                ),
+                if cfg!(feature = "ignore-invalid-name-records") {
+                    if offset + size <= data.len() {
+                        decode(
+                            record.platform_id,
+                            record.encoding_id,
+                            record.language_id,
+                            &data[offset..(offset + size)],
+                        )
+                    } else {
+                        None
+                    }
+                } else {
+                    decode(
+                        record.platform_id,
+                        record.encoding_id,
+                        record.language_id,
+                        &data[offset..(offset + size)],
+                    )
+                },
             )
         })
     }

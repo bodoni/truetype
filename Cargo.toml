@@ -1,6 +1,6 @@
 [package]
 name = "truetype"
-version = "0.47.6"
+version = "0.47.7"
 edition = "2021"
 license = "Apache-2.0/MIT"
 authors = [
@@ -28,3 +28,4 @@ ignore-invalid-embedding-flags = []
 # https://github.com/google/fonts/issues/5805
 # https://github.com/web-platform-tests/wpt/issues/37713
 ignore-invalid-language-ids = []
+ignore-invalid-name-records = []
