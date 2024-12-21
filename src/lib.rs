@@ -5,12 +5,10 @@ extern crate typeface;
 
 pub mod tables;
 
-mod number;
 mod tag;
 
-pub use typeface::{tape, value, walue, Error, Result};
+pub use typeface::{q16, q32, tape, value, walue, Error, Result};
 
-pub use number::{q16, q32};
 pub use tag::Tag;
 
 /// A glyph identifier.

@@ -2,8 +2,7 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/post
 
-use crate::number::q32;
-use crate::Result;
+use crate::{q32, Result};
 
 /// A PostScript table.
 #[derive(Clone, Debug)]

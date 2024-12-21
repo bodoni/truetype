@@ -2,8 +2,7 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/head
 
-use crate::number::q32;
-use crate::Result;
+use crate::{q32, Result};
 
 table! {
     @write

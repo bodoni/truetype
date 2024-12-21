@@ -2,8 +2,7 @@
 //!
 //! [1]: https://learn.microsoft.com/en-us/typography/opentype/spec/maxp
 
-use crate::number::q32;
-use crate::Result;
+use crate::{q32, Result};
 
 /// A maximum profile.
 #[derive(Clone, Debug)]
