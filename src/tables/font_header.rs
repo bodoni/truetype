@@ -12,7 +12,7 @@ table! {
         major_version (u16) = { 1 }, // majorVersion
 
         minor_version (u16) |_, tape| { // minorVersion
-            if cfg!(feature = "ignore-invalid-font-header-version") {
+            if cfg!(feature = "ignore-invalid-font-header-versions") {
                 tape.take()
             } else {
                 Ok(table! { @read FontHeader, this.minor_version, tape [] [u16] [{ 0 }] })

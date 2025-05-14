@@ -6,7 +6,7 @@ mod englebert {
     use truetype::value::Read;
 
     #[test]
-    #[cfg_attr(not(feature = "ignore-invalid-font-header-version"), should_panic)]
+    #[cfg_attr(not(feature = "ignore-invalid-font-header-versions"), should_panic)]
     fn read() {
         let _ = ok!(FontHeader::read(&mut setup!(Englebert, "head")));
     }
