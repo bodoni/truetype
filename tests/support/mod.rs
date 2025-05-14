@@ -19,6 +19,7 @@ macro_rules! setup(
 pub enum Fixture {
     BungeeColor,
     CSSTest,
+    Englebert,
     MPlus2P,
     OpenSans,
     SourceSerif,
@@ -33,6 +34,7 @@ impl Fixture {
         match *self {
             Fixture::BungeeColor => "BungeeColor-Regular.ttf",
             Fixture::CSSTest => "csstest-basic-regular.ttf",
+            Fixture::Englebert => "Englebert-Regular.ttf",
             Fixture::MPlus2P => "MPlus2P-Regular.ttf",
             Fixture::OpenSans => "OpenSans-Italic.ttf",
             Fixture::SourceSerif => "SourceSerifPro-Regular.otf",
@@ -56,6 +58,10 @@ impl Fixture {
             },
             Fixture::CSSTest => match table {
                 "name" => 101988,
+                _ => unreachable!(),
+            },
+            Fixture::Englebert => match table {
+                "head" => 268,
                 _ => unreachable!(),
             },
             Fixture::MPlus2P => match table {
