@@ -172,13 +172,11 @@ impl Names {
                         context,
                     );
                     if cfg!(feature = "ignore-invalid-name-records") {
-                        if let Err(_) = result {
+                        if result.is_err() {
                             return None;
                         }
-                    } else {
-                        if let Err(error) = result {
-                            return Some(Err(error));
-                        }
+                    } else if let Err(error) = result {
+                        return Some(Err(error));
                     }
                     Some(Ok(Record {
                         platform_id,
