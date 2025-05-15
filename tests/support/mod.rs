@@ -17,6 +17,7 @@ macro_rules! setup(
 #[allow(dead_code)]
 #[derive(Clone, Copy, Debug)]
 pub enum Fixture {
+    AoboshiOne,
     BungeeColor,
     CSSTest,
     Englebert,
@@ -32,6 +33,7 @@ pub enum Fixture {
 impl Fixture {
     pub fn file_name(&self) -> &'static str {
         match *self {
+            Fixture::AoboshiOne => "AoboshiOne-Regular.ttf",
             Fixture::BungeeColor => "BungeeColor-Regular.ttf",
             Fixture::CSSTest => "csstest-basic-regular.ttf",
             Fixture::Englebert => "Englebert-Regular.ttf",
@@ -52,6 +54,10 @@ impl Fixture {
 
     pub fn offset(&self, table: &str) -> u64 {
         match *self {
+            Fixture::AoboshiOne => match table {
+                "name" => 105912,
+                _ => unreachable!(),
+            },
             Fixture::BungeeColor => match table {
                 "OS/2" => 376,
                 _ => unreachable!(),

@@ -160,25 +160,34 @@ impl Names {
         let mut data = vec![];
         let records = records
             .into_iter()
-            .map(
+            .filter_map(
                 |((platform_id, encoding_id, language_id, name_id), value)| {
                     let offset = data.len();
-                    encode(
+                    let result = encode(
                         platform_id,
                         encoding_id,
                         language_id,
                         value.as_ref(),
                         &mut data,
                         context,
-                    )?;
-                    Ok(Record {
+                    );
+                    if cfg!(feature = "ignore-invalid-name-records") {
+                        if let Err(_) = result {
+                            return None;
+                        }
+                    } else {
+                        if let Err(error) = result {
+                            return Some(Err(error));
+                        }
+                    }
+                    Some(Ok(Record {
                         platform_id,
                         encoding_id,
                         language_id,
                         name_id,
                         size: (data.len() - offset) as _,
                         offset: offset as _,
-                    })
+                    }))
                 },
             )
             .collect::<Result<Vec<_>>>()?;

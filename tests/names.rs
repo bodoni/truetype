@@ -1,12 +1,46 @@
 #[macro_use]
 mod support;
 
+mod aoboshi_one {
+    use std::fs::File;
+    use std::io::Cursor;
+
+    use truetype::tables::names::Names;
+    use truetype::tape::Read as TapeRead;
+    use truetype::tape::Write;
+    use truetype::value::Read as ValueRead;
+
+    #[test]
+    #[cfg_attr(not(feature = "ignore-invalid-name-records"), should_panic)]
+    fn write() {
+        let path = crate::support::Fixture::AoboshiOne.path();
+        let offset = crate::support::Fixture::AoboshiOne.offset("name");
+        let mut file = ok!(File::open(path));
+
+        ok!(file.jump(offset));
+        let table = ok!(Names::read(&mut file));
+
+        let records = table
+            .iter()
+            .map(|(ids, value)| (ids, value.unwrap_or_default()));
+        let language_tags = table.language_tags().map(Option::unwrap_or_default);
+        let table = ok!(Names::from_iter(
+            records,
+            language_tags,
+            &mut Default::default(),
+        ));
+
+        let mut cursor = Cursor::new(vec![]);
+        ok!(cursor.give(&table));
+    }
+}
+
 mod css_test {
     use truetype::tables::names::Names;
     use truetype::value::Read;
 
-    #[cfg_attr(not(feature = "ignore-invalid-language-ids"), should_panic)]
     #[test]
+    #[cfg_attr(not(feature = "ignore-invalid-language-ids"), should_panic)]
     fn read() {
         let table = ok!(Names::read(&mut setup!(CSSTest, "name")));
         let _: Vec<_> = table.iter().collect();
@@ -25,7 +59,7 @@ mod open_sans {
     #[test]
     fn read() {
         let table = ok!(Names::read(&mut setup!(OpenSans, "name")));
-        test(&table);
+        assert(&table);
     }
 
     #[test]
@@ -45,7 +79,7 @@ mod open_sans {
             language_tags,
             &mut Default::default(),
         ));
-        test(&other);
+        assert(&other);
         match (&one, &other) {
             (Names::Format0(one), Names::Format0(other)) => {
                 assert_eq!(one.data.len(), other.data.len() - 48);
@@ -58,7 +92,7 @@ mod open_sans {
         assert_eq!(size, cursor.into_inner().len() - 48);
     }
 
-    fn test(table: &Names) {
+    fn assert(table: &Names) {
         let records = table.iter().collect::<Vec<_>>();
         let name_ids = records
             .iter()
